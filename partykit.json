@@ -1,0 +1,6 @@
+{
+  "$schema": "https://www.partykit.io/schema.json",
+  "name": "tdbunk-bunkers",
+  "main": "bunkers/index.ts",
+  "compatibilityDate": "2024-08-02"
+}

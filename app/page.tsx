@@ -15,11 +15,42 @@ import type { MenuProps } from 'antd';
 import { LaptopOutlined, NotificationOutlined, UserOutlined } from '@ant-design/icons';
 import { Col, Divider, Row } from 'antd';
 import Image from 'next/image';
+import { SINGLETON_ROOM_ID, BunkerInfo } from '@/bunkers-server/bunkers';
+import usePartySocket from "partysocket/react";
 
 const style: React.CSSProperties = { background: '#0092ff', padding: '8px 0' };
 
 const { Meta } = Card
 const { Header, Footer, Sider, Content } = Layout;
+
+const items = [
+  {
+    path: '/index',
+    title: 'home',
+  },
+  {
+    path: '/first',
+    title: 'first',
+    children: [
+      {
+        path: '/general',
+        title: 'General',
+      },
+      {
+        path: '/layout',
+        title: 'Layout',
+      },
+      {
+        path: '/navigation',
+        title: 'Navigation',
+      },
+    ],
+  },
+  {
+    path: '/second',
+    title: 'second',
+  },
+];
 
 
 const items1: MenuProps['items'] = ['1', '2', '3'].map((key) => ({
@@ -47,42 +78,6 @@ const items2: MenuProps['items'] = [UserOutlined, LaptopOutlined, NotificationOu
   },
 );
 
-const headerStyle: React.CSSProperties = {
-  // textAlign: 'center',
-  // color: '#fff',
-  // height: 64,
-  // paddingInline: 48,
-  // lineHeight: '64px',
-  // backgroundColor: '#4096ff',
-};
-
-const contentStyle: React.CSSProperties = {
-  // textAlign: 'center',
-  // minHeight: 120,
-  // lineHeight: '120px',
-  // color: '#fff',
-  // backgroundColor: '#0958d9',
-};
-
-const siderStyle: React.CSSProperties = {
-  // textAlign: 'center',
-  // lineHeight: '120px',
-  // color: '#fff',
-  // backgroundColor: '#1677ff',
-};
-
-const footerStyle: React.CSSProperties = {
-  // textAlign: 'center',
-  // color: '#fff',
-  // backgroundColor: '#4096ff',
-};
-
-const layoutStyle = {
-  // borderRadius: 8,
-  // overflow: 'hidden',
-  // width: 'calc(50% - 8px)',
-  // maxWidth: 'calc(50% - 8px)',
-};
 
 export default function Home() {
   const router = useRouter()
@@ -97,9 +92,25 @@ export default function Home() {
     setOpen(true);
   };
 
-  const handleOk = (e: React.MouseEvent<HTMLElement>) => {
-    console.log(e);
-    setOpen(false);
+  const handleOk = async (e: React.MouseEvent<HTMLElement>) => {
+    const slug = 'testing-this'
+    console.log("Create Room");
+    const okRes = await fetch(`http://127.0.0.1:1999/parties/bunker/${slug}`, {
+      method: "POST",
+      mode: "no-cors"
+    })
+
+    console.log("OK", okRes)
+
+    const getResp = await fetch(`http://127.0.0.1:1999/parties/bunker/${slug}`, {
+      mode: "no-cors"
+    })
+
+    console.log("getResp", getResp)
+
+
+    router.push(`/bunkers/${slug}`);
+    // setOpen(false);
   };
 
   const handleCancel = (e: React.MouseEvent<HTMLElement>) => {
@@ -185,6 +196,40 @@ export default function Home() {
     token: { colorBgContainer, borderRadiusLG },
   } = theme.useToken();
 
+  const partyUrl = `http://192.168.100.4:1999/parties/bunkers/${SINGLETON_ROOM_ID}`;
+
+  const [rooms2, setRooms2] = useState<BunkerInfo[]>([]);
+
+  
+  useEffect(() => {
+    const fetchBunkers = async () => {
+      // fetch rooms for server rendering with a GET request to the server
+      const res = await fetch(partyUrl, { next: { revalidate: 0 } });
+      const rooms = ((await res.json()) ?? []) as BunkerInfo[];
+    
+      console.log("Rooms ==>", rooms)
+      setRooms2(rooms)
+    }
+
+    fetchBunkers()
+  }, [])
+
+  // render with initial data, update from websocket as messages arrive
+  const [rooms, setRooms] = useState(rooms2);
+
+  // open a websocket connection to the server
+  const socket = usePartySocket({
+    host: 'http://192.168.100.4:1999',
+    party: "bunkers",
+    room: SINGLETON_ROOM_ID,
+    onMessage(event: MessageEvent<string>) {
+
+      setRooms(JSON.parse(event.data) as BunkerInfo[]);
+    },
+  });
+
+  console.log('===>', rooms)
+
   return (
     <Layout style={{ height: '100vh' }}>
       <Modal
@@ -248,7 +293,7 @@ export default function Home() {
         />
       </Modal>
       <Header style={{ display: 'flex', alignItems: 'center', backgroundColor: colorBgContainer }}>
-        <Image alt="TDBunk" src="" width={100} className='bg-[${}]' />
+        {/* <Image alt="TDBunk" src="http://localhost:3000/" width={100} height={100} /> */}
         <Menu
           // theme="dark"
           mode="horizontal"
@@ -261,11 +306,7 @@ export default function Home() {
         </Button>
       </Header>
       <Content style={{ padding: '0 48px' }}>
-        <Breadcrumb style={{ margin: '16px 16px 16px 0px', }}>
-          <Breadcrumb.Item>Home</Breadcrumb.Item>
-          <Breadcrumb.Item>List</Breadcrumb.Item>
-          <Breadcrumb.Item>App</Breadcrumb.Item>
-        </Breadcrumb>
+        <Breadcrumb style={{ margin: '16px 16px 16px 0px', }} items={items} />
         <Layout
           style={{ padding: '24px 0', background: colorBgContainer, borderRadius: borderRadiusLG, height: '90%' }}
         >
@@ -281,7 +322,7 @@ export default function Home() {
           <Content style={{ padding: '0 24px', minHeight: 280 }}>
             <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
               {bunkers.map((bunker) => (
-                <Col className="gutter-row" span={6}>
+                <Col key={bunker.id} className="gutter-row" span={6}>
                   <Card
                     key={bunker.id}
                     onClick={() => router.push(`/bunkers/${bunker.id}`)}

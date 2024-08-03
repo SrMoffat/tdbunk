@@ -11,15 +11,15 @@ export default class Server implements Party.Server {
   async onMessage(message: string, sender: Party.Connection) {
     this.bunker.broadcast(message, [sender.id])
     console.log("Connections", Array.from(this.bunker.getConnections()).map(conn => conn.id))
-    sender.send('pong')
+    // sender.send('pong')
   }
 
   async onConnect(connection: Party.Connection) {
-    connection.send('Connected')
+    // connection.send('Connected')
     const connectionCount = Array.from(this.bunker.getConnections()).length
 
-    this.bunker.broadcast(JSON.stringify({connectionCount}))
-    this.bunker.broadcast(`New Connection ${connection.id}`)
+    // this.bunker.broadcast(JSON.stringify({connectionCount}))
+    // this.bunker.broadcast(`New Connection ${connection.id}`)
     
   }
 

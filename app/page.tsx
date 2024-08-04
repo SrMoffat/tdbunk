@@ -1,27 +1,40 @@
 'use client'
-
-import { Button, Flex, Form, Alert, Modal, Steps, Layout, Breadcrumb, Menu, theme } from 'antd';
-import { AnimationProps, motion } from "framer-motion";
-import React, { useEffect, useRef, useState } from 'react'
-import PartySocket from 'partysocket';
-import CursorsContainer from './CursorsContainer';
-import { useBunkerContext } from '@/app/contexts/BunkerContext'
-import { EditOutlined, EllipsisOutlined, SettingOutlined } from '@ant-design/icons';
-import { Avatar, Card } from 'antd';
-import { useRouter } from 'next/navigation'
+import { EditOutlined, EllipsisOutlined, LaptopOutlined, NotificationOutlined, PlusOutlined, SettingOutlined, UserOutlined } from '@ant-design/icons';
+import type { MenuProps } from 'antd';
+import {
+  Avatar, Breadcrumb, Button, Card,
+  Cascader,
+  Checkbox,
+  Col,
+  ColorPicker,
+  DatePicker,
+  Flex,
+  Form,
+  Input,
+  InputNumber,
+  Layout, Menu, Modal,
+  Radio,
+  Row,
+  Select,
+  Slider,
+  Steps,
+  Switch,
+  theme,
+  TreeSelect,
+  Upload
+} from 'antd';
+import { AnimationProps } from "framer-motion";
+import { redirect, useRouter } from 'next/navigation';
+import React, { useRef, useState } from 'react';
 import type { DraggableData, DraggableEvent } from 'react-draggable';
 import Draggable from 'react-draggable';
-import type { MenuProps } from 'antd';
-import { LaptopOutlined, NotificationOutlined, UserOutlined } from '@ant-design/icons';
-import { Col, Divider, Row } from 'antd';
-import Image from 'next/image';
-import { SINGLETON_ROOM_ID, BunkerInfo } from '@/bunkers-server/bunkers';
-import usePartySocket from "partysocket/react";
+import type { FormProps } from 'antd';
 
-const style: React.CSSProperties = { background: '#0092ff', padding: '8px 0' };
+const { RangePicker } = DatePicker;
+const { TextArea } = Input;
 
 const { Meta } = Card
-const { Header, Footer, Sider, Content } = Layout;
+const { Header, Sider, Content } = Layout;
 
 const items = [
   {
@@ -52,7 +65,6 @@ const items = [
   },
 ];
 
-
 const items1: MenuProps['items'] = ['1', '2', '3'].map((key) => ({
   key,
   label: `nav ${key}`,
@@ -78,6 +90,153 @@ const items2: MenuProps['items'] = [UserOutlined, LaptopOutlined, NotificationOu
   },
 );
 
+const normFile = (e: any) => {
+  if (Array.isArray(e)) {
+    return e;
+  }
+  return e?.fileList;
+};
+
+type FieldType = {
+  username?: string;
+  password?: string;
+  remember?: string;
+};
+
+const FormDisabledDemo: React.FC = () => {
+  const router = useRouter()
+
+  const [componentDisabled, setComponentDisabled] = useState<boolean>(false);
+
+  const onFinish: FormProps<FieldType>['onFinish'] = async ({ title, option }: any) => {
+    const poll = {
+      title,
+      options: [option, 'Other'],
+    };
+    console.log('Success:', poll);
+    const res = await fetch(`http://0.0.0.0:1999/party/${title}`, {
+      method: "POST",
+      mode: "no-cors",
+      body: JSON.stringify(poll),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    // const data = await res.json()
+
+    console.log('SuccessRES:', {poll, res});
+
+
+    router.push(`/bunkers/${title}`);
+  };
+
+  const onFinishFailed: FormProps<FieldType>['onFinishFailed'] = (errorInfo) => {
+    console.log('Failed:', errorInfo);
+  };
+
+  return (
+    <>
+      {/* <Checkbox
+        checked={componentDisabled}
+        onChange={(e) => setComponentDisabled(e.target.checked)}
+      >
+        Form disabled
+      </Checkbox> */}
+      <Form
+        labelCol={{ span: 4 }}
+        wrapperCol={{ span: 14 }}
+        layout="horizontal"
+        disabled={componentDisabled}
+        style={{ maxWidth: 600 }}
+        onFinish={onFinish}
+        onFinishFailed={onFinishFailed}
+      >
+        <Form.Item name="title" label="Title" rules={[{ required: true, message: 'Please input title!' }]}>
+          <Input />
+        </Form.Item>
+        <Form.Item name="option" label="Option" rules={[{ required: true, message: 'Please add at least 2 options!' }]}>
+          <Input />
+        </Form.Item>
+        <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
+          <Button type="primary" htmlType="submit">
+            Create
+          </Button>
+        </Form.Item>
+        {/* <Form.Item label="Checkbox" name="disabled" valuePropName="checked">
+          <Checkbox>Checkbox</Checkbox>
+        </Form.Item>
+        <Form.Item label="Radio">
+          <Radio.Group>
+            <Radio value="apple"> Apple </Radio>
+            <Radio value="pear"> Pear </Radio>
+          </Radio.Group>
+        </Form.Item>
+        <Form.Item label="Select">
+          <Select>
+            <Select.Option value="demo">Demo</Select.Option>
+          </Select>
+        </Form.Item>
+        <Form.Item label="TreeSelect">
+          <TreeSelect
+            treeData={[
+              { title: 'Light', value: 'light', children: [{ title: 'Bamboo', value: 'bamboo' }] },
+            ]}
+          />
+        </Form.Item>
+        <Form.Item label="Cascader">
+          <Cascader
+            options={[
+              {
+                value: 'zhejiang',
+                label: 'Zhejiang',
+                children: [
+                  {
+                    value: 'hangzhou',
+                    label: 'Hangzhou',
+                  },
+                ],
+              },
+            ]}
+          />
+        </Form.Item>
+        <Form.Item label="DatePicker">
+          <DatePicker />
+        </Form.Item>
+        <Form.Item label="RangePicker">
+          <RangePicker />
+        </Form.Item>
+        <Form.Item label="InputNumber">
+          <InputNumber />
+        </Form.Item>
+        <Form.Item label="TextArea">
+          <TextArea rows={4} />
+        </Form.Item>
+        <Form.Item label="Switch" valuePropName="checked">
+          <Switch />
+        </Form.Item>
+        <Form.Item label="Upload" valuePropName="fileList" getValueFromEvent={normFile}>
+          <Upload action="/upload.do" listType="picture-card">
+            <button style={{ border: 0, background: 'none' }} type="button">
+              <PlusOutlined />
+              <div style={{ marginTop: 8 }}>Upload</div>
+            </button>
+          </Upload>
+        </Form.Item>
+        <Form.Item label="Button">
+          <Button>Button</Button>
+        </Form.Item>
+        <Form.Item label="Slider">
+          <Slider />
+        </Form.Item>
+        <Form.Item label="ColorPicker">
+          <ColorPicker />
+        </Form.Item> */}
+      </Form>
+    </>
+  );
+};
+
 
 export default function Home() {
   const router = useRouter()
@@ -93,24 +252,7 @@ export default function Home() {
   };
 
   const handleOk = async (e: React.MouseEvent<HTMLElement>) => {
-    const slug = 'testing-this'
-    console.log("Create Room");
-    const okRes = await fetch(`http://127.0.0.1:1999/parties/bunker/${slug}`, {
-      method: "POST",
-      mode: "no-cors"
-    })
-
-    console.log("OK", okRes)
-
-    const getResp = await fetch(`http://127.0.0.1:1999/parties/bunker/${slug}`, {
-      mode: "no-cors"
-    })
-
-    console.log("getResp", getResp)
-
-
-    router.push(`/bunkers/${slug}`);
-    // setOpen(false);
+    setOpen(false);
   };
 
   const handleCancel = (e: React.MouseEvent<HTMLElement>) => {
@@ -131,31 +273,6 @@ export default function Home() {
       bottom: clientHeight - (targetRect.bottom - uiData.y),
     });
   };
-
-
-  const partySocket = new PartySocket({
-    host: 'http://192.168.100.4:1999',
-    room: 'tdbunk3r'
-  })
-
-  const { getCount, others } = useBunkerContext()
-  let count = getCount?.()
-
-  partySocket.addEventListener('message', (event) => {
-    // const message = JSON.parse(event.data)
-    // const userCount = message.connectionCount
-    // setUserCount(userCount)
-    console.log("Event fired: message", event.data)
-  })
-  partySocket.addEventListener('close', (event) => {
-    // console.log("Event fired: close", event.code)
-  })
-  partySocket.addEventListener('error', (event) => {
-    // console.log("Event fired: error", event.error)
-  })
-  partySocket.addEventListener('open', (event) => {
-    // console.log("Event fired: open", event.eventPhase)
-  })
 
   const bunkers = [
     {
@@ -190,46 +307,10 @@ export default function Home() {
     },
   ]
 
-  const description = "This is a description.";
-
   const {
     token: { colorBgContainer, borderRadiusLG },
   } = theme.useToken();
-
-  const partyUrl = `http://192.168.100.4:1999/parties/bunkers/${SINGLETON_ROOM_ID}`;
-
-  const [rooms2, setRooms2] = useState<BunkerInfo[]>([]);
-
   
-  useEffect(() => {
-    const fetchBunkers = async () => {
-      // fetch rooms for server rendering with a GET request to the server
-      const res = await fetch(partyUrl, { next: { revalidate: 0 } });
-      const rooms = ((await res.json()) ?? []) as BunkerInfo[];
-    
-      console.log("Rooms ==>", rooms)
-      setRooms2(rooms)
-    }
-
-    fetchBunkers()
-  }, [])
-
-  // render with initial data, update from websocket as messages arrive
-  const [rooms, setRooms] = useState(rooms2);
-
-  // open a websocket connection to the server
-  const socket = usePartySocket({
-    host: 'http://192.168.100.4:1999',
-    party: "bunkers",
-    room: SINGLETON_ROOM_ID,
-    onMessage(event: MessageEvent<string>) {
-
-      setRooms(JSON.parse(event.data) as BunkerInfo[]);
-    },
-  });
-
-  console.log('===>', rooms)
-
   return (
     <Layout style={{ height: '100vh' }}>
       <Modal
@@ -291,6 +372,7 @@ export default function Home() {
             },
           ]}
         />
+        <FormDisabledDemo />
       </Modal>
       <Header style={{ display: 'flex', alignItems: 'center', backgroundColor: colorBgContainer }}>
         {/* <Image alt="TDBunk" src="http://localhost:3000/" width={100} height={100} /> */}

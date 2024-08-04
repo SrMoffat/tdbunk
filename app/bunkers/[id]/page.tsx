@@ -126,9 +126,9 @@ export type Poll = {
 
 const { Header, Footer, Sider, Content } = Layout;
 
-const items1: MenuProps['items'] = ['1', '2', '3'].map((key) => ({
+const items1: MenuProps['items'] = ['Campaigns', 'Investigations', 'Credentials'].map((key) => ({
     key,
-    label: `nav ${key}`,
+    label: `${key}`,
 }));
 
 const items = [
@@ -183,6 +183,8 @@ const items2: MenuProps['items'] = [UserOutlined, LaptopOutlined, NotificationOu
 
 export default function BunkerPage({ params }: { params: { id: string } }) {
     const [pollData, setPollData] = useState<any>()
+    const [vote, setVote] = useState<number | null>(null);
+    const [votes, setVotes] = useState<number[]>(pollData?.votes ?? []);
 
     useEffect(() => {
         const pollId = params.id;
@@ -209,11 +211,10 @@ export default function BunkerPage({ params }: { params: { id: string } }) {
             }
         }
         getDetails()
-    }, [params])
+    }, [params, votes])
 
     console.log("Data", pollData)
-    const [vote, setVote] = useState<number | null>(null);
-    const [votes, setVotes] = useState<number[]>(pollData?.votes ?? []);
+
 
     const totalVotes = votes.reduce((a, b) => a + b, 0);
     const mostVotes = Math.max(...votes);
@@ -255,7 +256,7 @@ export default function BunkerPage({ params }: { params: { id: string } }) {
                 <Menu
                     // theme="dark"
                     mode="horizontal"
-                    defaultSelectedKeys={['1']}
+                    defaultSelectedKeys={['Campaigns']}
                     items={items1}
                     style={{ flex: 1, width: '100%', borderBottom: 'none' }}
                 />

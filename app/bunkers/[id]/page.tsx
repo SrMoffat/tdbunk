@@ -32,10 +32,10 @@ export function PollOptions({
                     <div className="relative w-full min-h-[40px] border rounded-md  border-black flex">
                         <div
                             className={`absolute top-0 left-0 bottom-0 w-full rounded-md transition-all duration-500 z-10 ${votes[i] === mostVotes
-                                    ? "vote-bg-winning"
-                                    : vote === i
-                                        ? "vote-bg-own"
-                                        : "vote-bg"
+                                ? "vote-bg-winning"
+                                : vote === i
+                                    ? "vote-bg-own"
+                                    : "vote-bg"
                                 }`}
                             style={{
                                 width:
@@ -202,22 +202,12 @@ export default function BunkerPage({ params }: { params: { id: string } }) {
                         throw new Error("Something went wrong.");
                     }
                 }
-
                 const poll = await req.json()
-
                 setPollData(poll)
-
-
-                console.log("getDetails", {
-                    ok: req.ok,
-                    status: req.status,
-                    poll
-                })
             } catch (error: any) {
                 console.log("Error", error)
             }
         }
-
         getDetails()
     }, [params])
 
@@ -232,11 +222,17 @@ export default function BunkerPage({ params }: { params: { id: string } }) {
         host: 'http://localhost:1999',
         room: params.id,
         onMessage(event) {
-            console.log("Event Fired", event)
-            // const message = JSON.parse(event.data) as Poll;
-            // if (message.votes) {
-            //     setVotes(message.votes);
-            // }
+            try {
+                const message = JSON.parse(event.data) as Poll;
+                if (message.votes) {
+                    setVotes(message.votes);
+                }
+            } catch (error: any) {
+                console.log("Event error", {
+                    error,
+                    event
+                })
+            }
         },
     });
 
@@ -252,10 +248,6 @@ export default function BunkerPage({ params }: { params: { id: string } }) {
         }
     };
 
-
-    useEffect(() => {
-        console.log("Vote", vote)
-    }, [vote])
     return (
         <Layout style={{ height: '100vh' }}>
             <Header style={{ display: 'flex', alignItems: 'center', backgroundColor: colorBgContainer }}>
@@ -319,8 +311,7 @@ export default function BunkerPage({ params }: { params: { id: string } }) {
                                                     {entry}
                                                 </span>
                                             </button>
-
-                                            {vote === null ? null : <span>{votes[i] ?? 0}</span>}
+                                            {votes}
                                         </div>
                                     </div>
                                 </li>

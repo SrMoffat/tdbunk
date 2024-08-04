@@ -9,8 +9,6 @@ export default function ThemeProvider({ children }: PropsWithChildren) {
           algorithm: theme.darkAlgorithm,
           token: {
               colorPrimary: '#D2AF26',
-            //   colorPrimary: '#efbf04',
-            //   colorPrimary: '#00b96b',
           }
       }}>
         {children}

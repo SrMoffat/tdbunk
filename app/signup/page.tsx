@@ -1,5 +1,4 @@
 "use client"
-
 import React from 'react'
 import { Logo, LogoIcon } from '@/app/components/atoms/Icon';
 import { Flex, Layout, Button, Card, Typography, theme } from 'antd';

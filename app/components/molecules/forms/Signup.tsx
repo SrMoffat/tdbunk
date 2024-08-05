@@ -1,80 +1,75 @@
-import React, { useState } from 'react';
-import type { FormProps } from 'antd';
-import { Button, Checkbox, Form, Input, Space } from 'antd';
-import { DidDht } from '@web5/dids'
 import DebounceSelect from '@/app/components/atoms/DebounceSelect';
+import { DidDht } from '@web5/dids';
+import type { FormProps } from 'antd';
+import { Button, Form, Input } from 'antd';
+import React, { useState } from 'react';
 
 interface UserValue {
     label: string;
     value: string;
 }
 
+type FieldType = {
+    email?: string;
+    country?: string;
+};
+
+const generateDid = async () => {
+    // Creates a DID using the DHT method and publishes the DID Document to the DHT
+    const didDht = await DidDht.create({
+        options: {
+            publish: true
+        }
+    });
+    // DID and its associated data which can be exported and used in different contexts/apps
+    const portableDid = await didDht.export()
+    return {
+        didDht,
+        portableDid
+    }
+}
+
 const SignupForm: React.FC = () => {
+    const [value, setValue] = useState<UserValue[]>([]);
     const [isLoading, setIsLoading] = useState(false)
 
     const generateCredential = async (details: any) => {
         setIsLoading(true)
+        try {
+            const { portableDid } = await generateDid()
 
-        const response = await fetch('/api/credentials', {
-            method: 'POST',
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify(details)
-        })
+            const response = await fetch('/api/credentials', {
+                method: 'POST',
+                body: JSON.stringify({
+                    ...details,
+                    did: portableDid.uri
+                })
+            })
 
-        const data = await response.json()
+            const data = await response.json()
 
-        console.log("Generate Credentials ---....", data)
+            console.log("Generate Credentials ---....", data)
 
-        // // Creates a DID using the DHT method and publishes the DID Document to the DHT
-        // const didDht = await DidDht.create({
-        //     options: {
-        //         publish: true
-        //     }
-        // });
-        // console.log("DID", didDht)
-        // // DID and its associated data which can be exported and used in different contexts/apps
-        // const portableDid = await didDht.export()
-        // console.log("portableDid", portableDid)
-
-        // // DID string
-        // const did = didDht.uri;
-        // console.log("did string", did)
-
-        // // DID Document
-        // const didDocument = JSON.stringify(didDht.document);
-        // console.log("didDocument", didDocument)
-        setIsLoading(false)
+            setIsLoading(false)
+        } catch (error: any) {
+            console.log("Request errored here", error)
+            setIsLoading(false)
+        }
     }
 
-    type FieldType = {
-        email?: string;
-        country?: string;
-    };
-
     const onFinish: FormProps<FieldType>['onFinish'] = async (values) => {
-        console.log('Success:', values);
-        await generateCredential({
-            name: values?.email,
-            country: values?.country
-        })
+        await generateCredential(values)
     };
 
     const onFinishFailed: FormProps<FieldType>['onFinishFailed'] = (errorInfo) => {
         console.log('Failed:', errorInfo);
     };
 
-    const [value, setValue] = useState<UserValue[]>([]);
-
     async function fetchUserList(countryName: string): Promise<UserValue[]> {
         const response = await fetch('countries.json')
         const data = await response.json()
-        const similar = data.filter((country: any) => country?.countryName.toLowerCase().includes(countryName))
-        console.log('fetching user', {
-            countryName,
-            similar
-        });
+
+        const similar = data.filter((country: any) => country?.countryName.toLowerCase().includes(countryName.toLowerCase()))
 
         return similar.map(({ countryName, flag, countryCode }: any) => ({
             label: `${countryName} ${flag}`,

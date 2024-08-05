@@ -1,27 +1,46 @@
+import type { NextRequest } from "next/server";
+import { NextResponse } from "next/server";
+import { createEdgeRouter } from "next-connect";
+import cors from "cors";
 
-async function initKeyManagement(env, portableDid) {
-    // Determine which key manager to use based on the environment
-    let keyManager;
-    if (env === "production") {
-        keyManager = new AwsKeyManager();
-    } else {
-        keyManager = new LocalKeyManager();
-    }
+const VC_ISSUER_UL = 'https://mock-idv.tbddev.org/kcc'
 
-    // Initialize or load a DID
-    if (portableDid == null) {
-        // Create a new DID
-        return await DidDht.create(keyManager);
-    } else {
-        // Load existing DID
-        return await DidDht.import({ portableDid, keyManager });
-    }
+interface RequestContext {
+    params: {
+        id: string;
+    };
 }
 
-export async function POST(request: Request) {
-    // TO DO: Might want to setup a custom VC since sandbox is limited to just name and country
-    console.log("Generate Credentials", request.body)
-    const body = await request.json()
+const handlePost = createEdgeRouter<NextRequest, RequestContext>();
 
-    return Response.json({ msg: body })
+handlePost
+    .use(async (req, event, next) => {
+        const start = Date.now();
+        cors()
+        const end = Date.now();
+        console.log(`Request took ${end - start} ms`);
+        return await next();
+    })
+    .post(async (req) => {
+        const { email: name, country, did } = await req.json()
+        
+        const queryParams = `?name=${name}&country=${country.value}&did=${did}`
+        const url = `${VC_ISSUER_UL}${queryParams}`
+
+        const response = await fetch(url);
+        const vc = await response.text();
+
+        console.log(`VC`, vc);
+        return NextResponse.json({ vc });
+    })
+
+export async function POST(request: NextRequest, ctx: RequestContext) {
+    try {
+        // TO DO: Might want to setup a custom VC since sandbox is limited to just name and country
+        return handlePost.run(request, ctx);
+    } catch (error: any) {
+        // TODO: Better error handling
+        console.log("POST failed", error)
+        return Response.json({ error })
+    }
 }

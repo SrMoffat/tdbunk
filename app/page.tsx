@@ -10,7 +10,6 @@ const { Header } = Layout
 
 type Align = 'Campaigns' | 'Debunks' | 'Sponsorships';
 
-
 export default function Home() {
   const [alignValue, setAlignValue] = useState<Align>('Campaigns');
   const {

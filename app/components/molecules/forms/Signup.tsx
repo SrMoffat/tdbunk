@@ -9,10 +9,14 @@ interface UserValue {
     value: string;
 }
 
-type FieldType = {
+interface FieldType {
     email?: string;
     country?: string;
 };
+
+type UserDetails = FieldType & {
+    did: string
+}
 
 const generateDid = async () => {
     // Creates a DID using the DHT method and publishes the DID Document to the DHT
@@ -29,6 +33,17 @@ const generateDid = async () => {
     }
 }
 
+const generateVc = async (data: UserDetails) => {
+    const response = await fetch('/api/credentials', {
+        method: 'POST',
+        body: JSON.stringify(data)
+    })
+
+    const vc = await response.json()
+
+    return vc
+}
+
 const SignupForm: React.FC = () => {
     const [value, setValue] = useState<UserValue[]>([]);
     const [isLoading, setIsLoading] = useState(false)
@@ -37,22 +52,16 @@ const SignupForm: React.FC = () => {
         setIsLoading(true)
         try {
             const { portableDid } = await generateDid()
-
-            const response = await fetch('/api/credentials', {
-                method: 'POST',
-                body: JSON.stringify({
-                    ...details,
-                    did: portableDid.uri
-                })
+            const vc = await generateVc({
+                ...details,
+                did: portableDid.uri
             })
 
-            const data = await response.json()
+            console.log("Generate Credentials ---....", vc)
 
-            console.log("Generate Credentials ---....", data)
-
-            setIsLoading(false)
         } catch (error: any) {
             console.log("Request errored here", error)
+        } finally {
             setIsLoading(false)
         }
     }

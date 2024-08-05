@@ -30,7 +30,6 @@ handlePost
         const response = await fetch(url);
         const vc = await response.text();
 
-        console.log(`VC`, vc);
         return NextResponse.json({ vc });
     })
 

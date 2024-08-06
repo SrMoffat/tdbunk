@@ -1,8 +1,11 @@
 import DebounceSelect from '@/app/components/atoms/DebounceSelect';
 import { DidDht } from '@web5/dids';
+import { Jwk, LocalKeyManager } from "@web5/crypto"
 import type { FormProps } from 'antd';
 import { Button, Form, Input } from 'antd';
 import React, { useState } from 'react';
+
+const localKeyManager = new LocalKeyManager();
 
 interface UserValue {
     label: string;
@@ -19,15 +22,22 @@ type UserDetails = FieldType & {
 }
 
 const generateDid = async () => {
-    // Creates a DID using the DHT method and publishes the DID Document to the DHT
     const didDht = await DidDht.create({
+        keyManager: localKeyManager,
         options: {
             publish: true
         }
     });
-    // DID and its associated data which can be exported and used in different contexts/apps
+
     const portableDid = await didDht.export()
+
+    const privateKey = portableDid?.privateKeys?.[0] as Jwk
+    const keyUri = await localKeyManager.getKeyUri({
+        key: privateKey
+    });
+
     return {
+        keyUri,
         didDht,
         portableDid
     }
@@ -51,14 +61,17 @@ const SignupForm: React.FC = () => {
     const generateCredential = async (details: any) => {
         setIsLoading(true)
         try {
-            const { portableDid } = await generateDid()
+            const { portableDid, keyUri } = await generateDid()
             const vc = await generateVc({
                 ...details,
                 did: portableDid.uri
             })
 
-            console.log("Generate Credentials ---....", vc)
-
+            localStorage.setItem(`tdbunk:${details?.email}`, JSON.stringify({
+                didUri: portableDid.uri,
+                keyUri,
+                vc
+            }))
         } catch (error: any) {
             console.log("Request errored here", error)
         } finally {

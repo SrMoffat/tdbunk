@@ -4,11 +4,11 @@ import { Logo, LogoIcon } from '@/app/components/atoms/Icon';
 import { Flex, Layout, Button, Card, Typography, theme } from 'antd';
 import Image from 'next/image';
 import Link from 'next/link'
-import SignupForm from '@/app//components/molecules/forms/Signup';
+import CredentialsForm from '@/app//components/molecules/forms/Credentials';
 
 const { Header } = Layout
 
-export default function SignupPage() {
+export default function CredentialsFormPage() {
     const {
         token: { colorBgContainer },
     } = theme.useToken()
@@ -32,9 +32,9 @@ export default function SignupPage() {
                 <Card className='w-1/4'>
                     <Flex className="flex flex-col justify-center items-center">
                         <Image alt="TDBunk" src={LogoIcon} width={60} height={60} />
-                        <Typography.Title level={3} className="mt-4">Signup</Typography.Title>
+                        <Typography.Title level={3} className="mt-4">Create Credential</Typography.Title>
                     </Flex>
-                    <SignupForm />
+                    <CredentialsForm />
                 </Card>
             </Flex>
             <div className="border w-full">Footer</div>

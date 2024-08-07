@@ -4,6 +4,7 @@ import { Jwk, LocalKeyManager } from "@web5/crypto"
 import type { FormProps } from 'antd';
 import { Button, Form, Input } from 'antd';
 import React, { useState } from 'react';
+import { omit } from 'lodash';
 
 const localKeyManager = new LocalKeyManager();
 
@@ -32,6 +33,7 @@ const generateDid = async () => {
     const portableDid = await didDht.export()
 
     const privateKey = portableDid?.privateKeys?.[0] as Jwk
+
     const keyUri = await localKeyManager.getKeyUri({
         key: privateKey
     });
@@ -54,24 +56,35 @@ const generateVc = async (data: UserDetails) => {
     return vc
 }
 
-const SignupForm: React.FC = () => {
+const CredentialsForm: React.FC = () => {
     const [value, setValue] = useState<UserValue[]>([]);
     const [isLoading, setIsLoading] = useState(false)
 
     const generateCredential = async (details: any) => {
         setIsLoading(true)
         try {
-            const { portableDid, keyUri } = await generateDid()
-            const vc = await generateVc({
-                ...details,
-                did: portableDid.uri
-            })
+            const hasCredentials = false
+            // const hasCredentials = localStorage.getItem(`tdbunk:${details?.email}`)
 
-            localStorage.setItem(`tdbunk:${details?.email}`, JSON.stringify({
-                didUri: portableDid.uri,
-                keyUri,
-                vc
-            }))
+            if (hasCredentials) {
+                console.log("Has creds", JSON.parse(hasCredentials))
+                // Load credentials from key storage
+            } else {
+                // create new credentials
+                const { portableDid, keyUri } = await generateDid()
+                const vc = await generateVc({
+                    ...details,
+                    did: portableDid.uri
+                })
+
+                // Check if the user has any other credentials we set in the browser
+
+                localStorage.setItem(`tdbunk:${details?.email}`, JSON.stringify({
+                    portableDid: omit(portableDid, 'privateKeys'),
+                    keyUri,
+                    vc
+                }))
+            }
         } catch (error: any) {
             console.log("Request errored here", error)
         } finally {
@@ -113,7 +126,7 @@ const SignupForm: React.FC = () => {
                 name="email"
                 rules={[{ required: true, message: 'Please input your email!' }]}
             >
-                <Input placeholder='Enter your email' allowClear />
+                <Input size='large' placeholder='Enter your email' allowClear />
             </Form.Item>
             <Form.Item<FieldType>
                 label="Country"
@@ -132,11 +145,11 @@ const SignupForm: React.FC = () => {
             </Form.Item>
             <Form.Item>
                 <Button type="primary" htmlType="submit" loading={isLoading}>
-                    Submit
+                    Create
                 </Button>
             </Form.Item>
         </Form>
     )
 };
 
-export default SignupForm;
+export default CredentialsForm;

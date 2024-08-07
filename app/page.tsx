@@ -402,11 +402,14 @@ export default function Home() {
           <Image alt="TDBunk" src={Logo} width={150} height={150} />
         </Link>
         <Flex className="w-full flex items-end justify-end gap-4">
-          <Link href="/login">
-            <Button>Login</Button>
+          <Link href="/start/campaign">
+            <Button>Start Campaign</Button>
           </Link>
-          <Link href="/credentials">
-            <Button>Credentials</Button>
+          <Link href="/start/debunking">
+            <Button>Start Debunking</Button>
+          </Link>
+          <Link href="/sponsor">
+            <Button>Sponsor Campaign</Button>
           </Link>
         </Flex>
       </Header>
@@ -675,6 +678,10 @@ export default function Home() {
                         <Flex className="border">
                           <Typography.Text style={{ fontSize: 12 }}>{'PFI Name'}</Typography.Text>
                           <Rate disabled allowHalf defaultValue={2.5} style={{ color: '#CC9933' }} />
+                        </Flex>
+                        <Flex className="items-center">
+                          <Image alt="Fact Checkers" src={FactCheckers} width={25} height={25} />
+                          <Typography.Text style={{ fontSize: 12 }}>{`${numOfFactCheckers + 4} Fact Checkers`}</Typography.Text>
                         </Flex>
                         Number of Investigators
                         Amount Contributed - Percentage of Total

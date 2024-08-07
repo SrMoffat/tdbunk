@@ -23,8 +23,8 @@ export default function LoginPage() {
                     <Link href="/">
                         <Button>Home</Button>
                     </Link>
-                    <Link href="/signup">
-                        <Button>Signup</Button>
+                    <Link href="/credentials">
+                        <Button>Credentials</Button>
                     </Link>
                 </Flex>
             </Header>

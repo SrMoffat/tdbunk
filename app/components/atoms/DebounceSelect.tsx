@@ -43,6 +43,7 @@ function DebounceSelect<
             showSearch
             allowClear
             labelInValue
+            size='large'
             filterOption={false}
             onSearch={debounceFetcher}
             notFoundContent={fetching ? <Spin size="small" /> : null}

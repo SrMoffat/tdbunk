@@ -1,7 +1,7 @@
 "use client"
-import { Card1, Card2, Card3, Card4, Card5, Create, Import, Logo, LogoIcon, Request, StartCampaign } from '@/app/components/atoms/Icon';
+import { Card1, Card2, Card3, Card4, Card5, Create, Import, Logo, LogoIcon, Request, StartCampaign, LogoIcon2 } from '@/app/components/atoms/Icon';
 import { CopyOutlined, CopyFilled } from '@ant-design/icons';
-import { Button, Flex, Layout, Modal, Segmented, Steps, List, Collapse, theme, Typography, CollapseProps, Card, Drawer } from 'antd';
+import { Button, Flex, Layout, Modal, Segmented, Steps, List, Collapse, theme, Typography, CollapseProps, Card, Drawer, QRCode } from 'antd';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useState, useRef, useEffect } from 'react';
@@ -18,9 +18,9 @@ const FinancialInstitutionCredential = (props: any) => {
     return (
         <Flex className="h-[200px]">
             <Flex onClick={() => showDrawer()} className="absolute hover:opacity-70 rounded-md transition-all cursor-pointer">
-                <Image alt="card" src={Card1} width={300} height={300} />
+                <Image alt="card" src={Card1} width={100} height={100} />
                 <Flex className="absolute left-2 top-2 flex-col">
-                    <Image alt="LogoIcon" src={LogoIcon} width={100} height={100} />
+                    <Image alt="LogoIcon" src={LogoIcon2} width={40} height={40} />
                 </Flex>
                 <Flex className="absolute left-4 top-20 flex-col">
                     <Typography.Text style={{ fontSize: 12 }}>James Does</Typography.Text>
@@ -39,7 +39,7 @@ const GovernmentInstitutionCredential = (props: any) => {
             <Flex onClick={() => showDrawer()} className="absolute hover:opacity-70 rounded-md transition-all cursor-pointer">
                 <Image alt="Card2" src={Card2} width={300} height={300} />
                 <Flex className="absolute right-4 top-2 flex-col">
-                    <Image alt="LogoIcon" src={LogoIcon} width={100} height={100} />
+                    <Image alt="LogoIcon" src={LogoIcon2} width={40} height={40} />
                 </Flex>
                 <Flex className="absolute right-4 top-20 flex-col">
                     <Typography.Text style={{ fontSize: 12, textAlign: "right" }}>James Does</Typography.Text>
@@ -215,7 +215,6 @@ export default function StartCampaignPage() {
             <Flex className="flex-col mt-4">
                 <Typography.Text className="font-bold mb-4">Verifiable Credential Issuers</Typography.Text>
                 <Collapse items={items} />
-
             </Flex>
         )
     }
@@ -232,12 +231,13 @@ export default function StartCampaignPage() {
 
     const ImportCredential = () => {
         return (
-            <Flex>
-                Import Credential
-
-                Copy/Paste DID Document?
-                Scan QR Code?
-            </Flex>
+            <QRCode
+                errorLevel="H"
+                size={240}
+                iconSize={240 / 4}
+                value="https://ant.design/"
+                icon="/logo-icon.svg"
+            />
         )
     }
 
@@ -280,6 +280,21 @@ export default function StartCampaignPage() {
     const onClose = () => {
         setOpen2(false);
     };
+
+    const [copied, setCopied] = useState(false)
+
+    useEffect(() => {
+        let timer: string | number | NodeJS.Timeout | undefined
+        if (copied) {
+            timer = setTimeout(() => {
+                setCopied(false)
+            }, 1000)
+        }
+
+        return () => {
+            clearTimeout(timer)
+        }
+    }, [copied])
 
 
     return (
@@ -400,10 +415,17 @@ export default function StartCampaignPage() {
                 {isCreate && <CreateCredential />}
                 {isImport && <ImportCredential />}
             </Modal>
-            <Drawer title="Basic Drawer" onClose={onClose} open={open2} >
-                <p>Some contents...</p>
-                <p> Some contents...</p>
-                <p> Some contents...</p>
+            <Drawer title="Credential Document" onClose={onClose} open={open2} width={1000}>
+                <Flex className="mb-3">
+                    Copy Document
+                    {copied && <CopyFilled style={{ color: "#CC9933" }} className="ml-1 cursor-pointer" />}
+                    {!copied && <CopyOutlined onClick={() => {
+                        setCopied(true)
+                    }} className="ml-1 cursor-pointer" />}
+                </Flex>
+                <Flex className="border bg-[#334155] p-4 rounded-md border-gray-800 flex-col">
+                    <pre>{JSON.stringify(countries, null, 2)}</pre>
+                </Flex>
             </Drawer>
             <div className="border w-full p-12 mt-12 flex">Footer</div>
         </Layout>

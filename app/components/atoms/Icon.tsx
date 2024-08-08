@@ -16,6 +16,7 @@ import Import from '@/app/assets/Import.svg';
 import Instagram from '@/app/assets/Instagram.svg';
 import LogoIcon from '@/app/assets/logo-icon.svg';
 import Logo from '@/app/assets/logo.svg';
+import LogoIcon2 from '@/app/assets/LogoIcon.svg';
 import Request from '@/app/assets/Request.svg';
 import Sponsor from '@/app/assets/Sponsor.svg';
 import Sponsorships from '@/app/assets/Sponsorships.svg';
@@ -26,5 +27,5 @@ import True from '@/app/assets/True.svg';
 import X from '@/app/assets/X.svg';
 import Youtube from '@/app/assets/Youtube.png';
 
-export { Campaigns, Card1, Card2, Card3, Card4, Card5, Clock, Community, Create, Debunks, Evidence, Facebook, FactCheckers, False, Import, Instagram, Logo, LogoIcon, Request, Sponsor, Sponsorships, StartCampaign, TikTok, Tips, True, X, Youtube };
+export { Campaigns, Card1, Card2, Card3, Card4, Card5, Clock, Community, Create, Debunks, Evidence, Facebook, FactCheckers, False, Import, Instagram, Logo, LogoIcon, LogoIcon2, Request, Sponsor, Sponsorships, StartCampaign, TikTok, Tips, True, X, Youtube };
 

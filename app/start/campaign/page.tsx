@@ -1,5 +1,5 @@
 "use client"
-import { Card1, Card2, Card3, Card4, Card5, Create, Import, Logo, LogoIcon, Request, StartCampaign, LogoIcon2 } from '@/app/components/atoms/Icon';
+import { Card1, Card2, Card3, Card4, Card5, Create, Import, Logo, LogoIcon, Request, StartCampaign, LogoIcon2, TBDVCLogoBlack, TBDVCLogoYellow } from '@/app/components/atoms/Icon';
 import { CopyOutlined, CopyFilled } from '@ant-design/icons';
 import { Button, Flex, Layout, Modal, Segmented, Steps, List, Collapse, theme, Typography, CollapseProps, Card, Drawer, QRCode, Tabs } from 'antd';
 import Image from 'next/image';
@@ -47,9 +47,10 @@ const FinancialInstitutionCredential = (props: any) => {
     return (
         <Flex className="h-[200px]">
             <Flex onClick={() => showDrawer()} className="absolute hover:opacity-70 rounded-md transition-all cursor-pointer">
-                <Image alt="card" src={Card1} width={100} height={100} />
-                <Flex className="absolute left-2 top-2 flex-col">
-                    <Image alt="LogoIcon" src={LogoIcon2} width={40} height={40} />
+                <Image alt="card" src={Card1} width={300} height={300} />
+                <Flex className="absolute left-4 top-4 flex-col">
+                    <Image alt="LogoIcon" src={TBDVCLogoYellow} width={40} height={40} />
+                    <a href="https://mock-idv.tbddev.org" style={{ fontSize: 10, marginTop: 8 }}>tbd Issuer</a>
                 </Flex>
                 <Flex className="absolute left-4 top-20 flex-col">
                     <Typography.Text style={{ fontSize: 12 }}>James Does</Typography.Text>
@@ -67,8 +68,9 @@ const GovernmentInstitutionCredential = (props: any) => {
         <Flex className="h-[200px]">
             <Flex onClick={() => showDrawer()} className="absolute hover:opacity-70 rounded-md transition-all cursor-pointer">
                 <Image alt="Card2" src={Card2} width={300} height={300} />
-                <Flex className="absolute right-4 top-2 flex-col">
+                <Flex className="absolute right-4 top-2 flex-col justify-end items-end">
                     <Image alt="LogoIcon" src={LogoIcon2} width={40} height={40} />
+                    <a href="https://mock-idv.tbddev.org" style={{ fontSize: 10, marginTop: -3 }}>{`Government of ${country?.countryName}`} </a>
                 </Flex>
                 <Flex className="absolute right-4 top-20 flex-col">
                     <Typography.Text style={{ fontSize: 12, textAlign: "right" }}>James Does</Typography.Text>
@@ -86,10 +88,13 @@ const ProfessionalInstitutionCredential = (props: any) => {
         <Flex className="h-[200px]">
             <Flex onClick={() => showDrawer()} className="absolute hover:opacity-70 rounded-md transition-all cursor-pointer">
                 <Image alt="Card3" src={Card3} width={300} height={300} />
-                <Flex className="absolute right-4 top-20 flex-col">
+                <Flex className="absolute right-[102px] top-3 flex-col items-center">
+                    <Typography.Text style={{ fontSize: 12, textAlign: "right" }}>Board of Journalists</Typography.Text>
+                </Flex>
+                <Flex className="absolute right-[108px] top-28 flex-col items-center">
                     <Typography.Text style={{ fontSize: 12, textAlign: "right" }}>James Does</Typography.Text>
                     <Typography.Text style={{ fontSize: 12, textAlign: "right" }}>{`${country?.countryName} ${country?.flag}`}</Typography.Text>
-                    <Typography.Text style={{ fontSize: 10, marginTop: 10, textAlign: "right" }}>Expires in 30 days</Typography.Text>
+                    <Typography.Text style={{ fontSize: 10, textAlign: "right" }}>Expires in 30 days</Typography.Text>
                 </Flex>
             </Flex>
         </Flex>
@@ -102,6 +107,13 @@ const EducationalInstitutionCredential = (props: any) => {
         <Flex className="h-[200px]">
             <Flex onClick={() => showDrawer()} className="absolute hover:opacity-70 rounded-md transition-all cursor-pointer">
                 <Image alt="Card4" src={Card4} width={300} height={300} />
+
+                <Flex className="absolute right-8 top-0 flex-col">
+                    <Typography.Text style={{ fontSize: 12, textAlign: "right" }}>James Does</Typography.Text>
+                    <Typography.Text style={{ fontSize: 12, textAlign: "right" }}>{`${country?.countryName} ${country?.flag}`}</Typography.Text>
+                    <Typography.Text style={{ fontSize: 10, marginTop: 10, textAlign: "right" }}>Expires in 30 days</Typography.Text>
+                </Flex>
+
                 <Flex className="absolute right-4 top-20 flex-col">
                     <Typography.Text style={{ fontSize: 12, textAlign: "right" }}>James Does</Typography.Text>
                     <Typography.Text style={{ fontSize: 12, textAlign: "right" }}>{`${country?.countryName} ${country?.flag}`}</Typography.Text>
@@ -207,8 +219,8 @@ export default function StartCampaignPage() {
                 key: '1',
                 label: 'Financial Insitution',
                 children:
-                    // <FinancialInstitutionCredential showDrawer={showDrawer} />
-                    <CredentialIssuer />
+                    <FinancialInstitutionCredential showDrawer={showDrawer} />
+                // <CredentialIssuer />
             },
             {
                 key: '2',
@@ -221,8 +233,8 @@ export default function StartCampaignPage() {
                 key: '3',
                 label: 'Professional Institution',
                 children:
-                    // <ProfessionalInstitutionCredential showDrawer={showDrawer} />
-                    <CredentialIssuer />
+                    <ProfessionalInstitutionCredential showDrawer={showDrawer} />
+                // <CredentialIssuer />
             },
             {
                 key: '4',
@@ -235,8 +247,8 @@ export default function StartCampaignPage() {
                 key: '5',
                 label: 'Medical Institution',
                 children:
-                    // <MedicalInstitutionCredential showDrawer={showDrawer} />
-                    <CredentialIssuer />
+                    <MedicalInstitutionCredential showDrawer={showDrawer} />
+                // <CredentialIssuer />
             },
         ];
 
@@ -280,13 +292,12 @@ export default function StartCampaignPage() {
                         label: 'Upload Document',
                         key: 'upload',
                         children: <Dragger {...props}>
-                            <p className="ant-upload-drag-icon">
-                                <InboxOutlined />
+                            <p className="flex justify-center">
+                                <Image alt="Card3" src={Request} width={50} height={50} />
                             </p>
                             <p className="ant-upload-text">Click or drag file to this area to upload</p>
                             <p className="ant-upload-hint">
-                                Support for a single or bulk upload. Strictly prohibited from uploading company data or other
-                                banned files.
+                                Upload the JSON document for the credential. Kindly ensure it is a valid JSON file.
                             </p>
                         </Dragger>
                     },
@@ -320,7 +331,7 @@ export default function StartCampaignPage() {
                 <Image alt={name} src={icon} width={50} height={50} />
                 <Flex className="flex-col">
                     <Flex>{name}</Flex>
-                    <Flex className="-mt-2">Credentials</Flex>
+                    <Flex className="-mt-2">Credential</Flex>
                 </Flex>
             </Flex>
         ),
@@ -383,7 +394,7 @@ export default function StartCampaignPage() {
                             [
                                 {
                                     title: 'Credentials',
-                                    status: 'wait',
+                                    status: 'process',
                                 },
                                 {
                                     title: 'Campaign Details',

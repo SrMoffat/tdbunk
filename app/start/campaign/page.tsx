@@ -1,7 +1,7 @@
 "use client"
 import { Card1, Card2, Card3, Card4, Card5, Create, Import, Logo, LogoIcon, Request, StartCampaign, LogoIcon2 } from '@/app/components/atoms/Icon';
 import { CopyOutlined, CopyFilled } from '@ant-design/icons';
-import { Button, Flex, Layout, Modal, Segmented, Steps, List, Collapse, theme, Typography, CollapseProps, Card, Drawer, QRCode } from 'antd';
+import { Button, Flex, Layout, Modal, Segmented, Steps, List, Collapse, theme, Typography, CollapseProps, Card, Drawer, QRCode, Tabs } from 'antd';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useState, useRef, useEffect } from 'react';
@@ -9,9 +9,38 @@ import Draggable, { DraggableData, DraggableEvent } from 'react-draggable';
 import countries from '@/public/countries.json'
 import CredentialsForm from '@/app/components/molecules/forms/Credentials';
 
+import { InboxOutlined } from '@ant-design/icons';
+import type { UploadProps } from 'antd';
+import { message, Upload } from 'antd';
+import { Input } from 'antd';
+
+const { TextArea } = Input;
+
+const { Dragger } = Upload;
+
 const country = countries.filter((entry) => entry?.countryCode === "KE")[0]
 
 const { Header } = Layout
+
+const props: UploadProps = {
+    name: 'file',
+    multiple: true,
+    action: 'https://660d2bd96ddfa2943b33731c.mockapi.io/api/upload',
+    onChange(info) {
+        const { status } = info.file;
+        if (status !== 'uploading') {
+            console.log(info.file, info.fileList);
+        }
+        if (status === 'done') {
+            message.success(`${info.file.name} file uploaded successfully.`);
+        } else if (status === 'error') {
+            message.error(`${info.file.name} file upload failed.`);
+        }
+    },
+    onDrop(e) {
+        console.log('Dropped files', e.dataTransfer.files);
+    },
+};
 
 const FinancialInstitutionCredential = (props: any) => {
     const { showDrawer } = props
@@ -231,13 +260,44 @@ export default function StartCampaignPage() {
 
     const ImportCredential = () => {
         return (
-            <QRCode
-                errorLevel="H"
-                size={240}
-                iconSize={240 / 4}
-                value="https://ant.design/"
-                icon="/logo-icon.svg"
+            <Tabs
+                defaultActiveKey="1"
+                type="card"
+                size="small"
+                items={[
+                    {
+                        label: 'Scan QR Code',
+                        key: 'scan',
+                        children: <QRCode
+                            errorLevel="H"
+                            size={240}
+                            iconSize={240 / 4}
+                            value="https://ant.design/"
+                            icon="/logo-icon.svg"
+                        />
+                    },
+                    {
+                        label: 'Upload Document',
+                        key: 'upload',
+                        children: <Dragger {...props}>
+                            <p className="ant-upload-drag-icon">
+                                <InboxOutlined />
+                            </p>
+                            <p className="ant-upload-text">Click or drag file to this area to upload</p>
+                            <p className="ant-upload-hint">
+                                Support for a single or bulk upload. Strictly prohibited from uploading company data or other
+                                banned files.
+                            </p>
+                        </Dragger>
+                    },
+                    {
+                        label: 'Paste Document',
+                        key: 'paste',
+                        children: <TextArea rows={4} placeholder="maxLength is 6" maxLength={6} />
+                    }
+                ]}
             />
+
         )
     }
 

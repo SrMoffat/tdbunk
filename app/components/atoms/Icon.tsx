@@ -26,6 +26,8 @@ import Tips from '@/app/assets/Tips.svg';
 import True from '@/app/assets/True.svg';
 import X from '@/app/assets/X.svg';
 import Youtube from '@/app/assets/Youtube.png';
+import TBDVCLogoBlack from '@/app/assets/TBDVCLogoBlack.svg';
+import TBDVCLogoYellow from '@/app/assets/TBDVCLogoYellow.svg';
 
-export { Campaigns, Card1, Card2, Card3, Card4, Card5, Clock, Community, Create, Debunks, Evidence, Facebook, FactCheckers, False, Import, Instagram, Logo, LogoIcon, LogoIcon2, Request, Sponsor, Sponsorships, StartCampaign, TikTok, Tips, True, X, Youtube };
+export { TBDVCLogoBlack, TBDVCLogoYellow, Campaigns, Card1, Card2, Card3, Card4, Card5, Clock, Community, Create, Debunks, Evidence, Facebook, FactCheckers, False, Import, Instagram, Logo, LogoIcon, LogoIcon2, Request, Sponsor, Sponsorships, StartCampaign, TikTok, Tips, True, X, Youtube };
 

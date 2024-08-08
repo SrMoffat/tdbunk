@@ -1,21 +1,23 @@
 "use client"
 import { Card1, Card2, Card3, Card4, Card5, Create, Import, Logo, LogoIcon, Request, StartCampaign } from '@/app/components/atoms/Icon';
 import { CopyOutlined, CopyFilled } from '@ant-design/icons';
-import { Button, Flex, Layout, Modal, Segmented, Steps, List, Collapse, theme, Typography, CollapseProps, } from 'antd';
+import { Button, Flex, Layout, Modal, Segmented, Steps, List, Collapse, theme, Typography, CollapseProps, Card, Drawer } from 'antd';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import Draggable, { DraggableData, DraggableEvent } from 'react-draggable';
 import countries from '@/public/countries.json'
+import CredentialsForm from '@/app/components/molecules/forms/Credentials';
 
 const country = countries.filter((entry) => entry?.countryCode === "KE")[0]
 
 const { Header } = Layout
 
-const FinancialInstitutionCredential = () => {
+const FinancialInstitutionCredential = (props: any) => {
+    const { showDrawer } = props
     return (
         <Flex className="h-[200px]">
-            <Flex className="absolute hover:opacity-70 rounded-md transition-all cursor-pointer">
+            <Flex onClick={() => showDrawer()} className="absolute hover:opacity-70 rounded-md transition-all cursor-pointer">
                 <Image alt="card" src={Card1} width={300} height={300} />
                 <Flex className="absolute left-2 top-2 flex-col">
                     <Image alt="LogoIcon" src={LogoIcon} width={100} height={100} />
@@ -30,10 +32,11 @@ const FinancialInstitutionCredential = () => {
     )
 }
 
-const GovernmentInstitutionCredential = () => {
+const GovernmentInstitutionCredential = (props: any) => {
+    const { showDrawer } = props
     return (
-         <Flex className="h-[200px]">
-            <Flex className="absolute hover:opacity-70 rounded-md transition-all cursor-pointer">
+        <Flex className="h-[200px]">
+            <Flex onClick={() => showDrawer()} className="absolute hover:opacity-70 rounded-md transition-all cursor-pointer">
                 <Image alt="Card2" src={Card2} width={300} height={300} />
                 <Flex className="absolute right-4 top-2 flex-col">
                     <Image alt="LogoIcon" src={LogoIcon} width={100} height={100} />
@@ -48,10 +51,11 @@ const GovernmentInstitutionCredential = () => {
     )
 }
 
-const ProfessionalInstitutionCredential = () => {
+const ProfessionalInstitutionCredential = (props: any) => {
+    const { showDrawer } = props
     return (
-         <Flex className="h-[200px]">
-            <Flex className="absolute hover:opacity-70 rounded-md transition-all cursor-pointer">
+        <Flex className="h-[200px]">
+            <Flex onClick={() => showDrawer()} className="absolute hover:opacity-70 rounded-md transition-all cursor-pointer">
                 <Image alt="Card3" src={Card3} width={300} height={300} />
                 <Flex className="absolute right-4 top-20 flex-col">
                     <Typography.Text style={{ fontSize: 12, textAlign: "right" }}>James Does</Typography.Text>
@@ -63,10 +67,11 @@ const ProfessionalInstitutionCredential = () => {
     )
 }
 
-const EducationalInstitutionCredential = () => {
+const EducationalInstitutionCredential = (props: any) => {
+    const { showDrawer } = props
     return (
         <Flex className="h-[200px]">
-            <Flex className="absolute hover:opacity-70 rounded-md transition-all cursor-pointer">
+            <Flex onClick={() => showDrawer()} className="absolute hover:opacity-70 rounded-md transition-all cursor-pointer">
                 <Image alt="Card4" src={Card4} width={300} height={300} />
                 <Flex className="absolute right-4 top-20 flex-col">
                     <Typography.Text style={{ fontSize: 12, textAlign: "right" }}>James Does</Typography.Text>
@@ -78,16 +83,51 @@ const EducationalInstitutionCredential = () => {
     )
 }
 
-const MedicalInstitutionCredential = () => {
+const MedicalInstitutionCredential = (props: any) => {
+    const { showDrawer } = props
     return (
-         <Flex className="h-[200px]">
-            <Flex className="absolute hover:opacity-70 rounded-md transition-all cursor-pointer">
+        <Flex className="h-[200px]">
+            <Flex onClick={() => showDrawer()} className="absolute hover:opacity-70 rounded-md transition-all cursor-pointer">
                 <Image alt="Card5" src={Card5} width={300} height={300} />
                 <Flex className="absolute right-4 top-24 flex-col">
                     <Typography.Text style={{ fontSize: 12, textAlign: "right" }}>James Does</Typography.Text>
                     <Typography.Text style={{ fontSize: 12, textAlign: "right" }}>{`${country?.countryName} ${country?.flag}`}</Typography.Text>
                     <Typography.Text style={{ fontSize: 10, marginTop: 10, textAlign: "right" }}>Expires in 30 days</Typography.Text>
                 </Flex>
+            </Flex>
+        </Flex>
+    )
+}
+
+const CredentialIssuer = () => {
+    const [copied, setCopied] = useState(false)
+
+    useEffect(() => {
+        let timer: string | number | NodeJS.Timeout | undefined
+        if (copied) {
+            timer = setTimeout(() => {
+                setCopied(false)
+            }, 1000)
+        }
+
+        return () => {
+            clearTimeout(timer)
+        }
+    }, [copied])
+    return (
+        <Flex className="flex-col border border-gray-800 rounded-md p-4 gap-2">
+            <Flex>Credential Issuer Name</Flex>
+            <Flex>https://credential.users.com</Flex>
+            <Flex>
+                did:dht:i73yjhjd....87jhbsdj
+                {copied && <CopyFilled style={{ color: "#CC9933" }} className="ml-1 cursor-pointer" />}
+                {!copied && <CopyOutlined onClick={() => {
+                    setCopied(true)
+                    // TO DO: Copy to clipboard
+                }} className="ml-1 cursor-pointer" />}
+            </Flex>
+            <Flex>
+                <Button type="primary" size="small">Request</Button>
             </Flex>
         </Flex>
     )
@@ -130,80 +170,44 @@ export default function StartCampaignPage() {
         });
     };
 
-
-    console.log("Mode", mode)
-
-    const RequestCredential = () => {
+    const RequestCredential = (props: any) => {
+        const { showDrawer } = props
 
         const items: CollapseProps['items'] = [
             {
                 key: '1',
                 label: 'Financial Insitution',
-                children: <FinancialInstitutionCredential />
-                // <Flex className="flex-col">
-                //     <Flex>Name</Flex>
-                //     <Flex>Website</Flex>
-                //     <Flex>DID <CopyOutlined /></Flex>
-                //     <Flex>
-                //         <Button type="primary" size="small">Request</Button>
-                //     </Flex>
-                // </Flex>,
+                children:
+                    // <FinancialInstitutionCredential showDrawer={showDrawer} />
+                    <CredentialIssuer />
             },
             {
                 key: '2',
                 label: 'Government Institution',
-                children: <GovernmentInstitutionCredential />
-
-                // <Flex className="flex-col">
-                //     <Flex>Name</Flex>
-                //     <Flex>Website</Flex>
-                //     <Flex>DID <CopyOutlined /></Flex>
-                //     <Flex>
-                //         <Button type="primary" size="small">Request</Button>
-                //     </Flex>
-                // </Flex>,
+                children:
+                    <GovernmentInstitutionCredential showDrawer={showDrawer} />
+                // <CredentialIssuer />
             },
             {
                 key: '3',
                 label: 'Professional Institution',
-                children: <ProfessionalInstitutionCredential />
-
-                // <Flex className="flex-col">
-                //     <Flex>Name</Flex>
-                //     <Flex>Website</Flex>
-                //     <Flex>DID <CopyOutlined /></Flex>
-                //     <Flex>
-                //         <Button type="primary" size="small">Request</Button>
-                //     </Flex>
-                // </Flex>,
+                children:
+                    // <ProfessionalInstitutionCredential showDrawer={showDrawer} />
+                    <CredentialIssuer />
             },
             {
                 key: '4',
                 label: 'Educational Institution',
-                children: <EducationalInstitutionCredential />
-
-                // <Flex className="flex-col">
-                //     <Flex>Name</Flex>
-                //     <Flex>Website</Flex>
-                //     <Flex>DID <CopyOutlined /></Flex>
-                //     <Flex>
-                //         <Button type="primary" size="small">Request</Button>
-                //     </Flex>
-                // </Flex>,
+                children:
+                    <EducationalInstitutionCredential showDrawer={showDrawer} />
+                // <CredentialIssuer />
             },
             {
                 key: '5',
                 label: 'Medical Institution',
-                children: <MedicalInstitutionCredential />
-
-                // <Flex className="flex-col">
-                //     <Flex>Name</Flex>
-                //     <Flex>Website</Flex>
-                //     <Flex>DID <CopyOutlined /></Flex>
-                //     <Flex>
-                //         <Button type="primary" size="small">Request</Button>
-                //     </Flex>
-                // </Flex>,
+                children:
+                    // <MedicalInstitutionCredential showDrawer={showDrawer} />
+                    <CredentialIssuer />
             },
         ];
 
@@ -218,12 +222,10 @@ export default function StartCampaignPage() {
 
     const CreateCredential = () => {
         return (
-            <Flex>
-                Create Credential
-
-                Email
-                Country
-                Password?
+            <Flex className="h-full items-center justify-center">
+                <Card className='w-full'>
+                    <CredentialsForm />
+                </Card>
             </Flex>
         )
     }
@@ -268,6 +270,17 @@ export default function StartCampaignPage() {
     const isRequest = mode === options[0]?.value
     const isCreate = mode === options[1]?.value
     const isImport = mode === options[2]?.value
+
+    const [open2, setOpen2] = useState(false);
+
+    const showDrawer = () => {
+        setOpen2(true);
+    };
+
+    const onClose = () => {
+        setOpen2(false);
+    };
+
 
     return (
         <Layout style={{ height: '100vh' }}>
@@ -383,10 +396,15 @@ export default function StartCampaignPage() {
                     </Draggable>
                 )}
             >
-                {isRequest && <RequestCredential />}
+                {isRequest && <RequestCredential showDrawer={showDrawer} />}
                 {isCreate && <CreateCredential />}
                 {isImport && <ImportCredential />}
             </Modal>
+            <Drawer title="Basic Drawer" onClose={onClose} open={open2} >
+                <p>Some contents...</p>
+                <p> Some contents...</p>
+                <p> Some contents...</p>
+            </Drawer>
             <div className="border w-full p-12 mt-12 flex">Footer</div>
         </Layout>
     );

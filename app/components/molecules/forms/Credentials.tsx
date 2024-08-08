@@ -101,7 +101,7 @@ const CredentialsForm: React.FC = () => {
     };
 
     async function fetchUserList(countryName: string): Promise<UserValue[]> {
-        const response = await fetch('countries.json')
+        const response = await fetch('/countries.json')
         const data = await response.json()
 
         const similar = data.filter((country: any) => country?.countryName.toLowerCase().includes(countryName.toLowerCase()))

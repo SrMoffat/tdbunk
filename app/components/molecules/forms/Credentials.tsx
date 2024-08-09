@@ -16,6 +16,7 @@ interface UserValue {
 interface FieldType {
     email?: string;
     country?: string;
+    password?: string;
 };
 
 type UserDetails = FieldType & {
@@ -127,6 +128,13 @@ const CredentialsForm: React.FC = () => {
                 rules={[{ required: true, message: 'Please input your email!' }]}
             >
                 <Input size='large' placeholder='Enter your email' allowClear />
+            </Form.Item>
+            <Form.Item<FieldType>
+                label="Password"
+                name="password"
+                rules={[{ required: true, message: 'Please input your password!' }]}
+            >
+                <Input.Password size='large' placeholder='Enter password' allowClear/>
             </Form.Item>
             <Form.Item<FieldType>
                 label="Country"

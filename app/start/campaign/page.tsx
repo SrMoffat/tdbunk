@@ -88,15 +88,13 @@ const ProfessionalInstitutionCredential = (props: any) => {
         <Flex className="h-[200px]">
             <Flex onClick={() => showDrawer()} className="absolute hover:opacity-70 rounded-md transition-all cursor-pointer">
                 <Image alt="Card3" src={Card3} width={300} height={300} />
-                <Flex className="border absolute right-[108px] top-0 flex-col items-center">
-                    <Typography.Text style={{ fontSize: 12, textAlign: "right" }}>James Does</Typography.Text>
-                    <Typography.Text style={{ fontSize: 12, textAlign: "right" }}>{`${country?.countryName} ${country?.flag}`}</Typography.Text>
-                    <Typography.Text style={{ fontSize: 10, marginTop: 10, textAlign: "right" }}>Expires in 30 days</Typography.Text>
+                <Flex className="absolute right-[102px] top-3 flex-col items-center">
+                    <Typography.Text style={{ fontSize: 12, textAlign: "right" }}>Board of Journalists</Typography.Text>
                 </Flex>
-                <Flex className="border absolute right-[108px] top-28 flex-col items-center">
+                <Flex className="absolute right-[108px] top-28 flex-col items-center">
                     <Typography.Text style={{ fontSize: 12, textAlign: "right" }}>James Does</Typography.Text>
                     <Typography.Text style={{ fontSize: 12, textAlign: "right" }}>{`${country?.countryName} ${country?.flag}`}</Typography.Text>
-                    <Typography.Text style={{ fontSize: 10, marginTop: 10, textAlign: "right" }}>Expires in 30 days</Typography.Text>
+                    <Typography.Text style={{ fontSize: 10, textAlign: "right" }}>Expires in 30 days</Typography.Text>
                 </Flex>
             </Flex>
         </Flex>
@@ -236,7 +234,7 @@ export default function StartCampaignPage() {
                 label: 'Professional Institution',
                 children:
                     <ProfessionalInstitutionCredential showDrawer={showDrawer} />
-                    // <CredentialIssuer />
+                // <CredentialIssuer />
             },
             {
                 key: '4',
@@ -250,7 +248,7 @@ export default function StartCampaignPage() {
                 label: 'Medical Institution',
                 children:
                     <MedicalInstitutionCredential showDrawer={showDrawer} />
-                    // <CredentialIssuer />
+                // <CredentialIssuer />
             },
         ];
 
@@ -299,7 +297,7 @@ export default function StartCampaignPage() {
                             </p>
                             <p className="ant-upload-text">Click or drag file to this area to upload</p>
                             <p className="ant-upload-hint">
-                               Upload the JSON document for the credential. Kindly ensure it is a valid JSON file.
+                                Upload the JSON document for the credential. Kindly ensure it is a valid JSON file.
                             </p>
                         </Dragger>
                     },
@@ -333,7 +331,7 @@ export default function StartCampaignPage() {
                 <Image alt={name} src={icon} width={50} height={50} />
                 <Flex className="flex-col">
                     <Flex>{name}</Flex>
-                    <Flex className="-mt-2">Credentials</Flex>
+                    <Flex className="-mt-2">Credential</Flex>
                 </Flex>
             </Flex>
         ),
@@ -396,7 +394,7 @@ export default function StartCampaignPage() {
                             [
                                 {
                                     title: 'Credentials',
-                                    status: 'wait',
+                                    status: 'process',
                                 },
                                 {
                                     title: 'Campaign Details',

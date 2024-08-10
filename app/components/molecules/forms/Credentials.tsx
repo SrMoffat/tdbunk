@@ -121,6 +121,7 @@ const CredentialsForm: React.FC = () => {
             onFinish={onFinish}
             onFinishFailed={onFinishFailed}
             autoComplete="off"
+            className='w-full'
         >
             <Form.Item<FieldType>
                 label="Email"

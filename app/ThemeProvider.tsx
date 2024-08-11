@@ -1,8 +1,8 @@
 'use client'
-import React, { PropsWithChildren } from 'react'
+import React, { PropsWithChildren } from 'react';
 import { ConfigProvider, theme } from 'antd';
 
-export const PRIMARY_GOLD_HEX = '#CC9933'
+export const PRIMARY_GOLD_HEX = '#CC9933';
 
 export default function ThemeProvider({ children }: PropsWithChildren) {
   return (
@@ -15,4 +15,4 @@ export default function ThemeProvider({ children }: PropsWithChildren) {
       {children}
     </ConfigProvider>
   )
-}
+};

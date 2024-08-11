@@ -1,3 +1,5 @@
+import { DEBUNK_SOURCE, DEBUNK_CAMPAIGN_TYPE } from "./constants";
+
 interface RecordType {
     key: string;
     title: string;
@@ -9,7 +11,7 @@ export const campaigns = [
     {
         id: '1',
         title: "An amazing title to a Facebook fake news post.",
-        source: "Facebook",
+        source: DEBUNK_SOURCE.FACEBOOK,
         factCheckers: [],
         sponsors: [],
         type: "Community",
@@ -24,7 +26,7 @@ export const campaigns = [
     {
         id: '2',
         title: "An amazing title to a TikTok fake news post.",
-        source: "TikTok",
+        source: DEBUNK_SOURCE.TIKTOK,
         factCheckers: [],
         sponsors: [],
         type: "Sponsored",
@@ -39,7 +41,7 @@ export const campaigns = [
     {
         id: '3',
         title: "An amazing title to a Instagram fake news post.",
-        source: "Instagram",
+        source: DEBUNK_SOURCE.INSTAGRAM,
         factCheckers: [],
         sponsors: [],
         type: "Community",
@@ -54,7 +56,7 @@ export const campaigns = [
     {
         id: '4',
         title: "An amazing title to an X fake news post.",
-        source: "X",
+        source: DEBUNK_SOURCE.X,
         factCheckers: [],
         sponsors: [],
         type: "Sponsored",
@@ -69,7 +71,7 @@ export const campaigns = [
     {
         id: '5',
         title: "An amazing title to a Youtube fake news post.",
-        source: "Youtube",
+        source: DEBUNK_SOURCE.YOUTUBE,
         factCheckers: [],
         sponsors: [],
         type: "Community",
@@ -84,7 +86,7 @@ export const campaigns = [
     {
         id: '6',
         title: "campaigns This Story",
-        source: "Facebook",
+        source: DEBUNK_SOURCE.FACEBOOK,
         factCheckers: [],
         sponsors: [],
         type: "Sponsored",
@@ -98,163 +100,7 @@ export const campaigns = [
     }
 ]
 
-export const debunks = [
-    {
-        id: '1',
-        title: "An amazing title to a Facebook fake news post.",
-        source: "Facebook",
-        factCheckers: [],
-        sponsors: [],
-        type: "Community",
-        amount: 3000,
-        currency: "USD",
-        evidences: [],
-        thumbnail: "",
-        status: 'closed',
-        isFactual: false
-    },
-    {
-        id: '2',
-        title: "An amazing title to a TikTok fake news post.",
-        source: "TikTok",
-        factCheckers: [],
-        sponsors: [],
-        type: "Sponsored",
-        amount: 3000,
-        currency: "USD",
-        evidences: [],
-        thumbnail: "",
-        status: 'closed',
-        isFactual: true
-    },
-    {
-        id: '3',
-        title: "An amazing title to a Instagram fake news post.",
-        source: "Instagram",
-        factCheckers: [],
-        sponsors: [],
-        type: "Community",
-        amount: 3000,
-        currency: "USD",
-        evidences: [],
-        thumbnail: "",
-        status: 'closed',
-        isFactual: false
-    },
-    {
-        id: '4',
-        title: "An amazing title to an X fake news post.",
-        source: "X",
-        factCheckers: [],
-        sponsors: [],
-        type: "Sponsored",
-        amount: 3000,
-        currency: "USD",
-        evidences: [],
-        thumbnail: "",
-        status: 'closed',
-        isFactual: true
-    },
-    {
-        id: '5',
-        title: "An amazing title to a Youtube fake news post.",
-        source: "Youtube",
-        factCheckers: [],
-        sponsors: [],
-        type: "Community",
-        amount: 3000,
-        currency: "USD",
-        evidences: [],
-        thumbnail: "",
-        status: 'closed',
-        isFactual: false
-    },
-    {
-        id: '6',
-        title: "campaigns This Story",
-        source: "Facebook",
-        factCheckers: [],
-        sponsors: [],
-        type: "Sponsored",
-        amount: 3000,
-        currency: "USD",
-        evidences: [],
-        thumbnail: "",
-        status: 'closed',
-        isFactual: true
-    }
-]
-
-export const sponsorships = [
-    {
-        id: '1',
-        title: "sponsorships This Story",
-        source: "Facebook",
-        factCheckers: [],
-        type: "Free",
-        amount: 3000,
-        currency: "USD",
-        evidences: [],
-        thumbnail: ""
-    },
-    {
-        id: '2',
-        title: "sponsorships This Story",
-        source: "Facebook",
-        factCheckers: [],
-        type: "Free",
-        amount: 3000,
-        currency: "USD",
-        evidences: [],
-        thumbnail: ""
-    },
-    {
-        id: '3',
-        title: "sponsorships This Story",
-        source: "Facebook",
-        factCheckers: [],
-        type: "Free",
-        amount: 3000,
-        currency: "USD",
-        evidences: [],
-        thumbnail: ""
-    },
-    {
-        id: '3',
-        title: "sponsorships This Story",
-        source: "Facebook",
-        factCheckers: [],
-        type: "Free",
-        amount: 3000,
-        currency: "USD",
-        evidences: [],
-        thumbnail: ""
-    },
-    {
-        id: '3',
-        title: "sponsorships This Story",
-        source: "Facebook",
-        factCheckers: [],
-        type: "Free",
-        amount: 3000,
-        currency: "USD",
-        evidences: [],
-        thumbnail: ""
-    },
-    {
-        id: '3',
-        title: "sponsorships This Story",
-        source: "Facebook",
-        factCheckers: [],
-        type: "Free",
-        amount: 3000,
-        currency: "USD",
-        evidences: [],
-        thumbnail: ""
-    }
-]
-
-export const campaignData = Array.from({ length: 23 }).map((_, i) => ({
+export const debunks = Array.from({ length: 23 }).map((_, i) => ({
     href: 'https://articlesource.com',
     title: `ant design part ${i}`,
     avatar: `https://api.dicebear.com/7.x/miniavs/svg?seed=${i}`,
@@ -269,8 +115,27 @@ export const campaignData = Array.from({ length: 23 }).map((_, i) => ({
     amount: 3000,
     currency: "USD",
     isFactual: i % 2 === 0,
-    source: i % 2 === 0 ? "X" : i % 3 === 0 ? "TikTok" : "Facebook",
-    type: i % 2 === 0 ? "Community" : "Sponsored"
+    source: i % 2 === 0 ? DEBUNK_SOURCE.X : i % 3 === 0 ? DEBUNK_SOURCE.TIKTOK : DEBUNK_SOURCE.FACEBOOK,
+    type: i % 2 === 0 ? DEBUNK_CAMPAIGN_TYPE.COMMUNITY : DEBUNK_CAMPAIGN_TYPE.SPONSORED
+}));
+
+export const sponsorships = Array.from({ length: 23 }).map((_, i) => ({
+    href: 'https://articlesource.com',
+    title: `ant design part ${i}`,
+    avatar: `https://api.dicebear.com/7.x/miniavs/svg?seed=${i}`,
+    description:
+        'Ant Design, a design language for background applications, is refined by Ant UED Team.',
+    content:
+        'We supply a series of design principles, practical patterns and high quality design resources (Sketch and Axure), to help people create their product prototypes beautifully and efficiently.',
+    factCheckers: [],
+    sponsors: [],
+    tippers: [],
+    evidences: [],
+    amount: 3000,
+    currency: "USD",
+    isFactual: i % 2 === 0,
+    source: i % 2 === 0 ? DEBUNK_SOURCE.X : i % 3 === 0 ? DEBUNK_SOURCE.TIKTOK : DEBUNK_SOURCE.FACEBOOK,
+    type: i % 2 === 0 ? DEBUNK_CAMPAIGN_TYPE.COMMUNITY : DEBUNK_CAMPAIGN_TYPE.SPONSORED
 }));
 
 export const mockData: RecordType[] = Array.from({ length: 20 }).map((_, i) => ({

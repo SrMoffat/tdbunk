@@ -8,7 +8,7 @@ const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "TDBunk",
-  description: "Dismiss disinformation and misinformation through a cross-border crowdfunded investigation by crowdsourced investigators.",
+  description: "Dismiss DISinformation and MISinformation through a cross-border crowdfunded investigation to debuunk (TDBunk) by crowdsourced investigators.",
 };
 
 export default function RootLayout({

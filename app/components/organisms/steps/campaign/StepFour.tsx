@@ -36,7 +36,7 @@ const StepFour = () => {
                             <Image alt="card" src={Card1} width={300} height={300} />
                             <Flex className="absolute left-4 top-4 flex-col">
                                 <Image alt="LogoIcon" src={TBDVCLogoYellow} width={40} height={40} />
-                                <a href="https://mock-idv.tbddev.org" style={{ fontSize: 10, marginTop: 8, color: "white" }}>TBD Issuer</a>
+                                <a href="https://mock-idv.tbddev.org" style={{ fontSize: 10, marginTop: 8, color: "white" }}>Ultimate Identity</a>
                             </Flex>
                             <Flex className="absolute left-4 top-20 flex-col">
                                 <Typography.Text style={{ fontSize: 12 }}>James Does</Typography.Text>
@@ -55,7 +55,7 @@ const StepFour = () => {
                             <Image alt="card" src={Card1} width={300} height={300} />
                             <Flex className="absolute left-4 top-4 flex-col">
                                 <Image alt="LogoIcon" src={TBDVCLogoYellow} width={40} height={40} />
-                                <a href="https://mock-idv.tbddev.org" style={{ fontSize: 10, marginTop: 8, color: "white" }}>TBD Issuer</a>
+                                <a href="https://mock-idv.tbddev.org" style={{ fontSize: 10, marginTop: 8, color: "white" }}>Ultimate Identity</a>
                             </Flex>
                             <Flex className="absolute left-4 top-20 flex-col">
                                 <Typography.Text style={{ fontSize: 12 }}>James Does</Typography.Text>
@@ -74,7 +74,7 @@ const StepFour = () => {
                             <Image alt="card" src={Card1} width={300} height={300} />
                             <Flex className="absolute left-4 top-4 flex-col">
                                 <Image alt="LogoIcon" src={TBDVCLogoYellow} width={40} height={40} />
-                                <a href="https://mock-idv.tbddev.org" style={{ fontSize: 10, marginTop: 8, color: "white" }}>TBD Issuer</a>
+                                <a href="https://mock-idv.tbddev.org" style={{ fontSize: 10, marginTop: 8, color: "white" }}>Ultimate Identity</a>
                             </Flex>
                             <Flex className="absolute left-4 top-20 flex-col">
                                 <Typography.Text style={{ fontSize: 12 }}>James Does</Typography.Text>

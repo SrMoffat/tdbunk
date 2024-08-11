@@ -1,27 +1,16 @@
 "use client"
-import { Card1, Card2, Card3, Card4, Card5, Create, Import, Logo, LogoIcon, Request, StartCampaign, LogoIcon2, TBDVCLogoBlack, TBDVCLogoYellow, TikTok, Facebook, X, Youtube, Instagram, Community, Sponsor, Sponsorships, FactCheckers, ValidCredential, Evidence } from '@/app/components/atoms/Icon';
-import { CopyOutlined, CopyFilled } from '@ant-design/icons';
-import { Button, Flex, Layout, Modal, Segmented, Steps, List, Collapse, theme, Typography, CollapseProps, Card, Drawer, QRCode, Tabs, Form, Checkbox, Tag } from 'antd';
-import Image from 'next/image';
-import Link from 'next/link';
-import { useState, useRef, useEffect } from 'react';
-import Draggable, { DraggableData, DraggableEvent } from 'react-draggable';
-import countries from '@/public/countries.json'
-import CredentialsForm from '@/app/components/molecules/forms/Credentials';
-import { CheckCircleFilled, CheckCircleOutlined, SearchOutlined, RightCircleFilled } from '@ant-design/icons';
-import type { UploadProps } from 'antd';
-import { message, Upload, Select } from 'antd';
-import { Input, Cascader, InputNumber, Space } from 'antd';
 import DebounceSelect from '@/app/components/atoms/DebounceSelect';
-import { ArrowUpOutlined } from '@ant-design/icons';
-import type { StepsProps } from 'antd';
-import { Popover } from 'antd';
-import { Badge, Descriptions, Statistic, Tooltip } from 'antd';
-import type { DescriptionsProps } from 'antd';
+import { Card1, Card2, Card3, Card4, Card5, Community, Create, Evidence, Facebook, FactCheckers, Import, Instagram, LogoIcon2, Request, Sponsor, Sponsorships, StartCampaign, TBDVCLogoYellow, TikTok, ValidCredential, X, Youtube } from '@/app/components/atoms/Icon';
+import CredentialsForm from '@/app/components/molecules/forms/Credentials';
+import LandingHeader from '@/app/components/molecules/headers/LandingHeader';
+import countries from '@/public/countries.json';
+import { CheckCircleFilled, CheckCircleOutlined, CopyFilled, CopyOutlined, RightCircleFilled, SearchOutlined } from '@ant-design/icons';
+import type { DescriptionsProps, StatisticProps, StepsProps, UploadProps } from 'antd';
+import { Avatar, Badge, Button, Card, Collapse, CollapseProps, Descriptions, Divider, Drawer, Flex, Form, Input, InputNumber, Layout, message, Popover, QRCode, Segmented, Select, Space, Statistic, Steps, Tabs, Tag, theme, Tooltip, Typography, Upload } from 'antd';
+import Image from 'next/image';
+import { useEffect, useRef, useState } from 'react';
 import CountUp from 'react-countup';
-import type { StatisticProps } from 'antd';
-import { AntDesignOutlined, UserOutlined } from '@ant-design/icons';
-import { Avatar, Divider } from 'antd';
+import { DraggableData, DraggableEvent } from 'react-draggable';
 
 const { Option } = Select;
 
@@ -1043,22 +1032,7 @@ export default function StartCampaignPage() {
 
     return (
         <Layout className="h-screen">
-            <Header style={{ display: 'flex', alignItems: 'center', backgroundColor: colorBgContainer }}>
-                <Link href="/">
-                    <Image alt="TDBunk" src={Logo} width={150} height={150} />
-                </Link>
-                <Flex className="w-full flex items-end justify-end gap-4">
-                    {/* <Link href="/start/campaign">
-                        <Button>Start Campaign</Button>
-                    </Link> */}
-                    <Link href="/start/debunking">
-                        <Button>Start Debunking</Button>
-                    </Link>
-                    <Link href="/sponsor">
-                        <Button>Sponsor Campaign</Button>
-                    </Link>
-                </Flex>
-            </Header>
+            <LandingHeader />
             <Flex className=" items-center flex-col pt-12 gap-5 h-auto mb-4">
                 <Flex className="w-1/2 justify-center">
                     <Image alt="Start Campaign" src={StartCampaign} width={300} height={300} />

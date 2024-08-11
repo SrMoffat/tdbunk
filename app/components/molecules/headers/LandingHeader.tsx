@@ -1,30 +1,44 @@
+"use client"
+
 import { Logo } from '@/app/components/atoms/Icon';
 import { Button, Flex, theme } from 'antd';
 import { Header } from 'antd/es/layout/layout';
 import Image from 'next/image';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation'
 
 const LandingHeader = () => {
+    const pathname = usePathname()
+
     const {
         token: { colorBgContainer },
     } = theme.useToken()
 
+    const START_CAMPAIGN = '/start/campaign'
+    const START_DEBUNKING = '/start/debunking'
+    const SPONSOR_CAMPAIGN = '/sponsor'
+
     const links = [
         {
             name: "Start Campaign",
-            path: "/start/campaign"
+            path: START_CAMPAIGN,
+            active: pathname === START_CAMPAIGN
         },
         {
             name: "Start Debunking",
-            path: "/start/debunking"
+            path: START_DEBUNKING,
+            active: pathname === START_DEBUNKING
+
         },
         {
             name: "Sponsor Campaign",
-            path: "/sponsor"
+            path: SPONSOR_CAMPAIGN,
+            active: pathname === SPONSOR_CAMPAIGN
+
         }
-    ].map(({ name, path}) => (
+    ].map(({ name, path, active }) => (
         <Link href={path}>
-            <Button>{name}</Button>
+            <Button type={active ? "primary" : "default"}>{name}</Button>
         </Link>
     ))
     return (
@@ -33,7 +47,7 @@ const LandingHeader = () => {
                 <Image alt="TDBunk" src={Logo} width={150} height={150} />
             </Link>
             <Flex className="w-full flex items-end justify-end gap-4">
-               {links}
+                {links}
             </Flex>
         </Header>
     )

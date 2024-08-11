@@ -9,6 +9,7 @@ import Community from '@/app/assets/Community.svg';
 import Create from '@/app/assets/Create.svg';
 import Debunks from '@/app/assets/Debunks.svg';
 import Evidence from '@/app/assets/Evidence.svg';
+import Evidences from '@/app/assets/Evidences.svg';
 import Facebook from '@/app/assets/Facebook.svg';
 import FactCheckers from '@/app/assets/FactCheckers.svg';
 import False from '@/app/assets/False.svg';
@@ -21,13 +22,14 @@ import Request from '@/app/assets/Request.svg';
 import Sponsor from '@/app/assets/Sponsor.svg';
 import Sponsorships from '@/app/assets/Sponsorships.svg';
 import StartCampaign from '@/app/assets/Start Campaign.svg';
+import TBDVCLogoBlack from '@/app/assets/TBDVCLogoBlack.svg';
+import TBDVCLogoYellow from '@/app/assets/TBDVCLogoYellow.svg';
 import TikTok from '@/app/assets/TikTok.svg';
 import Tips from '@/app/assets/Tips.svg';
 import True from '@/app/assets/True.svg';
+import ValidCredential from '@/app/assets/ValidCredential.svg';
 import X from '@/app/assets/X.svg';
 import Youtube from '@/app/assets/Youtube.png';
-import TBDVCLogoBlack from '@/app/assets/TBDVCLogoBlack.svg';
-import TBDVCLogoYellow from '@/app/assets/TBDVCLogoYellow.svg';
 
-export { TBDVCLogoBlack, TBDVCLogoYellow, Campaigns, Card1, Card2, Card3, Card4, Card5, Clock, Community, Create, Debunks, Evidence, Facebook, FactCheckers, False, Import, Instagram, Logo, LogoIcon, LogoIcon2, Request, Sponsor, Sponsorships, StartCampaign, TikTok, Tips, True, X, Youtube };
+export { Campaigns, Card1, Card2, Card3, Card4, Card5, Clock, Community, Create, Debunks, Evidence, Evidences, Facebook, FactCheckers, False, Import, Instagram, Logo, LogoIcon, LogoIcon2, Request, Sponsor, Sponsorships, StartCampaign, TBDVCLogoBlack, TBDVCLogoYellow, TikTok, Tips, True, ValidCredential, X, Youtube };
 

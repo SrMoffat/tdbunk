@@ -1,8 +1,7 @@
-import React, { useMemo, useRef, useState } from 'react';
-import { Select, Spin } from 'antd';
 import type { SelectProps } from 'antd';
+import { Select, Spin } from 'antd';
 import debounce from 'lodash/debounce';
-
+import React, { useMemo, useRef, useState } from 'react';
 
 export interface DebounceSelectProps<ValueType = any>
     extends Omit<SelectProps<ValueType | ValueType[]>, 'options' | 'children'> {
@@ -51,7 +50,7 @@ function DebounceSelect<
             options={options}
         />
     );
-}
+};
 
-export default DebounceSelect
+export default DebounceSelect;
 

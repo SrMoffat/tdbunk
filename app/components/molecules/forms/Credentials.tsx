@@ -8,18 +8,18 @@ import { omit } from 'lodash';
 
 const localKeyManager = new LocalKeyManager();
 
-interface UserValue {
+export interface UserValue {
     label: string;
     value: string;
 }
 
-interface FieldType {
+export interface FieldType {
     email?: string;
     country?: string;
     password?: string;
 };
 
-type UserDetails = FieldType & {
+export type UserDetails = FieldType & {
     did: string
 }
 
@@ -129,13 +129,6 @@ const CredentialsForm: React.FC = () => {
                 rules={[{ required: true, message: 'Please input your email!' }]}
             >
                 <Input size='large' placeholder='Enter your email' allowClear />
-            </Form.Item>
-            <Form.Item<FieldType>
-                label="Password"
-                name="password"
-                rules={[{ required: true, message: 'Please input your password!' }]}
-            >
-                <Input.Password size='large' placeholder='Enter password' allowClear/>
             </Form.Item>
             <Form.Item<FieldType>
                 label="Country"

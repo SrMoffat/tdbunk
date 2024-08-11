@@ -1,14 +1,14 @@
 "use client"
-import { Card1, Card2, Card3, Card4, Card5, Create, Import, Logo, LogoIcon, Request, StartCampaign, LogoIcon2, TBDVCLogoBlack, TBDVCLogoYellow, TikTok, Facebook, X, Youtube, Instagram, Community, Sponsor, Sponsorships, FactCheckers } from '@/app/components/atoms/Icon';
+import { Card1, Card2, Card3, Card4, Card5, Create, Import, Logo, LogoIcon, Request, StartCampaign, LogoIcon2, TBDVCLogoBlack, TBDVCLogoYellow, TikTok, Facebook, X, Youtube, Instagram, Community, Sponsor, Sponsorships, FactCheckers, ValidCredential, Evidence } from '@/app/components/atoms/Icon';
 import { CopyOutlined, CopyFilled } from '@ant-design/icons';
-import { Button, Flex, Layout, Modal, Segmented, Steps, List, Collapse, theme, Typography, CollapseProps, Card, Drawer, QRCode, Tabs, Form, Checkbox } from 'antd';
+import { Button, Flex, Layout, Modal, Segmented, Steps, List, Collapse, theme, Typography, CollapseProps, Card, Drawer, QRCode, Tabs, Form, Checkbox, Tag } from 'antd';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useState, useRef, useEffect } from 'react';
 import Draggable, { DraggableData, DraggableEvent } from 'react-draggable';
 import countries from '@/public/countries.json'
 import CredentialsForm from '@/app/components/molecules/forms/Credentials';
-import { InboxOutlined } from '@ant-design/icons';
+import { CheckCircleFilled, CheckCircleOutlined, SearchOutlined, RightCircleFilled } from '@ant-design/icons';
 import type { UploadProps } from 'antd';
 import { message, Upload, Select } from 'antd';
 import { Input, Cascader, InputNumber, Space } from 'antd';
@@ -16,8 +16,12 @@ import DebounceSelect from '@/app/components/atoms/DebounceSelect';
 import { ArrowUpOutlined } from '@ant-design/icons';
 import type { StepsProps } from 'antd';
 import { Popover } from 'antd';
-import { Badge, Descriptions, Statistic } from 'antd';
+import { Badge, Descriptions, Statistic, Tooltip } from 'antd';
 import type { DescriptionsProps } from 'antd';
+import CountUp from 'react-countup';
+import type { StatisticProps } from 'antd';
+import { AntDesignOutlined, UserOutlined } from '@ant-design/icons';
+import { Avatar, Divider } from 'antd';
 
 const { Option } = Select;
 
@@ -288,8 +292,10 @@ const StepOne = () => {
 const StepTwo = () => {
     const [value, setValue] = useState<UserValue[]>([]);
     const [mode, setMode] = useState<any>();
+    const [selectedCredentials, setSelectedCredentials] = useState<string[]>([]);
     const [isLoading, setIsLoading] = useState(false)
     const [current, setCurrent] = useState(0);
+    const [count, setCount] = useState(selectedCredentials.length);
 
     const onFinish = () => { }
     const onFinishFailed = () => { }
@@ -328,7 +334,47 @@ const StepTwo = () => {
     const isCommunity = mode === "Community"
     const isSponsored = mode === "Sponsored"
 
-    console.log("Mode ==>", mode)
+    const handleCardClicked = (credential: string) => {
+        const exists = selectedCredentials.includes(credential)
+
+        if (exists) {
+            const removed = selectedCredentials.filter(entry => entry !== credential)
+            console.log("removed", removed)
+            setSelectedCredentials(removed)
+            setCount(removed.length)
+        } else {
+            setSelectedCredentials((existingCredentials) => ([...existingCredentials, credential]))
+            setCount(selectedCredentials.length + 1)
+        }
+    }
+
+    const {
+        token: { colorBgContainer, colorPrimary },
+    } = theme.useToken()
+
+    const credentialOptions = [
+        {
+            name: "Financial",
+            card: Card1,
+            className: ''
+        },
+        {
+            name: "Government",
+            card: Card2,
+            className: ''
+        },
+        {
+            name: "Professional",
+            card: Card3,
+        },
+        {
+            name: "Educational",
+            card: Card4,
+        },
+        {
+            name: "Medical",
+            card: Card5,
+        }]
 
     const steps = [
         {
@@ -448,7 +494,45 @@ const StepTwo = () => {
                 </Flex>
             )
         },
+        {
+            title: "Investigators' Credentials",
+            description: 'Add the credentials needed by face checkers to debunk the campaign subject. List of Selectable Credentials from those TDBunk has Integrated',
+            content: (
+                <Flex wrap className="w-full gap-6 mt-6">
+                    <Tooltip title="Select the credentials required to be a fact checker in this campaign." placement="top" >
+                        <Flex className="w-full justify-center items-center">
+                            <Badge count={count} color={colorPrimary} style={{ color: "white" }}>
+                                <Avatar shape='square' size='large' style={{ backgroundColor: colorPrimary }} icon={<Image src={ValidCredential} alt="factChecker" width={20} height={20} />} />
+                            </Badge>
+                            <Typography.Text className="ml-3">Required Credentials</Typography.Text>
+                        </Flex>
+                    </Tooltip>
+                    <Flex wrap className="gap-3 justify-center">
+                        {credentialOptions.map(({ name, card }) => {
+                            const isSelected = selectedCredentials.includes(name)
+                            console.log("Is Selected", isSelected)
+                            return (
+                                <Card onClick={() => handleCardClicked(name)} className={`transition-all cursor-pointer w-[380px] h-[130px] ${isSelected ? 'opacity-100' : 'opacity-60'} hover:opacity-80`}>
+                                    <Flex className={`absolute  rounded-md transition-all cursor-pointer`}>
+                                        <Image alt="card" src={card} width={150} height={150} />
+                                    </Flex>
+                                    <Flex className={`self-end absolute right-3 items-center h-[80px] w-[calc(100%-12rem)]`}>
+                                        <Typography.Text style={{ fontSize: 10, marginRight: 5 }}>{`Verifiable ${name} Credential`}</Typography.Text>
+                                        {
+                                            isSelected
+                                                ? <CheckCircleFilled style={{ color: colorPrimary }} />
+                                                : <CheckCircleOutlined style={{ color: 'gray' }} />
+                                        }
+                                    </Flex>
+                                </Card>
+                            )
+                        })}
+                    </Flex>
+                </Flex>
+            )
+        },
     ];
+
 
     const onChange = (value: number) => {
         console.log('onChange:', value);
@@ -501,22 +585,17 @@ const StepTwo = () => {
     );
 
 
-    const {
-        token: { colorBgContainer },
-    } = theme.useToken()
-
     return <Layout style={{ backgroundColor: colorBgContainer }}>
-        <Flex className="h-auto min-h-[600px]">
-            <Flex className="w-[230px] items-center">
+        <Flex className="h-auto min-h-[600px] flex-col">
+            <Flex className="w-1/2 self-center">
                 <Steps
-                    direction="vertical"
-                    progressDot={customDot}
+                    size="small"
                     current={current}
                     items={items}
                     onChange={onChange}
                 />
             </Flex>
-            <Flex className="w-full">
+            <Flex className="w-full mt-4">
                 {steps[current]?.content}
             </Flex>
         </Flex>
@@ -590,9 +669,12 @@ const StepThree = () => {
             key: '11',
             label: 'Fact Checkers',
             children: (
-                <Flex>
+                <Flex className="items-center">
                     <Image src={FactCheckers} width={25} height={25} alt="sponsored" />
                     <Typography.Text>4 Fact Checkers</Typography.Text>
+                    <Divider className="ml-4" type="vertical" />
+                    <Image src={ValidCredential} width={25} height={25} alt="sponsored" />
+                    <Typography.Text>3 Required Credentials</Typography.Text>
                 </Flex>
             ),
             span: 3,
@@ -603,7 +685,7 @@ const StepThree = () => {
             label: 'Minimum Evidence',
             children: (
                 <Flex>
-                    <Image src={FactCheckers} width={25} height={25} alt="sponsored" />
+                    <Image src={Evidence} width={25} height={25} alt="sponsored" />
                     <Typography.Text>4 Evidences</Typography.Text>
                 </Flex>
             ),
@@ -623,48 +705,136 @@ const StepThree = () => {
 }
 
 const StepFour = () => {
+    const [isSelected, setIsSelected] = useState(true)
     const {
-        token: { colorBgContainer },
+        token: { colorBgContainer, colorPrimary },
     } = theme.useToken()
+
+    const formatter: StatisticProps['formatter'] = (value) => (
+        <CountUp end={value as number} separator="," />
+    );
+
+    const currency = 'USD'
+
+    const handleCardClicked = () => {
+        setIsSelected(!isSelected)
+    }
     return <Layout style={{ backgroundColor: colorBgContainer }}>
         <Flex className="flex-col">
-            <Flex className="border border-red-400 justify-between">
-                <Flex>
-                    <Card>
-                        Credential
+            <Flex className="justify-between">
+                <Flex className="gap-3">
+                    <Card className='w-[360px] h-[220px]'>
+                        <Flex onClick={() => handleCardClicked()} className="absolute hover:opacity-70 rounded-md transition-all cursor-pointer">
+                            <Image alt="card" src={Card1} width={300} height={300} />
+                            <Flex className="absolute left-4 top-4 flex-col">
+                                <Image alt="LogoIcon" src={TBDVCLogoYellow} width={40} height={40} />
+                                <a href="https://mock-idv.tbddev.org" style={{ fontSize: 10, marginTop: 8, color: "white" }}>TBD Issuer</a>
+                            </Flex>
+                            <Flex className="absolute left-4 top-20 flex-col">
+                                <Typography.Text style={{ fontSize: 12 }}>James Does</Typography.Text>
+                                <Typography.Text style={{ fontSize: 12 }}>{`${country?.countryName} ${country?.flag}`}</Typography.Text>
+                                <Typography.Text style={{ fontSize: 10, marginTop: 10 }}>Expires in 30 days</Typography.Text>
+                            </Flex>
+                        </Flex>
+                        {
+                            isSelected
+                                ? <CheckCircleFilled className='absolute right-0 mr-2' style={{ color: colorPrimary }} />
+                                : <CheckCircleOutlined className='absolute right-0 mr-2' style={{ color: 'gray' }} />
+                        }
+                    </Card>
+                    <Card className='w-[360px] h-[220px]'>
+                        <Flex onClick={() => handleCardClicked()} className="absolute hover:opacity-70 rounded-md transition-all cursor-pointer">
+                            <Image alt="card" src={Card1} width={300} height={300} />
+                            <Flex className="absolute left-4 top-4 flex-col">
+                                <Image alt="LogoIcon" src={TBDVCLogoYellow} width={40} height={40} />
+                                <a href="https://mock-idv.tbddev.org" style={{ fontSize: 10, marginTop: 8, color: "white" }}>TBD Issuer</a>
+                            </Flex>
+                            <Flex className="absolute left-4 top-20 flex-col">
+                                <Typography.Text style={{ fontSize: 12 }}>James Does</Typography.Text>
+                                <Typography.Text style={{ fontSize: 12 }}>{`${country?.countryName} ${country?.flag}`}</Typography.Text>
+                                <Typography.Text style={{ fontSize: 10, marginTop: 10 }}>Expires in 30 days</Typography.Text>
+                            </Flex>
+                        </Flex>
+                        {
+                            isSelected
+                                ? <CheckCircleFilled className='absolute right-0 mr-2' style={{ color: colorPrimary }} />
+                                : <CheckCircleOutlined className='absolute right-0 mr-2' style={{ color: 'gray' }} />
+                        }
+                    </Card>
+                    <Card className='w-[360px] h-[220px]'>
+                        <Flex onClick={() => handleCardClicked()} className="absolute hover:opacity-70 rounded-md transition-all cursor-pointer">
+                            <Image alt="card" src={Card1} width={300} height={300} />
+                            <Flex className="absolute left-4 top-4 flex-col">
+                                <Image alt="LogoIcon" src={TBDVCLogoYellow} width={40} height={40} />
+                                <a href="https://mock-idv.tbddev.org" style={{ fontSize: 10, marginTop: 8, color: "white" }}>TBD Issuer</a>
+                            </Flex>
+                            <Flex className="absolute left-4 top-20 flex-col">
+                                <Typography.Text style={{ fontSize: 12 }}>James Does</Typography.Text>
+                                <Typography.Text style={{ fontSize: 12 }}>{`${country?.countryName} ${country?.flag}`}</Typography.Text>
+                                <Typography.Text style={{ fontSize: 10, marginTop: 10 }}>Expires in 30 days</Typography.Text>
+                            </Flex>
+                        </Flex>
+                        {
+                            isSelected
+                                ? <CheckCircleFilled className='absolute right-0 mr-2' style={{ color: colorPrimary }} />
+                                : <CheckCircleOutlined className='absolute right-0 mr-2' style={{ color: 'gray' }} />
+                        }
                     </Card>
                 </Flex>
                 <Flex>
-                    <Card>
-                        <Statistic
-                            title="Active"
-                            value={11.28}
-                            precision={2}
-                            valueStyle={{ color: '#3f8600' }}
-                            prefix={<ArrowUpOutlined />}
-                            suffix="%"
-                        />
+                    <Card className="h-[100px]">
+                        <Statistic prefix={currency} valueStyle={{ color: colorPrimary, fontSize: 18, fontWeight: "bold" }} title="Wallet Balance" value={1000} precision={2} formatter={formatter} />
                     </Card>
                 </Flex>
             </Flex>
-            {/* <Flex onClick={() => console.log()} className="absolute hover:opacity-70 rounded-md transition-all cursor-pointer">
-                <Image alt="card" src={Card1} width={300} height={300} />
-                <Flex className="absolute left-4 top-4 flex-col">
-                    <Image alt="LogoIcon" src={TBDVCLogoYellow} width={40} height={40} />
-                    <a href="https://mock-idv.tbddev.org" style={{ fontSize: 10, marginTop: 8, color: "white" }}>TBD Issuer</a>
+            <Flex className="border border-yellow-500 flex-col mt-4">
+                <Space.Compact block >
+                    <Select defaultValue="USD">
+                        <Option value="USD">USD</Option>
+                        <Option value="KES">KES</Option>
+                    </Select>
+                    <InputNumber defaultValue={12} />
+                    <RightCircleFilled className="px-4" style={{ color: colorPrimary }} />
+                    <Select defaultValue="USD">
+                        <Option value="USD">USD</Option>
+                        <Option value="KES">KES</Option>
+                    </Select>
+                    <Button type="primary" icon={<SearchOutlined />} iconPosition='end'>
+                        Search Offers
+                    </Button>
+                </Space.Compact>
+                <Space.Compact block>
+                    <Input
+                        style={{ width: 'calc(100% - 200px)' }}
+                        defaultValue="git@github.com:ant-design/ant-design.git"
+                    />
+                    <Tooltip title="copy did url">
+                        <Button icon={<CopyOutlined />} />
+                    </Tooltip>
+                </Space.Compact>
+                <Flex className="border items-center">
+                    <Image src={Sponsorships} alt="sponsorships" width={40} height={40} />
+                    <Tag color="gold">USD 300</Tag>
                 </Flex>
-                <Flex className="absolute left-4 top-20 flex-col">
-                    <Typography.Text style={{ fontSize: 12 }}>James Does</Typography.Text>
-                    <Typography.Text style={{ fontSize: 12 }}>{`${country?.countryName} ${country?.flag}`}</Typography.Text>
-                    <Typography.Text style={{ fontSize: 10, marginTop: 10 }}>Expires in 30 days</Typography.Text>
-                </Flex>
-            </Flex> */}
-            <Flex className="border border-yellow-500 flex-col">
-                Wallet Balance
-                Amount of the Campaign Sponsorship
-                Source Currency
-                Destination Currency
-
+                <Avatar.Group shape='square' size="large" max={{
+                    count: 4, style: {
+                        color: '#f56a00', backgroundColor: '#fde3cf',
+                        cursor: 'pointer'
+                    }, popover: { trigger: 'click' },
+                }}>
+                    <Tooltip title="Fact Checker 1" placement="top">
+                        <Avatar style={{ backgroundColor: colorPrimary }} icon={<Image src={FactCheckers} alt="factChecker" width={50} height={50} />} />
+                    </Tooltip>
+                    <Tooltip title="Fact Checker 2" placement="top">
+                        <Avatar style={{ backgroundColor: colorPrimary }} icon={<Image src={FactCheckers} alt="factChecker" width={50} height={50} />} />
+                    </Tooltip>
+                    <Tooltip title="Fact Checker 3" placement="top">
+                        <Avatar style={{ backgroundColor: colorPrimary }} icon={<Image src={FactCheckers} alt="factChecker" width={50} height={50} />} />
+                    </Tooltip>
+                    <Tooltip title="Fact Checker 4" placement="top">
+                        <Avatar style={{ backgroundColor: colorPrimary }} icon={<Image src={FactCheckers} alt="factChecker" width={50} height={50} />} />
+                    </Tooltip>
+                </Avatar.Group>
                 List of relevant PFI based on selection
             </Flex>
         </Flex>
@@ -851,7 +1021,7 @@ export default function StartCampaignPage() {
     ];
 
     const { token } = theme.useToken();
-    const [current, setCurrent] = useState(0);
+    const [current, setCurrent] = useState(1);
 
     const next = () => {
         setCurrent(current + 1);
@@ -893,17 +1063,17 @@ export default function StartCampaignPage() {
                 <Flex className="w-1/2 justify-center">
                     <Image alt="Start Campaign" src={StartCampaign} width={300} height={300} />
                 </Flex>
-                <Flex className="w-1/2">
+                <Flex className="w-[calc(100%-8rem)]">
                     <Card className="w-full">
                         <Steps current={current} items={items} />
                     </Card>
                 </Flex>
-                <Flex className="w-1/2 h-auto min-h-[750px]">
+                <Flex className="w-[calc(100%-8rem)] h-auto min-h-[750px]">
                     <Card className="w-full">
                         {steps[current].content}
                     </Card>
                 </Flex>
-                <Flex className="w-1/2 justify-between">
+                <Flex className="w-[calc(100%-8rem)] justify-between">
                     {isNotFirstStep ? <Button onClick={() => prev()}>Back</Button> : <Button className="opacity-0 cursor-none pointer-events-none" />}
                     {hasMoreSteps && <Button type="primary" onClick={() => next()}>Next</Button>}
                     {isLastStep && <Button type="primary" onClick={() => handleDone()}>Done</Button>}

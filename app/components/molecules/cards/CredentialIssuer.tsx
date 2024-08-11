@@ -2,7 +2,7 @@ import { CopyFilled, CopyOutlined } from "@ant-design/icons";
 import { Button, Flex } from "antd";
 import { useEffect, useState } from "react";
 
-const CredentialIssuer = () => {
+const CredentialIssuerCard = () => {
     const [copied, setCopied] = useState(false)
 
     useEffect(() => {
@@ -36,4 +36,4 @@ const CredentialIssuer = () => {
     );
 };
 
-export default CredentialIssuer;
+export default CredentialIssuerCard;

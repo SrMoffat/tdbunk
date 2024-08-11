@@ -1,7 +1,7 @@
-import { DEBUNK_SOURCE, DEBUNK_CAMPAIGN_TYPE } from '@/app/constants';
+import { DebunkCard } from '@/app/components/molecules/cards';
+import { DEBUNK_CAMPAIGN_TYPE, DEBUNK_SOURCE } from '@/app/constants';
 import { Flex, List } from 'antd';
-import React from 'react'
-import DebunkCard from '@/app/components/molecules/cards/Debunk';
+import React from 'react';
 
 export interface DebunkProps {
     href: string;

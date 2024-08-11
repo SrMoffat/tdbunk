@@ -6,7 +6,7 @@ import countries from '@/public/countries.json';
 
 const country = countries.filter((entry) => entry?.countryCode === "KE")[0]
 
-const MedicalInstitutionCredential = (props: any) => {
+const MedicalInstitutionCredentialCard = (props: any) => {
     const { showDrawer } = props
     return (
         <Flex className="h-[200px]">
@@ -22,5 +22,5 @@ const MedicalInstitutionCredential = (props: any) => {
     );
 };
 
-export default MedicalInstitutionCredential;
+export default MedicalInstitutionCredentialCard;
 

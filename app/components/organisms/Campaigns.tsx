@@ -1,4 +1,5 @@
-import CampaignCard, { CampaignProps } from '@/app/components/molecules/cards/Campaign';
+import { CampaignCard } from '@/app/components/molecules/cards';
+import { CampaignProps } from '@/app/components/molecules/cards/Campaign';
 import React from 'react';
 
 export interface CampaignsContainerProps {

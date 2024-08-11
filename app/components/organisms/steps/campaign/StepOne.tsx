@@ -1,18 +1,20 @@
 "use client"
 import { Create, Import, Request } from '@/app/components/atoms/Icon';
-import EducationalInstitutionCredential from '@/app/components/molecules/cards/EducationCredential';
-import FinancialInstitutionCredential from '@/app/components/molecules/cards/FinancialCredential';
-import GovernmentInstitutionCredential from '@/app/components/molecules/cards/GovernmentCredential';
-import MedicalInstitutionCredential from '@/app/components/molecules/cards/MedicalCredential';
-import ProfessionalInstitutionCredential from '@/app/components/molecules/cards/ProfessionalCredential';
+import {
+    CredentialIssuerCard,
+    EducationCredentialCard,
+    // FinancialCredentialCard,
+    GovernmentCredentialCard,
+    MedicalCredentialCard,
+    ProfessionalCredentialCard
+} from '@/app/components/molecules/cards';
 import CredentialsForm from '@/app/components/molecules/forms/Credentials';
 import countries from '@/public/countries.json';
 import { CopyFilled, CopyOutlined } from '@ant-design/icons';
 import type { UploadProps } from 'antd';
-import { Collapse, CollapseProps, Drawer, Flex, Input, Layout, message, QRCode, Segmented, Select, Tabs, theme, Typography, Upload } from 'antd';
+import { Collapse, CollapseProps, Drawer, Flex, Input, Layout, message, QRCode, Segmented, Tabs, theme, Typography, Upload } from 'antd';
 import Image from 'next/image';
-import { useRef, useState } from 'react';
-import { DraggableData, DraggableEvent } from 'react-draggable';
+import { useState } from 'react';
 
 const { TextArea } = Input;
 const { Dragger } = Upload;
@@ -21,11 +23,7 @@ const StepOne = () => {
     // Step 1
     const [mode, setMode] = useState('Request');
     const [open, setOpen] = useState(false);
-    const [open2, setOpen2] = useState(false);
     const [copied, setCopied] = useState(false)
-    const draggleRef = useRef<HTMLDivElement>(null);
-    const [disabled, setDisabled] = useState(true);
-    const [bounds, setBounds] = useState({ left: 0, top: 0, bottom: 0, right: 0 });
 
     const options = [
         {
@@ -65,30 +63,8 @@ const StepOne = () => {
         setOpen(true);
     };
 
-    const handleOk = (e: React.MouseEvent<HTMLElement>) => {
-        setOpen(false);
-    };
-
-    const handleCancel = (e: React.MouseEvent<HTMLElement>) => {
-        setOpen(false);
-    };
-
     const showDrawer = () => {
-        setOpen2(true);
-    };
-
-    const onStart = (_event: DraggableEvent, uiData: DraggableData) => {
-        const { clientWidth, clientHeight } = window.document.documentElement;
-        const targetRect = draggleRef.current?.getBoundingClientRect();
-        if (!targetRect) {
-            return;
-        }
-        setBounds({
-            left: -targetRect.left + uiData.x,
-            right: clientWidth - (targetRect.right - uiData.x),
-            top: -targetRect.top + uiData.y,
-            bottom: clientHeight - (targetRect.bottom - uiData.y),
-        });
+        setOpen(true);
     };
 
     const RequestCredential = (props: any) => {
@@ -99,35 +75,35 @@ const StepOne = () => {
                 key: '1',
                 label: 'Financial Insitution',
                 children:
-                    <FinancialInstitutionCredential showDrawer={showDrawer} />
-                // <CredentialIssuer />
+                    // <FinancialCredentialCard showDrawer={showDrawer} />
+                <CredentialIssuerCard />
             },
             {
                 key: '2',
                 label: 'Government Institution',
                 children:
-                    <GovernmentInstitutionCredential showDrawer={showDrawer} />
+                    <GovernmentCredentialCard showDrawer={showDrawer} />
                 // <CredentialIssuer />
             },
             {
                 key: '3',
                 label: 'Professional Institution',
                 children:
-                    <ProfessionalInstitutionCredential showDrawer={showDrawer} />
+                    <ProfessionalCredentialCard showDrawer={showDrawer} />
                 // <CredentialIssuer />
             },
             {
                 key: '4',
                 label: 'Educational Institution',
                 children:
-                    <EducationalInstitutionCredential showDrawer={showDrawer} />
+                    <EducationCredentialCard showDrawer={showDrawer} />
                 // <CredentialIssuer />
             },
             {
                 key: '5',
                 label: 'Medical Institution',
                 children:
-                    <MedicalInstitutionCredential showDrawer={showDrawer} />
+                    <MedicalCredentialCard showDrawer={showDrawer} />
                 // <CredentialIssuer />
             },
         ];
@@ -211,11 +187,11 @@ const StepOne = () => {
     }
 
     const onClose = () => {
-        setOpen2(false);
+        setOpen(false);
     };
     return (
         <Layout style={{ backgroundColor: colorBgContainer }}>
-            <Drawer title="Credential Document" onClose={onClose} open={open2} width={1000}>
+            <Drawer title="Credential Document" onClose={onClose} open={open} width={1000}>
                 <Flex className="mb-3">
                     Copy Document
                     {copied && <CopyFilled style={{ color: "#CC9933" }} className="ml-1 cursor-pointer" />}

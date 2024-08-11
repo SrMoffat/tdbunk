@@ -1,10 +1,10 @@
-import DebounceSelect from '@/app/components/atoms/DebounceSelect';
+import { DebounceSelect } from '@/app/components/atoms';
+import { Jwk, LocalKeyManager } from "@web5/crypto";
 import { DidDht } from '@web5/dids';
-import { Jwk, LocalKeyManager } from "@web5/crypto"
 import type { FormProps } from 'antd';
 import { Button, Form, Input } from 'antd';
-import React, { useState } from 'react';
 import { omit } from 'lodash';
+import React, { useState } from 'react';
 
 const localKeyManager = new LocalKeyManager();
 

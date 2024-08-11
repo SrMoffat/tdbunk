@@ -1,5 +1,5 @@
+import { TabItem } from '@/app/components/atoms';
 import { Campaigns, Debunks, Sponsorships } from '@/app/components/atoms/Icon';
-import TabItem from '@/app/components/atoms/TabItem';
 import { LANDING_PAGE_TABS } from '@/app/constants';
 import { Segmented } from 'antd';
 import React from 'react';

@@ -1,4 +1,4 @@
-import Footer from '@/app/components/atoms/Footer';
+import { Footer } from '@/app/components/atoms';
 import LandingHeader from '@/app/components/molecules/headers/LandingHeader';
 import { Layout } from 'antd';
 

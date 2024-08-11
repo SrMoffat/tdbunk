@@ -1,5 +1,5 @@
 "use client"
-import DebounceSelect from '@/app/components/atoms/DebounceSelect';
+import { DebounceSelect } from '@/app/components/atoms';
 import { Card1, Card2, Card3, Card4, Card5, Community, Facebook, Instagram, Sponsor, TikTok, ValidCredential, X, Youtube } from '@/app/components/atoms/Icon';
 import { UserValue } from '@/app/components/molecules/forms/Credentials';
 import { CheckCircleFilled, CheckCircleOutlined } from '@ant-design/icons';

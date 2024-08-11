@@ -1,5 +1,5 @@
 "use client"
-import Footer from '@/app/components/atoms/Footer';
+import { Footer } from '@/app/components/atoms';
 import LandingPageCarousel from '@/app/components/molecules/carousels/LandingPage';
 import LandingHeader from '@/app/components/molecules/headers/LandingHeader';
 import LandingPageTabs from '@/app/components/molecules/tabs/LandingPageTabs';

@@ -1,5 +1,5 @@
 "use client"
-import Footer from '@/app/components/atoms/Footer';
+import { Footer } from '@/app/components/atoms';
 import { StartCampaign } from '@/app/components/atoms/Icon';
 import LandingHeader from '@/app/components/molecules/headers/LandingHeader';
 import StepFour from '@/app/components/organisms/steps/campaign/StepFour';

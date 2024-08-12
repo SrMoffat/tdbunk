@@ -11,13 +11,13 @@ interface RecordType {
 export const campaigns = [
     {
         id: '1',
-        title: "An amazing title to a Facebook fake news post.",
-        source: DEBUNK_SOURCE.FACEBOOK,
+        title: "An amazing title to a Facebook fake news post.",//
+        source: DEBUNK_SOURCE.FACEBOOK,//
         factCheckers: [],
         sponsors: [],
-        type: "Community",
-        amount: 3000,
-        currency: "USD",
+        type: "Community",//
+        amount: 3000,//
+        currency: "USD",//
         evidences: [],
         thumbnail: "",
         status: 'open',

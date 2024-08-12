@@ -1,9 +1,8 @@
 "use client"
-import React from 'react'
-import { Logo, LogoIcon } from '@/app/components/atoms/Icon';
-import { Flex, Layout, Button, Card, Typography, theme } from 'antd';
+import { Logo } from '@/app/components/atoms/Icon';
+import { Button, Flex, Layout, theme } from 'antd';
 import Image from 'next/image';
-import Link from 'next/link'
+import Link from 'next/link';
 
 const { Header } = Layout
 
@@ -30,5 +29,5 @@ export default function CredentialsFormPage() {
            
             <div className="border w-full">Footer</div>
         </Layout>
-    )
-}
+    );
+};

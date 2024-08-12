@@ -6,9 +6,9 @@ import LandingPageTabs from '@/app/components/molecules/tabs/LandingPageTabs';
 import Campaigns from '@/app/components/organisms/Campaigns';
 import Debunks from '@/app/components/organisms/Debunks';
 import Sponsorships from '@/app/components/organisms/Sponsorships';
-import { LANDING_PAGE_TABS } from '@/app/constants';
-import { campaigns, debunks, sponsorships } from '@/app/mocks';
-import { isCampaign, isDebunks, isSponsorships } from '@/app/utils';
+import { LANDING_PAGE_TABS } from '@/app/lib/constants';
+import { campaigns, debunks, sponsorships } from '@/app/lib/mocks';
+import { isCampaign, isDebunks, isSponsorships } from '@/app/lib/utils';
 import { Flex, Layout, Row } from 'antd';
 import React, { useState } from 'react';
 

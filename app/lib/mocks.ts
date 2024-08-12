@@ -1,4 +1,4 @@
-import { DEBUNK_SOURCE, DEBUNK_CAMPAIGN_TYPE } from "./constants";
+import { DEBUNK_SOURCE, DEBUNK_CAMPAIGN_TYPE } from "@/app/lib/constants";
 
 interface RecordType {
     key: string;

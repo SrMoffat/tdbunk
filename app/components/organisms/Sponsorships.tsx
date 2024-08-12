@@ -6,7 +6,7 @@ import React from 'react';
 export interface SponsorshipProps extends DebunkProps {}
 
 export interface SponsorshipsContainerProps {
-    sponsorships: SponsorshipProps[]
+    sponsorships: SponsorshipProps[];
 }
 
 const Sponsorships: React.FC<SponsorshipsContainerProps> = ({
@@ -28,7 +28,7 @@ const Sponsorships: React.FC<SponsorshipsContainerProps> = ({
                 renderItem={(item) => <SponsorshipCard sponsorship={item} />}
             />
         </Flex>
-    )
-}
+    );
+};
 
 export default Sponsorships;

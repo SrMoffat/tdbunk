@@ -1,4 +1,4 @@
-import ThemeProvider from '@/app/ThemeProvider';
+import ThemeProvider from '@/app/providers/ThemeProvider';
 import { AntdRegistry } from '@ant-design/nextjs-registry';
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";

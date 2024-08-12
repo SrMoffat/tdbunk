@@ -3,7 +3,7 @@ import { CampaignProps } from '@/app/components/molecules/cards/Campaign';
 import React from 'react';
 
 export interface CampaignsContainerProps {
-    campaigns: CampaignProps[]
+    campaigns: CampaignProps[];
 }
 
 const Campaigns: React.FC<CampaignsContainerProps> = ({

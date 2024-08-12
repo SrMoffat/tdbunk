@@ -1,5 +1,5 @@
 import { Clock, Community, Facebook, FactCheckers, Instagram, Sponsorships, TikTok, X, Youtube } from '@/app/components/atoms/Icon';
-import { DEBUNK_SOURCE } from '@/app/constants';
+import { DEBUNK_SOURCE } from '@/app/lib/constants';
 import { Button, Card, Col, Flex, Tag, Tooltip, Typography } from 'antd';
 import { formatDistanceToNow } from 'date-fns';
 import Image from 'next/image';

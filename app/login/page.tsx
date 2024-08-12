@@ -1,5 +1,4 @@
 "use client"
-
 import React from 'react'
 import { Logo, LogoIcon } from '@/app/components/atoms/Icon';
 import { Flex, Layout, Button, Card, theme } from 'antd';
@@ -37,5 +36,5 @@ export default function LoginPage() {
             </Flex>
             <div className="border w-full">Footer</div>
         </Layout>
-    )
-}
+    );
+};

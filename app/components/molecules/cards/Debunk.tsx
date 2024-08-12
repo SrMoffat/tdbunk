@@ -1,5 +1,5 @@
 import { Community, Evidence, Facebook, FactCheckers, False, Instagram, Sponsor, Sponsorships, TikTok, True, X, Youtube } from '@/app/components/atoms/Icon';
-import { DEBUNK_CAMPAIGN_TYPE, DEBUNK_SOURCE } from '@/app/constants';
+import { DEBUNK_CAMPAIGN_TYPE, DEBUNK_SOURCE } from '@/app/lib/constants';
 import { Flex, List, Tag, Typography } from 'antd';
 import Image from 'next/image';
 import React from 'react';

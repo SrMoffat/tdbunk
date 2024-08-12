@@ -1,5 +1,5 @@
 import { DebunkCard } from '@/app/components/molecules/cards';
-import { DEBUNK_CAMPAIGN_TYPE, DEBUNK_SOURCE } from '@/app/constants';
+import { DEBUNK_CAMPAIGN_TYPE, DEBUNK_SOURCE } from '@/app/lib/constants';
 import { Flex, List } from 'antd';
 import React from 'react';
 
@@ -21,7 +21,7 @@ export interface DebunkProps {
 }
 
 export interface DebunksContainerProps {
-    debunks: DebunkProps[]
+    debunks: DebunkProps[];
 }
 
 const Debunks: React.FC<DebunksContainerProps> = ({
@@ -44,8 +44,8 @@ const Debunks: React.FC<DebunksContainerProps> = ({
             />
         </Flex>
 
-    )
-}
+    );
+};
 
-export default Debunks
+export default Debunks;
 

@@ -1,6 +1,6 @@
 import { TabItem } from '@/app/components/atoms';
 import { Campaigns, Debunks, Sponsorships } from '@/app/components/atoms/Icon';
-import { LANDING_PAGE_TABS } from '@/app/constants';
+import { LANDING_PAGE_TABS } from '@/app/lib/constants';
 import { Segmented } from 'antd';
 import React from 'react';
 
@@ -33,14 +33,14 @@ const LandingPageTabs: React.FC<LandingPageTabsProps> = ({ setSelectedTab }) => 
             label: (<TabItem name={name} icon={icon} />)
         }
     ))
-  return (
-      <Segmented
-          defaultValue="Campaigns"
-          onChange={(value) => setSelectedTab(value as LANDING_PAGE_TABS)}
-          options={tabs}
-          style={{ backgroundColor: "#334155" }}
-      />
-  );
+    return (
+        <Segmented
+            defaultValue="Campaigns"
+            onChange={(value) => setSelectedTab(value as LANDING_PAGE_TABS)}
+            options={tabs}
+            style={{ backgroundColor: "#334155" }}
+        />
+    );
 };
 
 export default LandingPageTabs;

@@ -1,4 +1,5 @@
 import { DEBUNK_SOURCE, DEBUNK_CAMPAIGN_TYPE } from "@/app/lib/constants";
+import { Card1, Card2, Card3, TBDVCLogoYellow } from "../components/atoms/Icon";
 
 interface RecordType {
     key: string;
@@ -146,3 +147,54 @@ export const mockData: RecordType[] = Array.from({ length: 20 }).map((_, i) => (
 }));
 
 export const oriTargetKeys = mockData.filter((item) => Number(item.key) % 3 > 1).map((item) => item.key);
+
+export const credentials = [
+    {
+        expires: new Date(),
+        id: '1',
+        uiTemplate: Card1,
+        issuer: {
+            logo: TBDVCLogoYellow,
+            url: 'https://mock-idv.tbddev.org',
+            name: 'Ultimate Identity',
+        },
+        holder: {
+            firstName: 'James',
+            lastName: 'Does',
+            country: 'KE'
+        }
+       
+    },
+    {
+        expires: new Date(),
+        id: '1',
+        uiTemplate: Card2,
+        issuer: {
+            logo: TBDVCLogoYellow,
+            url: 'https://mock-idv.tbddev.org',
+            name: 'Ultimate Identity',
+        },
+        holder: {
+            firstName: 'John',
+            lastName: 'Doe',
+            country: 'NL'
+        }
+
+    },
+    {
+        expires: new Date(),
+        id: '1',
+        uiTemplate: Card3,
+        issuer: {
+            logo: TBDVCLogoYellow,
+            url: 'https://mock-idv.tbddev.org',
+            name: 'Ultimate Identity',
+        },
+        holder: {
+            firstName: 'Jane',
+            lastName: 'Did',
+            country: 'US'
+        }
+
+    }
+];

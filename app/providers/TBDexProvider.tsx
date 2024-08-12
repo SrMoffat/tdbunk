@@ -1,3 +1,5 @@
+"use client"
+
 import { useContext, createContext, PropsWithChildren } from "react"
 
 interface TBDexContextProps { }

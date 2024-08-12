@@ -10,7 +10,7 @@ import Image from 'next/image';
 import { useState } from 'react';
 
 const StepOne = () => {
-    const [mode, setMode] = useState('Request');
+    const [mode, setMode] = useState('Create');
     const [open, setOpen] = useState(false);
     const [copied, setCopied] = useState(false)
 
@@ -40,8 +40,8 @@ const StepOne = () => {
         value: name
     }))
 
-    const isRequest = mode === options[0]?.value
-    const isCreate = mode === options[1]?.value
+    const isCreate = mode === options[0]?.value
+    const isRequest = mode === options[1]?.value
     const isImport = mode === options[2]?.value
 
     const {
@@ -73,7 +73,7 @@ const StepOne = () => {
                     onChange={(value) => {
                         console.log("Values", value)
                         setMode(value)
-                        showModal()
+                        // showModal()
                     }}
                     options={options}
                     style={{ backgroundColor: "#334155", height: 118 }}

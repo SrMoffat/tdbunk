@@ -1,7 +1,9 @@
 'use client'
-import { PropsWithChildren, createContext, useContext } from 'react'
+import { PropsWithChildren, createContext, useContext, useEffect } from 'react'
+import { Web5 as Web5Api } from "@web5/api";
+import { type Web5 } from "@web5/api";
 
-export interface Web5ContextType {}
+export interface Web5ContextType { }
 
 const Web5Context = createContext<Partial<Web5ContextType>>({})
 
@@ -15,8 +17,19 @@ const useWeb5Context = (): Partial<Web5ContextType> => {
 
 const Web5ContextProvider = ({ children }: PropsWithChildren) => {
 
+    useEffect(() => {
+        (async () => {
+            const { web5, did } = await Web5Api.connect();
+            console.log("Web5Provider Mounted", {
+                web5,
+                did
+
+            })
+        })()
+    }, [])
+
     return <Web5Context.Provider value={{}}>
-                {children}
+        {children}
     </Web5Context.Provider>
 }
 

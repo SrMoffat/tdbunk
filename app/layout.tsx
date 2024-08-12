@@ -1,4 +1,6 @@
+import { TBDexContextProvider } from '@/app/providers/TBDexProvider';
 import ThemeProvider from '@/app/providers/ThemeProvider';
+import { Web5ContextProvider } from '@/app/providers/Web5Provider';
 import { AntdRegistry } from '@ant-design/nextjs-registry';
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
@@ -19,11 +21,15 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <AntdRegistry>
-          <ThemeProvider>
-            {children}
-          </ThemeProvider>
-        </AntdRegistry>
+        <Web5ContextProvider>
+          <TBDexContextProvider>
+            <AntdRegistry>
+              <ThemeProvider>
+                {children}
+              </ThemeProvider>
+            </AntdRegistry>
+          </TBDexContextProvider>
+        </Web5ContextProvider>
       </body>
     </html>
   );

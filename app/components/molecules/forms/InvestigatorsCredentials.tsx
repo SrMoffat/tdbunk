@@ -11,7 +11,7 @@ const InvestigatorsCredentials: React.FC<InvestigatorsCredentialsProps> = () => 
 
     const [count, setCount] = useState(selectedCredentials.length);
     const {
-        token: { colorBgContainer, colorPrimary },
+        token: { colorPrimary },
     } = theme.useToken()
 
     const handleCardClicked = (credential: string) => {

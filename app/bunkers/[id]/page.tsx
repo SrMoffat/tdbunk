@@ -1,14 +1,10 @@
 "use client"
 
-import React, { useState, useEffect } from 'react'
-import { Button, Flex, Form, Alert, Modal, Steps, Layout, Breadcrumb, Menu, theme } from 'antd';
-import { EditOutlined, EllipsisOutlined, SettingOutlined, UserOutlined, LaptopOutlined, NotificationOutlined } from '@ant-design/icons';
-import { Avatar, Card } from 'antd';
-import Draggable from 'react-draggable';
-import { Col, Row } from 'antd';
-import Image from 'next/image';
+import { LaptopOutlined, NotificationOutlined, UserOutlined } from '@ant-design/icons';
 import type { MenuProps } from 'antd';
+import { Breadcrumb, Layout, Menu, theme } from 'antd';
 import { notFound } from "next/navigation";
+import React, { useEffect, useState } from 'react';
 
 import usePartySocket from "partysocket/react";
 export function PollOptions({

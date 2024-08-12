@@ -16,12 +16,12 @@ const StepOne = () => {
 
     const options = [
         {
-            name: "Request",
-            icon: Request
-        },
-        {
             name: "Create",
             icon: Create
+        },
+        {
+            name: "Request",
+            icon: Request
         },
         {
             name: "Import",
@@ -79,8 +79,8 @@ const StepOne = () => {
                     style={{ backgroundColor: "#334155", height: 118 }}
                 />
             </Flex>
-            {isRequest && <RequestCredential showDrawer={showDrawer} />}
             {isCreate && <CreateCredential />}
+            {isRequest && <RequestCredential showDrawer={showDrawer} />}
             {isImport && <ImportCredential />}
         </Layout>
     );

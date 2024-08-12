@@ -1,3 +1,5 @@
+"use client"
+
 import type { SelectProps } from 'antd';
 import { Select, Spin } from 'antd';
 import debounce from 'lodash/debounce';

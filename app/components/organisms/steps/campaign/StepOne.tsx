@@ -1,8 +1,8 @@
 "use client"
 import { Create, Import, Request } from '@/app/components/atoms/Icon';
-import CreateCredential from '@/app/components/molecules/credentials/CreateCredential';
-import ImportCredential from '@/app/components/molecules/credentials/ImportCredential';
-import RequestCredential from '@/app/components/molecules/credentials/RequestCredential';
+import CreateCredential from '@/app/components/molecules/forms/CreateCredential';
+import ImportCredential from '@/app/components/molecules/forms/ImportCredential';
+import RequestCredential from '@/app/components/molecules/forms/RequestCredential';
 import CredentialDocumentDrawer from '@/app/components/molecules/drawers';
 import countries from '@/public/countries.json';
 import { Flex, Layout, Segmented, theme } from 'antd';

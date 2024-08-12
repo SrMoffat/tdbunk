@@ -1,91 +1,39 @@
 import { DebounceSelect } from '@/app/components/atoms';
-import { Jwk, LocalKeyManager } from "@web5/crypto";
-import { DidDht } from '@web5/dids';
+import { FieldType, generateVc } from '@/app/lib/api';
+import { parseJwtToVc } from '@/app/lib/web5';
+import { useWeb5Context } from '@/app/providers/Web5Provider';
 import type { FormProps } from 'antd';
 import { Button, Form, Input } from 'antd';
-import { omit } from 'lodash';
 import React, { useState } from 'react';
-
-const localKeyManager = new LocalKeyManager();
 
 export interface UserValue {
     label: string;
     value: string;
 }
 
-export interface FieldType {
-    email?: string;
-    country?: string;
-    password?: string;
-};
-
-export type UserDetails = FieldType & {
-    did: string
-}
-
-const generateDid = async () => {
-    const didDht = await DidDht.create({
-        keyManager: localKeyManager,
-        options: {
-            publish: true
-        }
-    });
-
-    const portableDid = await didDht.export()
-
-    const privateKey = portableDid?.privateKeys?.[0] as Jwk
-
-    const keyUri = await localKeyManager.getKeyUri({
-        key: privateKey
-    });
-
-    return {
-        keyUri,
-        didDht,
-        portableDid
-    }
-}
-
-const generateVc = async (data: UserDetails) => {
-    const response = await fetch('/api/credentials', {
-        method: 'POST',
-        body: JSON.stringify(data)
-    })
-
-    const vc = await response.json()
-
-    return vc
-}
-
 const CredentialsForm: React.FC = () => {
-    const [value, setValue] = useState<UserValue[]>([]);
     const [isLoading, setIsLoading] = useState(false)
+    const { walletDid } = useWeb5Context()
+    const [value, setValue] = useState<UserValue[]>([]);
 
     const generateCredential = async (details: any) => {
         setIsLoading(true)
         try {
-            const hasCredentials = false
-            // const hasCredentials = localStorage.getItem(`tdbunk:${details?.email}`)
+            console.log("Details", details)
+            const vc = await generateVc({
+                ...details,
+                did: walletDid
+            })
+            const parsedVc = await parseJwtToVc(vc)
 
-            if (hasCredentials) {
-                console.log("Has creds", JSON.parse(hasCredentials))
-                // Load credentials from key storage
-            } else {
-                // create new credentials
-                const { portableDid, keyUri } = await generateDid()
-                const vc = await generateVc({
-                    ...details,
-                    did: portableDid.uri
-                })
+            console.log("vc", { vc, parsedVc })
 
-                // Check if the user has any other credentials we set in the browser
-
-                localStorage.setItem(`tdbunk:${details?.email}`, JSON.stringify({
-                    portableDid: omit(portableDid, 'privateKeys'),
-                    keyUri,
-                    vc
-                }))
-            }
+            //     // Check if the user has any other credentials we set in the browser
+            //     localStorage.setItem(`tdbunk:${details?.email}`, JSON.stringify({
+            //         portableDid: omit(portableDid, 'privateKeys'),
+            //         keyUri,
+            //         vc
+            //     }))
         } catch (error: any) {
             console.log("Request errored here", error)
         } finally {

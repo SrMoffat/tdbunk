@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 import { createEdgeRouter } from "next-connect";
 import cors from "cors";
 
-const VC_ISSUER_UL = 'https://mock-idv.tbddev.org/kcc'
+const VC_ISSUER_URL = 'https://mock-idv.tbddev.org/kcc'
 
 interface RequestContext {
     params: {
@@ -25,12 +25,12 @@ handlePost
         const { email: name, country, did } = await req.json()
         
         const queryParams = `?name=${name}&country=${country.value}&did=${did}`
-        const url = `${VC_ISSUER_UL}${queryParams}`
+        const url = `${VC_ISSUER_URL}${queryParams}`
 
         const response = await fetch(url);
         const vc = await response.text();
 
-        return NextResponse.json({ vc });
+        return NextResponse.json(vc);
     })
 
 export async function POST(request: NextRequest, ctx: RequestContext) {

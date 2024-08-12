@@ -1,6 +1,10 @@
-import { Web5 as Web5Api } from "@web5/api";
-
 import { CampaignProtocol } from "@/app/web5Protocols/campaign.protocol";
+import { Web5 as Web5Api } from "@web5/api";
+import { VerifiableCredential } from "@web5/credentials";
+import { Jwk, LocalKeyManager } from "@web5/crypto";
+import { DidDht } from '@web5/dids';
+
+const localKeyManager = new LocalKeyManager();
 
 export const setupCampaignProtocol = async (web5: Web5Api | null, did: string) => {
     try {
@@ -51,6 +55,32 @@ export const fetchCampaigns = async (web5: Web5Api | null, did: string): Promise
     }
 }
 
-export const setupDebunkProtocol = () => { }
+export const generateDid = async () => {
+    const didDht = await DidDht.create({
+        keyManager: localKeyManager,
+        options: {
+            publish: true
+        }
+    });
 
-export const setupSponsorshipProtocol = () => { }
+    const portableDid = await didDht.export()
+    const privateKeys: Jwk[] = portableDid?.privateKeys ?? []
+    const privateKeysUris = []
+
+    for (let pk of privateKeys) {
+        const keyUri = await localKeyManager.getKeyUri({
+            key: pk
+        });
+        privateKeysUris.push(keyUri)
+    }
+
+    return {
+        didDht,
+        portableDid,
+        privateKeysUris,
+    }
+}
+
+export const parseJwtToVc = async (signedVcJwt: any) => {
+    return VerifiableCredential.parseJwt({ vcJwt: signedVcJwt })
+}

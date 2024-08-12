@@ -7,9 +7,13 @@ import { DebunkProps } from '../components/organisms/Debunks';
 export interface Web5ContextType {
     web5: Web5 | null;
     userDid: string | null;
+    walletDid: string | null;
     campaigns: DebunkProps[];
+    recoveryPhrase: string | null;
     setUserDid: (did: string) => void;
+    setWalletDid: (did: string) => void;
     setCampaigns: React.Dispatch<React.SetStateAction<DebunkProps[]>>;
+    setRecoveryPhrase: React.Dispatch<React.SetStateAction<string | null>>;
 }
 
 const Web5Context = createContext<Partial<Web5ContextType>>({})
@@ -24,11 +28,14 @@ const useWeb5Context = (): Partial<Web5ContextType> => {
 
 const Web5ContextProvider = ({ children }: PropsWithChildren) => {
     const [userDid, setUserDid] = useState<string | null>(null);
+    const [walletDid, setWalletDid] = useState<string | null>(null);
     const [campaigns, setCampaigns] = useState<DebunkProps[]>([]);
     const [web5Instance, setWeb5Instance] = useState<Web5 | null>(null);
+    const [recoveryPhrase, setRecoveryPhrase] = useState<string | null>(null);
 
     useEffect(() => {
         (async () => {
+            let recovery
             let diduri = ''
             let web5Client = null
 
@@ -39,32 +46,35 @@ const Web5ContextProvider = ({ children }: PropsWithChildren) => {
                 console.log("Handle Did exists")
             } else {
                 // If not, create one and set it in storage
-                const { web5, did } = await Web5Api.connect({
+                const { web5, did: walletDid, recoveryPhrase } = await Web5Api.connect({
                     password: process.env.WEB5_PASSWORD // ?? '5PC{*?e|ix48'
                 });
-
-                diduri = did
+                diduri = walletDid
                 web5Client = web5
+                recovery = recoveryPhrase
             }
 
-            setUserDid(diduri)
-
+            setWalletDid(diduri)
             setWeb5Instance(web5Client)
+            setRecoveryPhrase(recoveryPhrase)
 
             await setupCampaignProtocol(web5Client, diduri)
 
             const campaigns = await fetchCampaigns(web5Client, diduri)
-
             setCampaigns(campaigns)
         })()
     }, [])
 
     return <Web5Context.Provider value={{
         userDid,
+        walletDid,
         campaigns,
+        recoveryPhrase,
         web5: web5Instance,
         setUserDid,
-        setCampaigns
+        setWalletDid,
+        setCampaigns,
+        setRecoveryPhrase
     }}>
         {children}
     </Web5Context.Provider>

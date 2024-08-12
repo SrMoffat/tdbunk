@@ -2,8 +2,8 @@ import { Facebook, Instagram, TikTok, X, Youtube } from '@/app/components/atoms/
 import { Flex, Form, Input, Typography } from "antd";
 import Image from "next/image";
 import { useState } from "react";
-import { DebounceSelect } from "../../atoms";
-import { UserValue } from "./Credentials";
+import { DebounceSelect } from "@/app/components/atoms";
+import { UserValue } from "@/app/components/molecules/forms/Credentials";
 
 interface DebunkSubjectProps { }
 interface FieldType {

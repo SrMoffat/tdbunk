@@ -1,5 +1,4 @@
 "use client"
-
 import { LaptopOutlined, NotificationOutlined, UserOutlined } from '@ant-design/icons';
 import type { MenuProps } from 'antd';
 import { Breadcrumb, Layout, Menu, theme } from 'antd';
@@ -13,8 +12,8 @@ export function PollOptions({
     vote,
     setVote,
 }: {
-    options: string[];
     votes: number[];
+    options: string[];
     vote: number | null;
     setVote: (option: number) => void;
 }) {

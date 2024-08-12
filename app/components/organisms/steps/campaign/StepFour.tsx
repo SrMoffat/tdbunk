@@ -4,7 +4,7 @@ import { DidUrlWithCopy } from "@/app/components/atoms/UrlWithCopy";
 import { FactCheckersAvatars } from "@/app/components/molecules/avatars/FactCheckersGroup";
 import { WalletBalance } from "@/app/components/molecules/cards/WalletBalance";
 import { Flex, Layout, theme } from "antd";
-import { Credentials } from "../../Credentials";
+import { Credentials } from "@/app/components/organisms/Credentials";
 
 const StepFour = () => {
     const {

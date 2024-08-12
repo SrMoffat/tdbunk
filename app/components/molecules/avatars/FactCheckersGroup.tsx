@@ -1,5 +1,5 @@
 import { theme, Avatar, Tooltip } from "antd"
-import { FactCheckers } from "../../atoms/Icon"
+import { FactCheckers } from "@/app/components/atoms/Icon"
 import Image from "next/image"
 
 export const FactCheckersAvatars = () => {

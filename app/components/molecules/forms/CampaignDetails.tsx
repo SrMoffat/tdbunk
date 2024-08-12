@@ -1,6 +1,6 @@
 import { Flex, Segmented, Form, InputNumber, Input, Select } from "antd";
 import { useState } from "react";
-import { Community, Sponsor } from "../../atoms/Icon";
+import { Community, Sponsor } from "@/app/components/atoms/Icon";
 import Image from "next/image"
 
 const { Option } = Select

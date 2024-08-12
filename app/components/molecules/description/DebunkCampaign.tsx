@@ -1,5 +1,5 @@
 import { Evidence, FactCheckers, Sponsorships, ValidCredential } from "@/app/components/atoms/Icon";
-import { Badge, Descriptions, DescriptionsProps, Divider, Flex, Layout, theme, Typography } from "antd";
+import { Badge, Descriptions, DescriptionsProps, Divider, Flex, Typography } from "antd";
 import Image from "next/image";
 
 const DebunkingCampaign = () => {

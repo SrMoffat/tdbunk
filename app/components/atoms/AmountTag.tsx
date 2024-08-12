@@ -1,5 +1,5 @@
 import { Flex, Tag } from "antd"
-import { Sponsorships } from "./Icon"
+import { Sponsorships } from "@/app/components/atoms/Icon"
 import Image from "next/image"
 
 export const CampaignAmount = () => {

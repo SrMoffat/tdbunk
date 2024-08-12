@@ -7,7 +7,7 @@ import StepThree from '@/app/components/organisms/steps/campaign/StepThree';
 import StepTwo from '@/app/components/organisms/steps/campaign/StepTwo';
 import { Flex, Layout } from 'antd';
 import { useEffect, useState } from 'react';
-import { StepContent, StepNavigation, StepTracker, Title } from './components';
+import { StepContent, StepNavigation, StepTracker, Title } from '@/app/start/campaign/components';
 
 export default function StartCampaignPage() {
     const [current, setCurrent] = useState(0);

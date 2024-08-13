@@ -1,10 +1,12 @@
 import { DebounceSelect } from '@/app/components/atoms';
 import useBrowserStorage from '@/app/hooks/useLocalStorage';
 import { FieldType, generateVc } from '@/app/lib/api';
+import { parseJwtToVc } from '@/app/lib/web5';
 import { useWeb5Context } from '@/app/providers/Web5Provider';
 import type { FormProps } from 'antd';
 import { Button, Form, Input } from 'antd';
 import React, { useState } from 'react';
+
 
 export interface UserValue {
     label: string;
@@ -23,6 +25,91 @@ const CredentialsForm: React.FC = () => {
         'local'
     )
 
+    const createOrUpdateCredentials = (data: any, vc: string) => {
+        const vcDetails = parseJwtToVc(vc)
+
+        const vcType = vcDetails?.type
+        const vcGranularTypes = vcDetails?.vcDataModel?.type
+
+        const storedVc = {
+            [vcType]: [vc]
+        }
+
+        if (data) {
+            console.log("Case 1: User has Data", data)
+            const details = data as any
+            const existingCreds = details?.credentials
+
+            const existingMatchesNew = Object.hasOwn(existingCreds, vcType)
+
+            if (existingMatchesNew){
+                console.log("Case 2: User Has Similar Type Credential", {
+                    existingCreds,
+                    vcType
+                })
+            } else {
+                console.log("Case 3: Credential is New", {
+                    existingCreds,
+                    vcType
+                })
+            }
+            // vCs = details?.vCs?.length ? [...new Set([...details?.vCs, vc])] : vCs
+        } else {
+            console.log("Case 4: New Data", { storedVc, vcDetails: vcDetails?.vcDataModel?.type })
+
+        }
+
+ 
+
+        // let vCs = [storedVc]
+
+        /**
+         * {
+         *    credentials: {
+         *        EducationCred: ['eeeee', 'efdeded',],
+         *        GovernmentCred: ['eeeee', 'efdeded',],
+         *     }
+         * }
+         */
+
+
+
+        // setLocalUser({
+        //     vCs,
+        //     did: walletDid
+        // })
+
+
+        // if (data) {
+        //     console.log("check data 1", data)
+        //     // Check it
+        //     const details = data as any
+        //     const hasVCs = details?.vCs?.length
+
+        //     if (hasVCs) {
+        //         // Append
+        //         console.log("check data 2", hasVCs)
+        //         setLocalUser({
+        //             vCs: [...new Set([...details?.vCs, vc])],
+        //             did: walletDid
+        //         })
+        //     } else {
+        //         // Add this one
+        //         console.log("check data 3", hasVCs)
+        //         setLocalUser({
+        //             vCs: [vc],
+        //             did: walletDid
+        //         })
+        //     }
+        // } else {
+        //     console.log("check data 4", data)
+        //     setLocalUser({
+        //         vCs: [vc],
+        //         did: walletDid
+        //     })
+        // }
+    }
+
     const generateCredential = async (details: any) => {
         setIsLoading(true)
         try {
@@ -31,32 +118,7 @@ const CredentialsForm: React.FC = () => {
                 did: walletDid
             })
 
-            if (data) {
-                console.log("check data 1", data)
-                // Check it
-                const details = data as any
-                const hasVCs = details?.vCs?.length
-
-                if (hasVCs) {
-                    // Append
-                    console.log("check data 2", hasVCs)
-                    setLocalUser({
-                        vCs: [...details?.vCs, vc],
-                    })
-                } else {
-                    // Add this one
-                    console.log("check data 3", hasVCs)
-                    setLocalUser({
-                        vCs: [vc],
-                    })
-                }
-            } else {
-                console.log("check data 4", data)
-                setLocalUser({
-                    vCs: [vc],
-                    did: walletDid
-                })
-            }
+            createOrUpdateCredentials(data, vc)
             console.log("vc", { vc, did: walletDid, data })
         } catch (error: any) {
             console.log("Request errored here", error)

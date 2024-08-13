@@ -1,6 +1,7 @@
 import { CampaignProtocol } from "@/app/web5Protocols/campaign.protocol";
 import { Web5 as Web5Api } from "@web5/api";
 import { VerifiableCredential } from "@web5/credentials";
+import { type VerifiableCredential as VC } from "@web5/credentials";
 import { Jwk, LocalKeyManager } from "@web5/crypto";
 import { DidDht } from '@web5/dids';
 
@@ -81,6 +82,6 @@ export const generateDid = async () => {
     }
 }
 
-export const parseJwtToVc = async (signedVcJwt: any) => {
+export const parseJwtToVc = (signedVcJwt: any): VC => {
     return VerifiableCredential.parseJwt({ vcJwt: signedVcJwt })
 }

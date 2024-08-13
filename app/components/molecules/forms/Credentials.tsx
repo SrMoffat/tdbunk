@@ -1,6 +1,6 @@
 import { DebounceSelect } from '@/app/components/atoms';
+import useBrowserStorage from '@/app/hooks/useLocalStorage';
 import { FieldType, generateVc } from '@/app/lib/api';
-import { parseJwtToVc } from '@/app/lib/web5';
 import { useWeb5Context } from '@/app/providers/Web5Provider';
 import type { FormProps } from 'antd';
 import { Button, Form, Input } from 'antd';
@@ -11,29 +11,53 @@ export interface UserValue {
     value: string;
 }
 
+export type UserStorage = {} | null
+
+
 const CredentialsForm: React.FC = () => {
-    const [isLoading, setIsLoading] = useState(false)
     const { walletDid } = useWeb5Context()
+    const [isLoading, setIsLoading] = useState(false)
     const [value, setValue] = useState<UserValue[]>([]);
+    const [data, setLocalUser,] = useBrowserStorage<UserStorage>(
+        'TDBunk',
+        'local'
+    )
 
     const generateCredential = async (details: any) => {
         setIsLoading(true)
         try {
-            console.log("Details", details)
             const vc = await generateVc({
                 ...details,
                 did: walletDid
             })
-            const parsedVc = await parseJwtToVc(vc)
 
-            console.log("vc", { vc, parsedVc })
+            if (data) {
+                console.log("check data 1", data)
+                // Check it
+                const details = data as any
+                const hasVCs = details?.vCs?.length
 
-            //     // Check if the user has any other credentials we set in the browser
-            //     localStorage.setItem(`tdbunk:${details?.email}`, JSON.stringify({
-            //         portableDid: omit(portableDid, 'privateKeys'),
-            //         keyUri,
-            //         vc
-            //     }))
+                if (hasVCs) {
+                    // Append
+                    console.log("check data 2", hasVCs)
+                    setLocalUser({
+                        vCs: [...details?.vCs, vc],
+                    })
+                } else {
+                    // Add this one
+                    console.log("check data 3", hasVCs)
+                    setLocalUser({
+                        vCs: [vc],
+                    })
+                }
+            } else {
+                console.log("check data 4", data)
+                setLocalUser({
+                    vCs: [vc],
+                    did: walletDid
+                })
+            }
+            console.log("vc", { vc, did: walletDid, data })
         } catch (error: any) {
             console.log("Request errored here", error)
         } finally {
@@ -65,11 +89,11 @@ const CredentialsForm: React.FC = () => {
         <Form
             name="basic"
             layout="vertical"
-            initialValues={{ remember: true }}
-            onFinish={onFinish}
-            onFinishFailed={onFinishFailed}
-            autoComplete="off"
             className='w-full'
+            autoComplete="off"
+            onFinish={onFinish}
+            initialValues={{ remember: true }}
+            onFinishFailed={onFinishFailed}
         >
             <Form.Item<FieldType>
                 label="Email"

@@ -24,29 +24,29 @@ const RequestCredential = (props: any) => {
             key: '2',
             label: 'Government Institution',
             children:
-                <GovernmentCredentialCard showDrawer={showDrawer} />
-            // <CredentialIssuer />
+                // <GovernmentCredentialCard showDrawer={showDrawer} />
+                <CredentialIssuerCard />
         },
         {
             key: '3',
             label: 'Professional Institution',
             children:
-                <ProfessionalCredentialCard showDrawer={showDrawer} />
-            // <CredentialIssuer />
+                // <ProfessionalCredentialCard showDrawer={showDrawer} />
+                <CredentialIssuerCard />
         },
         {
             key: '4',
             label: 'Educational Institution',
             children:
-                <EducationCredentialCard showDrawer={showDrawer} />
-            // <CredentialIssuer />
+                // <EducationCredentialCard showDrawer={showDrawer} />
+                <CredentialIssuerCard />
         },
         {
             key: '5',
             label: 'Medical Institution',
             children:
-                <MedicalCredentialCard showDrawer={showDrawer} />
-            // <CredentialIssuer />
+                // <MedicalCredentialCard showDrawer={showDrawer} />
+                <CredentialIssuerCard />
         },
     ];
 

@@ -1,5 +1,7 @@
 "use client"
 import { StartCampaign } from '@/app/components/atoms/Icon';
+import { UserStorage } from '@/app/components/molecules/forms/Credentials';
+import useBrowserStorage from '@/app/hooks/useLocalStorage';
 import { Button, Card, Flex, message, Steps } from 'antd';
 import Image from 'next/image';
 
@@ -62,6 +64,11 @@ export const StepNavigation: React.FC<StepNavigationProps> = ({
     const hasMoreSteps = current < steps.length - 1
     const isLastStep = current === steps.length - 1
 
+    const [localStorageData, setLocalUser,] = useBrowserStorage<UserStorage>(
+        'TDBunk',
+        'local'
+    )
+
     const handleDone = () => {
         // next()
         message.success('Processing complete!')
@@ -74,11 +81,14 @@ export const StepNavigation: React.FC<StepNavigationProps> = ({
     const prev = () => {
         setCurrent(current - 1);
     };
+
+    // @ts-ignore
+    const existingCreds = localStorageData?.credentials
     return (
         <Flex className="w-[calc(100%-8rem)] justify-between">
             {isNotFirstStep ? <Button onClick={() => prev()}>Back</Button> : <Button className="opacity-0 cursor-none pointer-events-none" />}
-            {hasMoreSteps && <Button type="primary" onClick={() => next()}>Next</Button>}
-            {isLastStep && <Button type="primary" onClick={() => handleDone()}>Done</Button>}
+            {hasMoreSteps && <Button disabled={!existingCreds} type="primary" onClick={() => next()}>Next</Button>}
+            {isLastStep && <Button disabled type="primary" onClick={() => handleDone()}>Done</Button>}
         </Flex>
     )
 }

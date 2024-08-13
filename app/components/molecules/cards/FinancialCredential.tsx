@@ -75,8 +75,7 @@ export interface DrawerHeaderProps {
 const DrawerHeader: React.FC<DrawerHeaderProps> = ({
     type
 }) => {
-    const { token: { colorPrimary } } = theme.useToken()
-    return (<Flex>
+    return (<Flex className="justify-end">
         {type?.map(entry => (<Tag color="gold">{entry}</Tag>))}
     </Flex>)
 }
@@ -187,9 +186,8 @@ const FinancialInstitutionCredential = (props: any) => {
                     <Flex className="mb-3 justify-between">
                         <Flex className="flex-col">
                             <Typography.Text style={{ fontSize: 18 }}>Credential Document:</Typography.Text>
-                            <Typography.Text style={{ fontSize: 14 }}>DID document content</Typography.Text>
                         </Flex>
-                        <Image src={Evidence} width={50} height={50} alt="valid" />
+                        <Image src={Evidence} width={40} height={40} alt="valid" />
                     </Flex>
                     <Flex className="flex-col mb-3">
                         <pre>{JSON.stringify(credentialDidDocument, null, 2)}</pre>

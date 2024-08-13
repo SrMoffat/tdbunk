@@ -4,10 +4,9 @@ import { FieldType, generateVc } from '@/app/lib/api';
 import { parseJwtToVc } from '@/app/lib/web5';
 import { useWeb5Context } from '@/app/providers/Web5Provider';
 import type { FormProps } from 'antd';
-import { Button, Flex, Form, Input } from 'antd';
+import { Button, Flex, Form, Input, Typography } from 'antd';
 import React, { useState } from 'react';
 import FinancialInstitutionCredential from '@/app/components/molecules/cards/FinancialCredential';
-
 
 export interface UserValue {
     label: string;
@@ -99,8 +98,15 @@ const CredentialsForm: React.FC = () => {
 
     return (
         <Flex>
+            {!existingCreds && <Typography.Text className="font-bold mb-4">Create Credential</Typography.Text>}
             {existingCreds
-                ? <FinancialInstitutionCredential existingCreds={existingCreds} />
+                ? (
+                    <Flex className="w-full justify-center">
+                        <Flex className="w-1/6">
+                            <FinancialInstitutionCredential existingCreds={existingCreds} />
+                        </Flex>
+                    </Flex>
+                )
                 : (
                     <Form
                         name="basic"

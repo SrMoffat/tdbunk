@@ -8,11 +8,21 @@ import countries from '@/public/countries.json';
 import { Flex, Layout, Segmented, theme } from 'antd';
 import Image from 'next/image';
 import { useState } from 'react';
+import { UserStorage } from '@/app/components/molecules/forms/Credentials';
+import useBrowserStorage from '@/app/hooks/useLocalStorage';
 
 const StepOne = () => {
     const [mode, setMode] = useState('Create');
     const [open, setOpen] = useState(false);
     const [copied, setCopied] = useState(false)
+
+    const [localStorageData] = useBrowserStorage<UserStorage>(
+        'TDBunk',
+        'local'
+    )
+
+    // @ts-ignore
+    const existingCreds = localStorageData?.credentials
 
     const options = [
         {
@@ -76,6 +86,7 @@ const StepOne = () => {
                         // showModal()
                     }}
                     options={options}
+                    disabled={existingCreds}
                     style={{ backgroundColor: "#334155", height: 118 }}
                 />
             </Flex>

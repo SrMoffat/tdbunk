@@ -2,7 +2,8 @@
 import { fetchCampaigns, setupCampaignProtocol } from '@/app/lib/web5';
 import { Web5 as Web5Api, type Web5 } from "@web5/api";
 import { PropsWithChildren, createContext, useContext, useEffect, useState } from 'react';
-import { DebunkProps } from '../components/organisms/Debunks';
+import { DebunkProps } from '@/app/components/organisms/Debunks';
+import { DidDht, DidResolutionResult } from '@web5/dids';
 
 export interface Web5ContextType {
     web5: Web5 | null;
@@ -14,6 +15,7 @@ export interface Web5ContextType {
     setWalletDid: (did: string) => void;
     setCampaigns: React.Dispatch<React.SetStateAction<DebunkProps[]>>;
     setRecoveryPhrase: React.Dispatch<React.SetStateAction<string | null>>;
+    resolveDid: (didUri: string) => Promise<DidResolutionResult | undefined>;
 }
 
 const Web5Context = createContext<Partial<Web5ContextType>>({})
@@ -32,6 +34,16 @@ const Web5ContextProvider = ({ children }: PropsWithChildren) => {
     const [campaigns, setCampaigns] = useState<DebunkProps[]>([]);
     const [web5Instance, setWeb5Instance] = useState<Web5 | null>(null);
     const [recoveryPhrase, setRecoveryPhrase] = useState<string | null>(null);
+
+    const resolveDid = async (didUri: string): Promise<DidResolutionResult | undefined> => {
+        try {
+            const resolvedDhtDid = await DidDht.resolve(didUri);
+            // console.log("Resolved DID", resolvedDhtDid)
+            return resolvedDhtDid
+        } catch (error: any) {
+            console.log("Resolution error", error)
+        }
+    }
 
     useEffect(() => {
         (async () => {
@@ -72,6 +84,7 @@ const Web5ContextProvider = ({ children }: PropsWithChildren) => {
         recoveryPhrase,
         web5: web5Instance,
         setUserDid,
+        resolveDid,
         setWalletDid,
         setCampaigns,
         setRecoveryPhrase

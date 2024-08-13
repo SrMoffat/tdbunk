@@ -4,8 +4,9 @@ import { FieldType, generateVc } from '@/app/lib/api';
 import { parseJwtToVc } from '@/app/lib/web5';
 import { useWeb5Context } from '@/app/providers/Web5Provider';
 import type { FormProps } from 'antd';
-import { Button, Form, Input } from 'antd';
+import { Button, Flex, Form, Input } from 'antd';
 import React, { useState } from 'react';
+import FinancialInstitutionCredential from '@/app/components/molecules/cards/FinancialCredential';
 
 
 export interface UserValue {
@@ -20,106 +21,52 @@ const CredentialsForm: React.FC = () => {
     const { walletDid } = useWeb5Context()
     const [isLoading, setIsLoading] = useState(false)
     const [value, setValue] = useState<UserValue[]>([]);
-    const [data, setLocalUser,] = useBrowserStorage<UserStorage>(
+    const [showExistingCredentialModal, setShowExistingCredentialModal] = useState(false)
+    const [localStorageData, setLocalUser,] = useBrowserStorage<UserStorage>(
         'TDBunk',
         'local'
     )
 
-    const createOrUpdateCredentials = (data: any, vc: string) => {
-        const vcDetails = parseJwtToVc(vc)
-
-        const vcType = vcDetails?.type
-        const vcGranularTypes = vcDetails?.vcDataModel?.type
-
-        const storedVc = {
-            [vcType]: [vc]
-        }
-
-        if (data) {
-            console.log("Case 1: User has Data", data)
-            const details = data as any
-            const existingCreds = details?.credentials
-
-            const existingMatchesNew = Object.hasOwn(existingCreds, vcType)
-
-            if (existingMatchesNew){
-                console.log("Case 2: User Has Similar Type Credential", {
-                    existingCreds,
-                    vcType
-                })
-            } else {
-                console.log("Case 3: Credential is New", {
-                    existingCreds,
-                    vcType
-                })
-            }
-            // vCs = details?.vCs?.length ? [...new Set([...details?.vCs, vc])] : vCs
-        } else {
-            console.log("Case 4: New Data", { storedVc, vcDetails: vcDetails?.vcDataModel?.type })
-
-        }
-
- 
-
-        // let vCs = [storedVc]
-
-        /**
-         * {
-         *    credentials: {
-         *        EducationCred: ['eeeee', 'efdeded',],
-         *        GovernmentCred: ['eeeee', 'efdeded',],
-         *     }
-         * }
-         */
-
-
-
-        // setLocalUser({
-        //     vCs,
-        //     did: walletDid
-        // })
-
-
-        // if (data) {
-        //     console.log("check data 1", data)
-        //     // Check it
-        //     const details = data as any
-        //     const hasVCs = details?.vCs?.length
-
-        //     if (hasVCs) {
-        //         // Append
-        //         console.log("check data 2", hasVCs)
-        //         setLocalUser({
-        //             vCs: [...new Set([...details?.vCs, vc])],
-        //             did: walletDid
-        //         })
-        //     } else {
-        //         // Add this one
-        //         console.log("check data 3", hasVCs)
-        //         setLocalUser({
-        //             vCs: [vc],
-        //             did: walletDid
-        //         })
-        //     }
-        // } else {
-        //     console.log("check data 4", data)
-        //     setLocalUser({
-        //         vCs: [vc],
-        //         did: walletDid
-        //     })
-        // }
-    }
-
-    const generateCredential = async (details: any) => {
+    const createOrUpdateCredentials = async (details: any) => {
         setIsLoading(true)
-        try {
+
+        if (localStorageData) {
+            // @ts-ignore
+            const existingCreds = localStorageData?.credentials
+            console.log("Existing credentials", existingCreds)
+
+        } else {
             const vc = await generateVc({
                 ...details,
                 did: walletDid
             })
 
-            createOrUpdateCredentials(data, vc)
-            console.log("vc", { vc, did: walletDid, data })
+            const parsedVc = parseJwtToVc(vc)
+
+            const vcGranularTypes = parsedVc?.vcDataModel?.type
+            const vcConcatenateTypes = vcGranularTypes.join(":")
+
+            const storedVc = {
+                [vcConcatenateTypes]: [vc]
+            }
+
+            console.log("Data does not existss created VC", {
+                vc, parsedVc, vcConcatenateTypes, storedVc
+            })
+            setLocalUser({
+                credentials: storedVc,
+                did: walletDid
+            })
+
+            setShowExistingCredentialModal(true)
+        }
+    }
+
+    const generateCredential = async (details: any) => {
+        setIsLoading(true)
+
+        try {
+            await createOrUpdateCredentials(details)
         } catch (error: any) {
             console.log("Request errored here", error)
         } finally {
@@ -147,44 +94,54 @@ const CredentialsForm: React.FC = () => {
         }))
     }
 
+    // @ts-ignore
+    const existingCreds = localStorageData?.credentials
+
     return (
-        <Form
-            name="basic"
-            layout="vertical"
-            className='w-full'
-            autoComplete="off"
-            onFinish={onFinish}
-            initialValues={{ remember: true }}
-            onFinishFailed={onFinishFailed}
-        >
-            <Form.Item<FieldType>
-                label="Email"
-                name="email"
-                rules={[{ required: true, message: 'Please input your email!' }]}
-            >
-                <Input size='large' placeholder='Enter your email' allowClear />
-            </Form.Item>
-            <Form.Item<FieldType>
-                label="Country"
-                name="country"
-                rules={[{ required: true, message: 'Please input your country!' }]}
-            >
-                <DebounceSelect
-                    value={value}
-                    placeholder="Select your country"
-                    fetchOptions={fetchUserList}
-                    onChange={(newValue) => {
-                        setValue(newValue as UserValue[]);
-                    }}
-                    style={{ width: '100%' }}
-                />
-            </Form.Item>
-            <Form.Item>
-                <Button type="primary" htmlType="submit" loading={isLoading}>
-                    Create
-                </Button>
-            </Form.Item>
-        </Form>
+        <Flex>
+            {existingCreds
+                ? <FinancialInstitutionCredential existingCreds={existingCreds} />
+                : (
+                    <Form
+                        name="basic"
+                        layout="vertical"
+                        className='w-full'
+                        autoComplete="off"
+                        onFinish={onFinish}
+                        initialValues={{ remember: true }}
+                        onFinishFailed={onFinishFailed}
+                    >
+                        <Form.Item<FieldType>
+                            label="Email"
+                            name="email"
+                            rules={[{ required: true, message: 'Please input your email!' }]}
+                        >
+                            <Input size='large' placeholder='Enter your email' allowClear />
+                        </Form.Item>
+                        <Form.Item<FieldType>
+                            label="Country"
+                            name="country"
+                            rules={[{ required: true, message: 'Please input your country!' }]}
+                        >
+                            <DebounceSelect
+                                value={value}
+                                placeholder="Select your country"
+                                fetchOptions={fetchUserList}
+                                onChange={(newValue) => {
+                                    setValue(newValue as UserValue[]);
+                                }}
+                                style={{ width: '100%' }}
+                            />
+                        </Form.Item>
+                        <Form.Item>
+                            <Button type="primary" htmlType="submit" loading={isLoading}>
+                                Create
+                            </Button>
+                        </Form.Item>
+                    </Form>
+                )
+            }
+        </Flex>
     )
 };
 

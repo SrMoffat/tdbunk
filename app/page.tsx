@@ -23,8 +23,8 @@ const LandingPageContent: React.FC<any> = () => {
         {isSponsorships(selectedTab) && <Sponsorships sponsorships={sponsorships} />}
       </Row>
     </Flex>
-  )
-}
+  );
+};
 
 export default function Home() {
   return (
@@ -35,4 +35,4 @@ export default function Home() {
       <Footer />
     </Layout>
   );
-}
+};

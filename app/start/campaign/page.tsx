@@ -11,7 +11,7 @@ import { StepContent, StepNavigation, StepTracker, Title } from '@/app/start/cam
 
 export default function StartCampaignPage() {
     const [current, setCurrent] = useState(0);
-    const [copied, setCopied] = useState(false)
+    const [copied, setCopied] = useState(false);
 
     const steps = [
         {
@@ -59,5 +59,5 @@ export default function StartCampaignPage() {
             <Footer />
         </Layout>
     );
-}
+};
 

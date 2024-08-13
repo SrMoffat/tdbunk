@@ -1,20 +1,17 @@
 "use client"
+import { useContext, createContext, PropsWithChildren } from "react";
 
-import { useContext, createContext, PropsWithChildren } from "react"
+interface TBDexContextProps { };
 
-interface TBDexContextProps { }
-
-const TBDexContext = createContext<Partial<TBDexContextProps>>({})
+const TBDexContext = createContext<Partial<TBDexContextProps>>({});
 
 const useTBDexContext = (): Partial<TBDexContextProps> => {
-    const context = useContext(TBDexContext)
-
+    const context = useContext(TBDexContext);
     if (!context) {
-        throw new Error('useTBDexContext must be used within a TBDexContextProvider')
+        throw new Error('useTBDexContext must be used within a TBDexContextProvider');
     }
-    return context
-
-}
+    return context;
+};
 
 const TBDexContextProvider = ({ children }: PropsWithChildren) => {
     return <TBDexContext.Provider value={{}}>
@@ -23,5 +20,3 @@ const TBDexContextProvider = ({ children }: PropsWithChildren) => {
 }
 
 export { TBDexContextProvider, useTBDexContext, TBDexContext };
-
-

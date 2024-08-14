@@ -5,21 +5,21 @@ const DebunkingSubject = () => {
     const items: DescriptionsProps['items'] = [
         {
             key: '1',
-            label: 'Article Title',
-            children: 'Article Title',
+            label: 'Debunk Title',
+            children: 'Debunk Title',
             span: 3,
         },
         {
             key: '2',
-            label: 'Article Source',
-            children: 'Article Source',
+            label: 'Debunk Source',
+            children: 'Debunk Source',
             span: 3,
 
         },
         {
             key: '3',
-            label: 'Article Link',
-            children: 'Article Link',
+            label: 'Debunk Link',
+            children: 'Debunk Link',
             span: 3,
 
         },

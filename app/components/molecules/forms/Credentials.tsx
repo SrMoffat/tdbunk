@@ -7,6 +7,7 @@ import type { FormProps } from 'antd';
 import { Button, Flex, Form, Input, Typography } from 'antd';
 import React, { useState } from 'react';
 import FinancialInstitutionCredential from '@/app/components/molecules/cards/FinancialCredential';
+import { useTBDexContext } from '@/app/providers/TBDexProvider';
 
 export interface UserValue {
     label: string;
@@ -15,9 +16,9 @@ export interface UserValue {
 
 export type UserStorage = {} | null
 
-
 const CredentialsForm: React.FC = () => {
     const { walletDid } = useWeb5Context()
+    const { setCredentials } = useTBDexContext()
     const [isLoading, setIsLoading] = useState(false)
     const [value, setValue] = useState<UserValue[]>([]);
     const [showExistingCredentialModal, setShowExistingCredentialModal] = useState(false)
@@ -52,10 +53,13 @@ const CredentialsForm: React.FC = () => {
             console.log("Data does not existss created VC", {
                 vc, parsedVc, vcConcatenateTypes, storedVc
             })
+
             setLocalUser({
                 credentials: storedVc,
                 did: walletDid
             })
+
+            setCredentials?.(storedVc)
 
             setShowExistingCredentialModal(true)
         }
@@ -97,7 +101,7 @@ const CredentialsForm: React.FC = () => {
     const existingCreds = localStorageData?.credentials
 
     return (
-        <Flex>
+        <Flex className="flex-col">
             {!existingCreds && <Typography.Text className="font-bold mb-4">Create Credential</Typography.Text>}
             {existingCreds
                 ? (

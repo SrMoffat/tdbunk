@@ -1,26 +1,40 @@
-import { Flex, Segmented, Form, InputNumber, Input, Select } from "antd";
+import { Flex, Segmented, Form, InputNumber, Input, Select, Typography } from "antd";
 import { useState } from "react";
-import { Community, Sponsor } from "@/app/components/atoms/Icon";
+import { Community, Evidence, FactCheckers, Sponsor, Sponsorships } from "@/app/components/atoms/Icon";
 import Image from "next/image"
+import { useCreateCampaignContext } from "@/app/providers/CreateCampaignProvider";
+import { DEBUNK_CAMPAIGN_TYPE } from "@/app/lib/constants";
 
-const { Option } = Select
+export interface SelectBeforeProps {
+    type: string;
+    currency?: string;
+}
 
 
-interface CampaignDetailsProps { }
-interface FieldType {
+export interface CampaignDetailsProps { }
+export interface FieldType {
     title: string;
     link: string;
     source: string;
-    amount: string;
+    amount: number;
+    factCheckers: number;
+    minEvidences: number;
     description: string;
 };
 
 const CampaignDetails: React.FC<CampaignDetailsProps> = () => {
-    const [mode, setMode] = useState<any>();
-
-
-    const isCommunity = mode === "Community"
-    const isSponsored = mode === "Sponsored"
+    const {
+        campaignName,
+        campaignAmount,
+        campaignDescription,
+        campaignMinEvidences,
+        campaignNumOfFactCheckers,
+        setCampaignType,
+        setCampaignAmount,
+        setStepTwoValues,
+    } = useCreateCampaignContext()
+    const [mode, setMode] = useState<DEBUNK_CAMPAIGN_TYPE>();
+    const isSponsored = mode === DEBUNK_CAMPAIGN_TYPE.SPONSORED
 
     const options = [
         {
@@ -41,30 +55,49 @@ const CampaignDetails: React.FC<CampaignDetailsProps> = () => {
                 </Flex>
             </Flex>
         ),
-        value: name
+        value: name as DEBUNK_CAMPAIGN_TYPE
     }))
 
-    const selectAfter = (
-        <Select defaultValue="USD" style={{ width: 100 }}>
-            <Option value="USD">USD</Option>
-            <Option value="EUR">EUR</Option>
-            <Option value="GBP">GBP</Option>
-            <Option value="CNY">CNY</Option>
-        </Select>
-    );
+    const SelectBefore = (props: SelectBeforeProps) => {
+        let icon = undefined
 
-    const onFinish = () => { }
-    const onFinishFailed = () => { }
+        switch (props.type) {
+            case 'amount': {
+                icon = Sponsorships
+                break
+            }
+            case 'factCheckers': {
+                icon = FactCheckers
+                break
+            }
+            case 'minEvidences': {
+                icon = Evidence
+                break
+            }
+
+        }
+
+        const isAmount = props.type === 'amount'
+        return (
+            <Flex className={`items-center justify-center w-[${isAmount ? '100px' : '30px'}] h-[30px]`}>
+                <Image className="mr-2" alt={props.type} src={icon} width={30} height={30} />
+                {isAmount && props.currency}
+            </Flex>
+        )
+    }
 
     return (
         <Flex className="w-full flex-col">
             <Flex className="justify-center">
                 <Segmented
+                    value={mode}
                     onChange={(value) => {
-                        // Launch modal
-                        console.log("Values", value)
+                        const isSponsored = value === DEBUNK_CAMPAIGN_TYPE.COMMUNITY
                         setMode(value)
-                        // showModal()
+                        setCampaignType?.(value)
+                        if (isSponsored) {
+                            setCampaignAmount?.(0)
+                        }
                     }}
                     options={options}
                     style={{ backgroundColor: "#334155", height: 100 }}
@@ -74,21 +107,32 @@ const CampaignDetails: React.FC<CampaignDetailsProps> = () => {
                 <Form
                     name="basic"
                     layout="vertical"
-                    initialValues={{ remember: true }}
-                    onFinish={onFinish}
-                    onFinishFailed={onFinishFailed}
-                    autoComplete="off"
+                    initialValues={{
+                        title: campaignName,
+                        amount: campaignAmount,
+                        description: campaignDescription,
+                        factCheckers: campaignNumOfFactCheckers,
+                        minEvidences: campaignMinEvidences,
+                    }}
                     className='w-full'
+                    onValuesChange={(_, all) => {
+                        const details = {
+                            name: all?.title,
+                            description: all?.description,
+                            factCheckers: all?.factCheckers,
+                            minEvidences: all?.minEvidences,
+                        }
+                        setCampaignAmount?.(all?.amount)
+                        setStepTwoValues?.(details)
+                    }}
                 >
-                    {isSponsored && (
-                        <Form.Item<FieldType>
-                            label="Sponsorhip Amount"
-                            name="amount"
-                            rules={[{ required: true, message: 'Please input your description!' }]}
-                        >
-                            <InputNumber size='large' addonBefore={selectAfter} defaultValue={100} />
-                        </Form.Item>
-                    )}
+                    <Form.Item<FieldType>
+                        label="Sponsorhip Amount"
+                        name="amount"
+                        rules={[{ required: true, message: 'Please input your description!' }]}
+                    >
+                        <InputNumber min={1} disabled={!isSponsored} size='large' addonBefore={<SelectBefore type="amount" currency="USD" />} />
+                    </Form.Item>
                     <Form.Item<FieldType>
                         label="Campaign Name"
                         name="title"
@@ -106,17 +150,17 @@ const CampaignDetails: React.FC<CampaignDetailsProps> = () => {
 
                     <Form.Item<FieldType>
                         label="Number of Fact Checkers"
-                        name="amount"
+                        name="factCheckers"
                         rules={[{ required: true, message: 'Please input number of fact checkers!' }]}
                     >
-                        <InputNumber size='large' addonBefore={selectAfter} defaultValue={4} />
+                        <InputNumber min={1} size='large' addonBefore={<SelectBefore type="factCheckers" />} />
                     </Form.Item>
                     <Form.Item<FieldType>
                         label="Minimum Evidence Submissions"
-                        name="amount"
+                        name="minEvidences"
                         rules={[{ required: true, message: 'Please input number of fact checkers!' }]}
                     >
-                        <InputNumber size='large' addonBefore={selectAfter} defaultValue={4} />
+                        <InputNumber min={1} size='large' addonBefore={<SelectBefore type="minEvidences" />} />
                     </Form.Item>
                 </Form>
             </Flex>

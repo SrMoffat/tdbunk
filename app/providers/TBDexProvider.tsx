@@ -1,7 +1,14 @@
 "use client"
-import { useContext, createContext, PropsWithChildren } from "react";
+import { useContext, createContext, PropsWithChildren, useState } from "react";
 
-interface TBDexContextProps { };
+export interface CredentialProp {
+    [key: string]: string[]
+}
+
+export interface TBDexContextProps {
+    credentials: CredentialProp
+    setCredentials: React.Dispatch<React.SetStateAction<CredentialProp | undefined>>
+};
 
 const TBDexContext = createContext<Partial<TBDexContextProps>>({});
 
@@ -14,7 +21,12 @@ const useTBDexContext = (): Partial<TBDexContextProps> => {
 };
 
 const TBDexContextProvider = ({ children }: PropsWithChildren) => {
-    return <TBDexContext.Provider value={{}}>
+    const [credentials, setCredentials] = useState<CredentialProp>()
+
+    return <TBDexContext.Provider value={{
+        credentials,
+        setCredentials
+    }}>
         {children}
     </TBDexContext.Provider>
 }

@@ -7,10 +7,11 @@ import StepThree from '@/app/components/organisms/steps/campaign/StepThree';
 import StepTwo from '@/app/components/organisms/steps/campaign/StepTwo';
 import { Flex, Layout } from 'antd';
 import { useEffect, useState } from 'react';
+import { CreateCampaignContextProvider } from '@/app/providers/CreateCampaignProvider';
 import { StepContent, StepNavigation, StepTracker, Title } from '@/app/start/campaign/components';
 
 export default function StartCampaignPage() {
-    const [current, setCurrent] = useState(0);
+    const [current, setCurrent] = useState(1);
     const [copied, setCopied] = useState(false);
 
     const steps = [
@@ -49,14 +50,16 @@ export default function StartCampaignPage() {
 
     return (
         <Layout className="h-screen">
-            <LandingHeader />
-            <Flex className=" items-center flex-col pt-12 gap-5 h-auto mb-4">
-                <Title />
-                <StepTracker current={current} items={items} />
-                <StepContent current={current} steps={steps} />
-                <StepNavigation setCurrent={setCurrent} current={current} steps={steps} />
-            </Flex>
-            <Footer />
+            <CreateCampaignContextProvider>
+                <LandingHeader />
+                <Flex className=" items-center flex-col pt-12 gap-5 h-auto mb-4">
+                    <Title />
+                    <StepTracker current={current} items={items} />
+                    <StepContent current={current} steps={steps} />
+                    <StepNavigation setCurrent={setCurrent} current={current} steps={steps} />
+                </Flex>
+                <Footer />
+            </CreateCampaignContextProvider>
         </Layout>
     );
 };

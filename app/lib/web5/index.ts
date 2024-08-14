@@ -18,19 +18,19 @@ export const setupCampaignProtocol = async (web5: Web5Api | null, did: string) =
 
         const isConfigured = localStatus.detail === 'Accepted'
 
-        console.log("Local Protocol Configuration Status", {
-            status: localStatus.detail,
-            isConfigured
-        })
+        // console.log("Local Protocol Configuration Status", {
+        //     status: localStatus.detail,
+        //     isConfigured
+        // })
 
         if (protocol) {
             const { status: remoteStatus } = await protocol.send(did);
             const isInstalled = remoteStatus.detail === 'Accepted'
 
-            console.log("Local Protocol Installation Status", {
-                status: remoteStatus.detail,
-                isInstalled
-            })
+            // console.log("Local Protocol Installation Status", {
+            //     status: remoteStatus.detail,
+            //     isInstalled
+            // })
         }
     } catch (error: any) {
         console.log("Error setting up campaign protocol", error);

@@ -1,12 +1,12 @@
 import { Facebook, Instagram, TikTok, X, Youtube } from '@/app/components/atoms/Icon';
 import { Flex, Form, Input, Typography } from "antd";
 import Image from "next/image";
-import { useState } from "react";
 import { DebounceSelect } from "@/app/components/atoms";
-import { UserValue } from "@/app/components/molecules/forms/Credentials";
+import { DEBUNK_SOURCE } from '@/app/lib/constants';
+import { useCreateCampaignContext } from '@/app/providers/CreateCampaignProvider';
 
-interface DebunkSubjectProps { }
-interface FieldType {
+export interface DebunkSubjectProps { }
+export interface FieldType {
     title: string;
     link: string;
     source: string;
@@ -14,39 +14,35 @@ interface FieldType {
     description: string;
 };
 
+// TO DO: Fetch from some registry?
+const sourcesList = [
+    {
+        name: DEBUNK_SOURCE.TIKTOK,
+        icon: TikTok
+    },
+    {
+        name: DEBUNK_SOURCE.FACEBOOK,
+        icon: Facebook
+    },
+    {
+        name: DEBUNK_SOURCE.X,
+        icon: X
+    },
+    {
+        name: DEBUNK_SOURCE.YOUTUBE,
+        icon: Youtube
+    },
+    {
+        name: DEBUNK_SOURCE.INSTAGRAM,
+        icon: Instagram
+    },
+]
+
 const DebunkSubject: React.FC<DebunkSubjectProps> = () => {
-    const [value, setValue] = useState<UserValue[]>([]);
+    const { setStepOneValues, debunkTitle, debunkLink, debunkSource } = useCreateCampaignContext()
 
-    const onFinish = () => { }
-    const onFinishFailed = () => { }
-    async function fetchSourcesList(countryName: string): Promise<any[]> {
-        const response = await fetch('/countries.json')
-        const data = await response.json()
-
-        const similar = data.filter((country: any) => country?.countryName.toLowerCase().includes(countryName.toLowerCase()))
-
-        return [
-            {
-                name: "TikTok",
-                icon: TikTok
-            },
-            {
-                name: "Facebook",
-                icon: Facebook
-            },
-            {
-                name: "X",
-                icon: X
-            },
-            {
-                name: "Youtube",
-                icon: Youtube
-            },
-            {
-                name: "Instagram",
-                icon: Instagram
-            },
-        ].map(({ name, icon }: any) => ({
+    async function fetchSourcesList() {
+        return sourcesList.map(({ name, icon }: any) => ({
             label: <Flex className="items-center">
                 <Typography.Text>{name}</Typography.Text>
                 <Image alt={name} width={25} height={25} src={icon} />
@@ -54,30 +50,47 @@ const DebunkSubject: React.FC<DebunkSubjectProps> = () => {
             value: name
         }))
     }
+
+    const selected = sourcesList.filter(({ name }) => name === debunkSource)[0]
     return (
         <Flex className="w-full min-h-[520px]">
             <Form
-                name="basic"
+                name="DebunkSubjectForm"
                 layout="vertical"
-                initialValues={{ remember: true }}
-                onFinish={onFinish}
-                onFinishFailed={onFinishFailed}
-                autoComplete="off"
+                initialValues={{
+                    title: debunkTitle,
+                    link: debunkLink,
+                    source: debunkSource ? {
+                        label: <Flex className="items-center">
+                            <Typography.Text>{selected?.name}</Typography.Text>
+                            <Image alt={selected?.name} width={25} height={25} src={selected?.icon} />
+                        </Flex>,
+                        value: selected?.name
+                    } : undefined
+                }}
                 className='w-full'
+                onValuesChange={(_, all) => {
+                    const details = {
+                        title: all?.title,
+                        link: all?.link,
+                        source: all?.source?.value,
+                    }
+                    setStepOneValues?.(details)
+                }}
             >
                 <Form.Item<FieldType>
-                    label="Article Title"
+                    label="Debunk Title"
                     name="title"
-                    rules={[{ required: true, message: 'Please input article title!' }]}
+                    rules={[{ required: true, message: 'Please input debunk title!' }]}
                 >
-                    <Input size='large' placeholder='Enter article title' allowClear />
+                    <Input size='large' placeholder='Enter debunk title' allowClear />
                 </Form.Item>
                 <Form.Item<FieldType>
-                    label="Article Link"
+                    label="Debunk Link"
                     name="link"
-                    rules={[{ required: true, message: 'Please input article link!' }]}
+                    rules={[{ required: true, message: 'Please input debunk link!' }]}
                 >
-                    <Input size='large' placeholder='Enter article link' allowClear />
+                    <Input size='large' placeholder='Enter debunk link' allowClear />
                 </Form.Item>
                 <Form.Item<FieldType>
                     label="Source Platform"
@@ -85,12 +98,8 @@ const DebunkSubject: React.FC<DebunkSubjectProps> = () => {
                     rules={[{ required: true, message: 'Please input your source!' }]}
                 >
                     <DebounceSelect
-                        value={value}
                         placeholder="Select source platform"
                         fetchOptions={fetchSourcesList}
-                        onChange={(newValue) => {
-                            setValue(newValue as UserValue[]);
-                        }}
                         style={{ width: '100%' }}
                     />
                 </Form.Item>

@@ -44,13 +44,12 @@ const LandingHeader = () => {
         </Link>
     ))
 
-    console.log("Web5Provider Mounted", {
-        web5,
-        campaigns,
-        userDid,
-        id: process.env.WEB5_PASSWORD
-
-    })
+    // console.log("Web5Provider Mounted", {
+    //     web5,
+    //     campaigns,
+    //     userDid,
+    //     id: process.env.WEB5_PASSWORD
+    // })
     return (
         <Header style={{ display: 'flex', alignItems: 'center', backgroundColor: colorBgContainer }}>
             <Link href="/">

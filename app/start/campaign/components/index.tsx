@@ -84,10 +84,14 @@ export const StepNavigation: React.FC<StepNavigationProps> = ({
 
     // @ts-ignore
     const existingCreds = localStorageData?.credentials
+
+    const isNextButtonDisabled = () => {
+        return false
+    }
     return (
         <Flex className="w-[calc(100%-8rem)] justify-between">
             {isNotFirstStep ? <Button onClick={() => prev()}>Back</Button> : <Button className="opacity-0 cursor-none pointer-events-none" />}
-            {hasMoreSteps && <Button disabled={!existingCreds} type="primary" onClick={() => next()}>Next</Button>}
+            {hasMoreSteps && <Button disabled={isNextButtonDisabled()} type="primary" onClick={() => next()}>Next</Button>}
             {isLastStep && <Button disabled type="primary" onClick={() => handleDone()}>Done</Button>}
         </Flex>
     )

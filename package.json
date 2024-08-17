@@ -11,10 +11,11 @@
   "dependencies": {
     "@ant-design/icons": "^5.4.0",
     "@ant-design/nextjs-registry": "^1.0.0",
+    "@tbdex/http-client": "1.1.0",
     "@web5/api": "0.10.0",
     "@web5/credentials": "1.0.3",
     "@web5/crypto": "1.0.1",
-    "@web5/dids": "1.1.1",
+    "@web5/dids": "1.1.2",
     "antd": "^5.19.4",
     "cors": "^2.8.5",
     "date-fns": "^3.6.0",

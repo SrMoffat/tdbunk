@@ -3,14 +3,24 @@ import { WalletBalance } from "@/app/components/molecules/cards/WalletBalance";
 import DebunkingCampaign from "@/app/components/molecules/description/DebunkCampaign";
 import DebunkCampaignStats from "@/app/components/molecules/description/DebunkCampaignStats";
 import DebunkSubject from "@/app/components/molecules/description/DebunkSubject";
+import { CredentialStorage } from "@/app/components/molecules/forms/Credentials";
 import { Credentials } from "@/app/components/organisms/Credentials";
+import useBrowserStorage from "@/app/hooks/useLocalStorage";
+import { OFFERINGS_LOCAL_STORAGE_KEY, LOCAL_STORAGE_KEY } from "@/app/lib/constants";
 import { UserOutlined } from "@ant-design/icons";
-import { Avatar, Card, Flex, Layout, List, Segmented, StepProps, Steps, theme, Typography } from "antd";
+import { Avatar, Card, Flex, Layout, List, Segmented, StepProps, Steps, theme, Typography, Space, Button } from "antd";
 
 const StepFour = () => {
     const {
         token: { colorBgContainer },
     } = theme.useToken()
+
+    const [localStorageData, setLocalCredentials] = useBrowserStorage<CredentialStorage>(
+        OFFERINGS_LOCAL_STORAGE_KEY,
+        LOCAL_STORAGE_KEY
+    )
+
+    console.log("Suza bhebho ==>", localStorageData)
 
     const data = [
         {
@@ -60,19 +70,24 @@ const StepFour = () => {
                             />
                         </Flex>
                     </Flex>
-                        <List
-                            pagination={{ position: "bottom", align: "start" }}
-                            dataSource={data}
-                            className="mt-4"
-                            renderItem={(item, index) => (
-                                <List.Item>
-                                    <Segmented
+                    <List
+                        pagination={{ position: "bottom", align: "start" }}
+                        dataSource={data}
+                        className="mt-4"
+                        renderItem={(item, index) => (
+                            <List.Item>
+                                <Space.Compact>
+                                    <Button className="h-[70px] w-[70px]">Button 1</Button>
+                                    <Button className="h-[70px] w-[70px]">Button 1</Button>
+                                    <Button className="h-[70px] w-[70px]">Button 1</Button>
+                                </Space.Compact>
+                                {/* <Segmented
                                         options={[
                                             {
                                                 label: (
                                                     <div style={{ padding: 4 }}>
                                                         <Avatar src="https://api.dicebear.com/7.x/miniavs/svg?seed=8" />
-                                                        <div>User 1</div>
+                                                        <div>USD</div>
                                                     </div>
                                                 ),
                                                 value: 'user1',
@@ -96,8 +111,8 @@ const StepFour = () => {
                                                 value: 'user3',
                                             },
                                         ]}
-                                    />
-                                    {/* <List.Item.Meta
+                                    /> */}
+                                {/* <List.Item.Meta
                                         avatar={
                                             <Avatar
                                                 src={`https://api.dicebear.com/7.x/miniavs/svg?seed=${index}`}
@@ -106,9 +121,9 @@ const StepFour = () => {
                                         title={<a href="https://ant.design">{item.title}</a>}
                                         description="Ant Design, a design language for background applications, is refined by Ant UED Team"
                                     /> */}
-                                </List.Item>
-                            )}
-                        />
+                            </List.Item>
+                        )}
+                    />
                 </Card>
                 <Flex className="w-full flex flex-row">
                     <Flex className="w-full">

@@ -167,7 +167,7 @@ export const credentials = [
     },
     {
         expires: new Date(),
-        id: '1',
+        id: '2',
         uiTemplate: Card2,
         issuer: {
             logo: TBDVCLogoYellow,
@@ -183,7 +183,7 @@ export const credentials = [
     },
     {
         expires: new Date(),
-        id: '1',
+        id: '3',
         uiTemplate: Card3,
         issuer: {
             logo: TBDVCLogoYellow,

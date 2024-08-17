@@ -19,6 +19,7 @@ export interface CreateCampaignContextProps {
     setCampaignName: React.Dispatch<React.SetStateAction<string>>;
     setCampaignAmount: React.Dispatch<React.SetStateAction<number>>;
     setCampaignDescription: React.Dispatch<React.SetStateAction<string>>;
+    setRequiredCredentials: React.Dispatch<React.SetStateAction<string[]>>;
     setCampaignNumOfFactCheckersCount: React.Dispatch<React.SetStateAction<number>>;
     setDebunkSource: React.Dispatch<React.SetStateAction<DEBUNK_SOURCE | undefined>>;
     setCampaignType: React.Dispatch<React.SetStateAction<DEBUNK_CAMPAIGN_TYPE | undefined>>;
@@ -48,6 +49,7 @@ const CreateCampaignContextProvider = ({ children }: PropsWithChildren) => {
     const [campaignAmount, setCampaignAmount] = useState<number>(1)
     const [debunkSource, setDebunkSource] = useState<DEBUNK_SOURCE>()
     const [campaignDescription, setCampaignDescription] = useState('')
+    const [requiredCredentials, setRequiredCredentials] = useState([''])
     const [campaignType, setCampaignType] = useState<DEBUNK_CAMPAIGN_TYPE>()
     const [campaignMinEvidencesCount, setCampaignMinEvidencesCount] = useState<number>(1)
     const [campaignNumOfFactCheckersCount, setCampaignNumOfFactCheckersCount] = useState<number>(1)
@@ -97,6 +99,7 @@ const CreateCampaignContextProvider = ({ children }: PropsWithChildren) => {
             campaignName,
             campaignType,
             campaignAmount,
+            requiredCredentials,
             campaignDescription,
             campaignMinEvidences: campaignMinEvidencesCount,
             campaignNumOfFactCheckers: campaignNumOfFactCheckersCount,
@@ -110,6 +113,7 @@ const CreateCampaignContextProvider = ({ children }: PropsWithChildren) => {
             setCampaignType,
             setCampaignAmount,
             setCampaignDescription,
+            setRequiredCredentials,
             setCampaignNumOfFactCheckersCount,
         }}>
             {children}

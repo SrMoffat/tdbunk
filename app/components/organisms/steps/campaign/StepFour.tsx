@@ -7,6 +7,7 @@ import { CredentialStorage } from "@/app/components/molecules/forms/Credentials"
 import { Credentials } from "@/app/components/organisms/Credentials";
 import useBrowserStorage from "@/app/hooks/useLocalStorage";
 import { OFFERINGS_LOCAL_STORAGE_KEY, LOCAL_STORAGE_KEY } from "@/app/lib/constants";
+import { useTbdexContext } from "@/app/providers/TbdexProvider";
 import { UserOutlined } from "@ant-design/icons";
 import { Avatar, Card, Flex, Layout, List, Segmented, StepProps, Steps, theme, Typography, Space, Button } from "antd";
 
@@ -15,12 +16,34 @@ const StepFour = () => {
         token: { colorBgContainer },
     } = theme.useToken()
 
-    const [localStorageData, setLocalCredentials] = useBrowserStorage<CredentialStorage>(
+    const { selectedCurrency, selectedDestinationCurrency } = useTbdexContext()
+
+    const [localStorageData] = useBrowserStorage<CredentialStorage>(
         OFFERINGS_LOCAL_STORAGE_KEY,
         LOCAL_STORAGE_KEY
     )
 
-    console.log("Suza bhebho ==>", localStorageData)
+    const getFormattedOfferings = (offerings: any) => {
+        for (const offer of offerings) {
+            const offering = Object.values(offer!)[0] as any
+            const [sourceCurrency, destinationCurrency] = offering?.pair
+            const sourceCurrencyCode = sourceCurrency?.currencyCode
+            const destinationCurrencyCode = destinationCurrency?.currencyCode
+
+            const sourceMatches = selectedCurrency === sourceCurrencyCode
+            const destinationMatches = selectedDestinationCurrency === destinationCurrencyCode
+            const isHit = sourceMatches && destinationMatches
+
+            if (isHit) {
+                console.log("isHit ===>", offering?.pair)
+            } else {
+                console.log("isMiss")
+                // console.log("isMiss", offering?.pair)
+            }
+        }
+    }
+
+    getFormattedOfferings(Object.values(localStorageData!))
 
     const data = [
         {
@@ -39,7 +62,7 @@ const StepFour = () => {
 
     const items = [
         {
-            title: 'USD 1.00',
+            title: `${selectedCurrency} 1.00`,
             status: 'process'
         },
         {
@@ -47,7 +70,7 @@ const StepFour = () => {
             status: 'wait'
         },
         {
-            title: 'KES 128.98',
+            title: `${selectedDestinationCurrency} calc`,
             status: 'process'
         },
     ] as StepProps[];

@@ -14,10 +14,12 @@ export interface TbdexContextProps {
     selectedCurrency: string;
     destinationCurrencies: any[];
     credentials: CredentialProp;
+    selectedDestinationCurrency: string;
     setOfferings: React.Dispatch<React.SetStateAction<any[]>>;
-    setSlectedCurrency: React.Dispatch<React.SetStateAction<string>>;
     setSourceCurrencies: React.Dispatch<React.SetStateAction<any[]>>;
+    setSelectedCurrency: React.Dispatch<React.SetStateAction<string>>;
     setDestinationCurrencies: React.Dispatch<React.SetStateAction<any[]>>;
+    setSelectedDestinationCurrency: React.Dispatch<React.SetStateAction<string>>;
     setCredentials: React.Dispatch<React.SetStateAction<CredentialProp | undefined>>;
 };
 
@@ -135,8 +137,9 @@ const TbdexContextProvider = ({ children }: PropsWithChildren) => {
     const [offerings, setOfferings] = useState<any[]>([])
     const [credentials, setCredentials] = useState<CredentialProp>()
     const [sourceCurrencies, setSourceCurrencies] = useState<any[]>([])
-    const [selectedCurrency, setSlectedCurrency] = useState<string>('USD')
+    const [selectedCurrency, setSelectedCurrency] = useState<string>('USD')
     const [destinationCurrencies, setDestinationCurrencies] = useState<any[]>([])
+    const [selectedDestinationCurrency, setSelectedDestinationCurrency] = useState<string>('USD')
 
     const [_, setLocalOfferings] = useBrowserStorage<OfferingStorage>(
         OFFERINGS_LOCAL_STORAGE_KEY,
@@ -182,12 +185,14 @@ const TbdexContextProvider = ({ children }: PropsWithChildren) => {
         sourceCurrencies,
         selectedCurrency,
         destinationCurrencies,
+        selectedDestinationCurrency,
 
         setOfferings,
         setCredentials,
-        setSlectedCurrency,
+        setSelectedCurrency,
         setSourceCurrencies,
-        setDestinationCurrencies
+        setDestinationCurrencies,
+        setSelectedDestinationCurrency
     }}>
         {children}
     </TbdexContext.Provider>

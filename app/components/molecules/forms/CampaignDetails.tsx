@@ -28,7 +28,7 @@ export interface FieldType {
 const CampaignDetails: React.FC<CampaignDetailsProps> = () => {
     const {
         sourceCurrencies,
-        setSlectedCurrency
+        setSelectedCurrency
     } = useTbdexContext()
     const {
         campaignName,
@@ -142,7 +142,7 @@ const CampaignDetails: React.FC<CampaignDetailsProps> = () => {
                     >
                         <InputNumber min={1} disabled={!isSponsored} size='large' addonBefore={(
                             <Select defaultValue="USD" disabled={!isSponsored} onChange={(value) => {
-                                setSlectedCurrency?.(value)
+                                setSelectedCurrency?.(value)
                             }}>
                                 {sourceCurrencies?.map(entry => <Option key={entry} value={entry}>{entry}</Option>)}
                             </Select>

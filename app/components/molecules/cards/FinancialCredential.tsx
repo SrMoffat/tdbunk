@@ -35,7 +35,7 @@ export interface CredentialCardProps {
 
 }
 
-const CredentialCard: React.FC<CredentialCardProps> = ({
+export const CredentialCard: React.FC<CredentialCardProps> = ({
     name,
     countryCode,
     vcServiceUrl,
@@ -45,7 +45,7 @@ const CredentialCard: React.FC<CredentialCardProps> = ({
 }) => {
     const expiry = expirationDate ? expirationDate : ''
     const issuance = issuanceDate ? formatDistanceToNow(new Date(issuanceDate), { addSuffix: true }) : ''
-    const expiration = issuanceDate ? formatDistanceToNow(new Date(expiry), { addSuffix: true }) : ''
+    const expiration = expiry ? formatDistanceToNow(new Date(expiry), { addSuffix: true }) : ''
 
     const country = countries.filter(entry => entry?.countryCode === countryCode)[0]
     return (
@@ -76,8 +76,37 @@ const DrawerHeader: React.FC<DrawerHeaderProps> = ({
     type
 }) => {
     return (<Flex className="justify-end">
-        {type?.map(entry => (<Tag color="gold">{entry}</Tag>))}
+        {type?.map(entry => (<Tag key={entry} color="gold">{entry}</Tag>))}
     </Flex>)
+}
+
+export const extractVcDocumentDetails = (vc: VerifiableCredential) => {
+    const vcModel = vc?.vcDataModel
+
+    const credentialSubject = vcModel?.credentialSubject as {
+        id: string;
+        name: string;
+        countryOfResidence: string;
+    }
+
+    const credentialMetadata = {
+        subject: {
+            didUri: credentialSubject?.id,
+            name: credentialSubject?.name,
+            countryCode: credentialSubject?.countryOfResidence,
+        },
+        issuerDidUri: vcModel?.issuer,
+        issuanceDate: vcModel?.issuanceDate,
+        expirationDate: vcModel?.expirationDate,
+        type: vcModel?.type,
+    };
+
+    const issuerUri = vcModel?.issuer as string
+
+    return {
+        issuerUri,
+        data: credentialMetadata
+    }
 }
 
 const FinancialInstitutionCredential = (props: any) => {
@@ -105,35 +134,6 @@ const FinancialInstitutionCredential = (props: any) => {
         const createdFinancialCred = Object.values(creds).flat()[0]
         const parsedVc = parseJwtToVc(createdFinancialCred)
         return parsedVc
-    }
-
-    const extractVcDocumentDetails = (vc: VerifiableCredential) => {
-        const vcModel = vc?.vcDataModel
-
-        const credentialSubject = vcModel?.credentialSubject as {
-            id: string;
-            name: string;
-            countryOfResidence: string;
-        }
-
-        const credentialMetadata = {
-            subject: {
-                didUri: credentialSubject?.id,
-                name: credentialSubject?.name,
-                countryCode: credentialSubject?.countryOfResidence,
-            },
-            issuerDidUri: vcModel?.issuer,
-            issuanceDate: vcModel?.issuanceDate,
-            expirationDate: vcModel?.expirationDate,
-            type: vcModel?.type,
-        };
-
-        const issuerUri = vcModel?.issuer as string
-
-        return {
-            issuerUri,
-            data: credentialMetadata
-        }
     }
 
     const handleCardClicked = () => {

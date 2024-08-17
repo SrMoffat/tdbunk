@@ -7,24 +7,24 @@ import type { FormProps } from 'antd';
 import { Button, Flex, Form, Input, Typography } from 'antd';
 import React, { useState } from 'react';
 import FinancialInstitutionCredential from '@/app/components/molecules/cards/FinancialCredential';
-import { useTBDexContext } from '@/app/providers/TBDexProvider';
+import { useTbdexContext } from '@/app/providers/TbdexProvider';
+import { CREDENTIALS_LOCAL_STORAGE_KEY, LOCAL_STORAGE_KEY } from '@/app/lib/constants';
 
 export interface UserValue {
     label: string;
     value: string;
 }
 
-export type UserStorage = {} | null
+export type CredentialStorage = {} | null
 
 const CredentialsForm: React.FC = () => {
     const { walletDid } = useWeb5Context()
-    const { setCredentials } = useTBDexContext()
+    const { setCredentials } = useTbdexContext()
     const [isLoading, setIsLoading] = useState(false)
     const [value, setValue] = useState<UserValue[]>([]);
-    const [showExistingCredentialModal, setShowExistingCredentialModal] = useState(false)
-    const [localStorageData, setLocalUser,] = useBrowserStorage<UserStorage>(
-        'TDBunk',
-        'local'
+    const [localStorageData, setLocalCredentials] = useBrowserStorage<CredentialStorage>(
+        CREDENTIALS_LOCAL_STORAGE_KEY,
+        LOCAL_STORAGE_KEY
     )
 
     const createOrUpdateCredentials = async (details: any) => {
@@ -54,14 +54,12 @@ const CredentialsForm: React.FC = () => {
                 vc, parsedVc, vcConcatenateTypes, storedVc
             })
 
-            setLocalUser({
+            setLocalCredentials({
                 credentials: storedVc,
                 did: walletDid
             })
 
             setCredentials?.(storedVc)
-
-            setShowExistingCredentialModal(true)
         }
     }
 

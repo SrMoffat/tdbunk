@@ -8,8 +8,10 @@ import countries from '@/public/countries.json';
 import { Flex, Layout, Segmented, theme } from 'antd';
 import Image from 'next/image';
 import { useState } from 'react';
-import { UserStorage } from '@/app/components/molecules/forms/Credentials';
 import useBrowserStorage from '@/app/hooks/useLocalStorage';
+import { CREDENTIALS_LOCAL_STORAGE_KEY, LOCAL_STORAGE_KEY } from '@/app/lib/constants';
+
+export interface UserStorage { }
 
 const StepOne = () => {
     const [mode, setMode] = useState('Create');
@@ -17,8 +19,8 @@ const StepOne = () => {
     const [copied, setCopied] = useState(false)
 
     const [localStorageData] = useBrowserStorage<UserStorage>(
-        'TDBunk',
-        'local'
+        CREDENTIALS_LOCAL_STORAGE_KEY,
+        LOCAL_STORAGE_KEY
     )
 
     // @ts-ignore

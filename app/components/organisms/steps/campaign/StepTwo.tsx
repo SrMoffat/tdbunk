@@ -6,7 +6,7 @@ import { Flex, Layout, Steps, theme } from 'antd';
 import { useState } from 'react';
 
 const StepTwo = () => {
-    const [current, setCurrent] = useState(1);
+    const [current, setCurrent] = useState(0);
 
     const {
         token: { colorBgContainer },

@@ -1,4 +1,5 @@
 import { Card1, Card2, Card3, Card4, Card5, ValidCredential } from '@/app/components/atoms/Icon';
+import { useCreateCampaignContext } from '@/app/providers/CreateCampaignProvider';
 import { CheckCircleFilled, CheckCircleOutlined } from "@ant-design/icons";
 import { Avatar, Badge, Card, Flex, theme, Tooltip, Typography } from "antd";
 import Image from "next/image";
@@ -7,24 +8,23 @@ import { useState } from "react";
 interface InvestigatorsCredentialsProps { }
 
 const InvestigatorsCredentials: React.FC<InvestigatorsCredentialsProps> = () => {
-    const [selectedCredentials, setSelectedCredentials] = useState<string[]>([]);
+    const {requiredCredentials, setRequiredCredentials} = useCreateCampaignContext()
 
-    const [count, setCount] = useState(selectedCredentials.length);
+    const [count, setCount] = useState(requiredCredentials!.length-1);
     const {
         token: { colorPrimary },
     } = theme.useToken()
 
     const handleCardClicked = (credential: string) => {
-        const exists = selectedCredentials.includes(credential)
+        const exists = requiredCredentials!.includes(credential)
 
         if (exists) {
-            const removed = selectedCredentials.filter(entry => entry !== credential)
-            console.log("removed", removed)
-            setSelectedCredentials(removed)
-            setCount(removed.length)
-        } else {
-            setSelectedCredentials((existingCredentials) => ([...existingCredentials, credential]))
-            setCount(selectedCredentials.length + 1)
+            const removed = requiredCredentials!.filter(entry => entry !== credential)
+            setRequiredCredentials?.(removed)
+            setCount(removed.length-1)
+            } else {
+            setRequiredCredentials?.((existingCredentials) => ([...existingCredentials, credential]))
+            setCount(requiredCredentials!.length)
         }
     }
 
@@ -63,10 +63,9 @@ const InvestigatorsCredentials: React.FC<InvestigatorsCredentialsProps> = () => 
             </Tooltip>
             <Flex wrap className="gap-3 justify-center">
                 {credentialOptions.map(({ name, card }) => {
-                    const isSelected = selectedCredentials.includes(name)
-                    console.log("Is Selected", isSelected)
+                    const isSelected = requiredCredentials!.includes(name)
                     return (
-                        <Card onClick={() => handleCardClicked(name)} className={`transition-all cursor-pointer w-[380px] h-[130px] ${isSelected ? 'opacity-100' : 'opacity-60'} hover:opacity-80`}>
+                        <Card key={name} onClick={() => handleCardClicked(name)} className={`transition-all cursor-pointer w-[380px] h-[130px] ${isSelected ? 'opacity-100' : 'opacity-60'} hover:opacity-80`}>
                             <Flex className={`absolute  rounded-md transition-all cursor-pointer`}>
                                 <Image alt="card" src={card} width={150} height={150} />
                             </Flex>

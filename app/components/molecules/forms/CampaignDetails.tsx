@@ -4,6 +4,9 @@ import { Community, Evidence, FactCheckers, Sponsor, Sponsorships } from "@/app/
 import Image from "next/image"
 import { useCreateCampaignContext } from "@/app/providers/CreateCampaignProvider";
 import { DEBUNK_CAMPAIGN_TYPE } from "@/app/lib/constants";
+import { useTbdexContext } from "@/app/providers/TbdexProvider";
+
+const { Option } = Select
 
 export interface SelectBeforeProps {
     type: string;
@@ -23,6 +26,10 @@ export interface FieldType {
 };
 
 const CampaignDetails: React.FC<CampaignDetailsProps> = () => {
+    const {
+        sourceCurrencies,
+        setSlectedCurrency
+    } = useTbdexContext()
     const {
         campaignName,
         campaignAmount,
@@ -80,11 +87,13 @@ const CampaignDetails: React.FC<CampaignDetailsProps> = () => {
         const isAmount = props.type === 'amount'
         return (
             <Flex className={`items-center justify-center w-[${isAmount ? '100px' : '30px'}] h-[30px]`}>
-                <Image className="mr-2" alt={props.type} src={icon} width={30} height={30} />
+                <Image className="mr-2" alt={props.type} src={icon} width={50} height={50} />
                 {isAmount && props.currency}
             </Flex>
         )
     }
+
+    console.log("==>", sourceCurrencies)
 
     return (
         <Flex className="w-full flex-col">
@@ -131,7 +140,14 @@ const CampaignDetails: React.FC<CampaignDetailsProps> = () => {
                         name="amount"
                         rules={[{ required: true, message: 'Please input your description!' }]}
                     >
-                        <InputNumber min={1} disabled={!isSponsored} size='large' addonBefore={<SelectBefore type="amount" currency="USD" />} />
+                        <InputNumber min={1} disabled={!isSponsored} size='large' addonBefore={(
+                            <Select defaultValue="USD" disabled={!isSponsored} onChange={(value) => {
+                                setSlectedCurrency?.(value)
+                            }}>
+                                {sourceCurrencies?.map(entry => <Option key={entry} value={entry}>{entry}</Option>)}
+                            </Select>
+                        )} />
+                        {/* <InputNumber min={1} disabled={!isSponsored} size='large' addonBefore={<SelectBefore type="amount" currency="USD" />} /> */}
                     </Form.Item>
                     <Form.Item<FieldType>
                         label="Campaign Name"
@@ -153,14 +169,16 @@ const CampaignDetails: React.FC<CampaignDetailsProps> = () => {
                         name="factCheckers"
                         rules={[{ required: true, message: 'Please input number of fact checkers!' }]}
                     >
-                        <InputNumber min={1} size='large' addonBefore={<SelectBefore type="factCheckers" />} />
+                        <InputNumber min={1} size='large' />
+                        {/* <InputNumber min={1} size='large' addonBefore={<SelectBefore type="factCheckers" />} /> */}
                     </Form.Item>
                     <Form.Item<FieldType>
                         label="Minimum Evidence Submissions"
                         name="minEvidences"
                         rules={[{ required: true, message: 'Please input number of fact checkers!' }]}
                     >
-                        <InputNumber min={1} size='large' addonBefore={<SelectBefore type="minEvidences" />} />
+                        <InputNumber min={1} size='large' />
+                        {/* <InputNumber min={1} size='large' addonBefore={<SelectBefore type="minEvidences" />} /> */}
                     </Form.Item>
                 </Form>
             </Flex>

@@ -29,9 +29,10 @@ const ImportCredential = () => {
     };
     return (
         <Tabs
-            defaultActiveKey="1"
+            defaultActiveKey="upload"
             type="card"
             size="small"
+            centered
             items={[
                 {
                     label: 'Scan QR Code',

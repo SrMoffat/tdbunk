@@ -37,7 +37,7 @@ const StepFour = () => {
             if (isHit) {
                 console.log("isHit ===>", offering?.pair)
             } else {
-                console.log("isMiss", [sourceCurrencyCode, destinationCurrencyCode])
+                // console.log("isMiss", [sourceCurrencyCode, destinationCurrencyCode])
                 // console.log("isMiss", offering?.pair)
             }
         }
@@ -74,8 +74,6 @@ const StepFour = () => {
             status: 'process'
         },
     ] as StepProps[];
-
-    console.log("Handle Here", monopolyMoney)
 
     return <Layout style={{ backgroundColor: colorBgContainer }}>
         <Flex className="flex-col">

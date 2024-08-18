@@ -45,7 +45,7 @@ export const PFIs = [
             ["EUR", "USD"],
             ["EUR", "USDC"],
             ["USD", "EUR"],
-            ["EUR", "GB"],
+            ["EUR", "GBP"],
         ]
     },
     {

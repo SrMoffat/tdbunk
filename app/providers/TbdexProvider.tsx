@@ -161,21 +161,21 @@ const TbdexContextProvider = ({ children }: PropsWithChildren) => {
                 const source = monopolyMoney?.currency
                 const destination = selectedCurrency
 
-                const response = await fetch('/api/rates', {
-                    method: 'POST',
-                    body: JSON.stringify({
-                        source,
-                        destination,
-                        amount
-                    })
-                })
+                // const response = await fetch('/api/conversions', {
+                //     method: 'POST',
+                //     body: JSON.stringify({
+                //         source,
+                //         destination,
+                //         amount
+                //     })
+                // })
 
-                const newAmount = await response.json()
+                // const newAmount = await response.json()
 
-                setMonopolyMoney({
-                    amount: newAmount?.conversion_result,
-                    currency: destination
-                })
+                // setMonopolyMoney({
+                //     amount: newAmount?.conversion_result,
+                //     currency: destination
+                // })
             } catch (error: any) {
                 console.log("Error in wallet conversion", error)
             }

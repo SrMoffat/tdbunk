@@ -1,4 +1,4 @@
-import { TBDexContextProvider } from '@/app/providers/TBDexProvider';
+import { TBDexContextProvider } from '@/app/providers/TBDexProviderOld';
 import ThemeProvider from '@/app/providers/ThemeProvider';
 import { Web5ContextProvider } from '@/app/providers/Web5Provider';
 import { AntdRegistry } from '@ant-design/nextjs-registry';

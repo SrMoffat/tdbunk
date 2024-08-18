@@ -9,8 +9,8 @@ const StepThree = () => {
     } = theme.useToken()
     return <Layout style={{ backgroundColor: colorBgContainer }}>
         <Flex className="justify-center gap-4 w-full">
-            <DebunkCampaignStats />
-            <Flex className="flex-col justify-between gap-4">
+            <DebunkCampaignStats isFull={false} />
+            <Flex className="flex-col justify-between gap-4 w-full">
                 <DebunkSubject />
                 <DebunkingCampaign />
             </Flex>

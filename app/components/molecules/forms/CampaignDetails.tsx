@@ -5,6 +5,7 @@ import Image from "next/image"
 import { useCreateCampaignContext } from "@/app/providers/CreateCampaignProvider";
 import { DEBUNK_CAMPAIGN_TYPE } from "@/app/lib/constants";
 import { useTbdexContext } from "@/app/providers/TbdexProvider";
+import { getCurrencyFlag } from "../../atoms/SearchOffersInput";
 
 const { Option } = Select
 
@@ -28,7 +29,9 @@ export interface FieldType {
 const CampaignDetails: React.FC<CampaignDetailsProps> = () => {
     const {
         sourceCurrencies,
-        setSelectedCurrency
+        destinationCurrencies,
+        setSelectedCurrency,
+        setSelectedDestinationCurrency
     } = useTbdexContext()
     const {
         campaignName,
@@ -93,8 +96,6 @@ const CampaignDetails: React.FC<CampaignDetailsProps> = () => {
         )
     }
 
-    console.log("==>", sourceCurrencies)
-
     return (
         <Flex className="w-full flex-col">
             <Flex className="justify-center">
@@ -104,8 +105,11 @@ const CampaignDetails: React.FC<CampaignDetailsProps> = () => {
                         const isSponsored = value === DEBUNK_CAMPAIGN_TYPE.COMMUNITY
                         setMode(value)
                         setCampaignType?.(value)
+
+                        console.log("Changed Type", value)
                         if (isSponsored) {
                             setCampaignAmount?.(0)
+                            // 
                         }
                     }}
                     options={options}
@@ -118,7 +122,7 @@ const CampaignDetails: React.FC<CampaignDetailsProps> = () => {
                     layout="vertical"
                     initialValues={{
                         title: campaignName,
-                        amount: campaignAmount,
+                        amount: isSponsored ? campaignAmount : 1,
                         description: campaignDescription,
                         factCheckers: campaignNumOfFactCheckers,
                         minEvidences: campaignMinEvidences,
@@ -130,25 +134,30 @@ const CampaignDetails: React.FC<CampaignDetailsProps> = () => {
                             description: all?.description,
                             factCheckers: all?.factCheckers,
                             minEvidences: all?.minEvidences,
+                            type: all?.amount > 0 ? DEBUNK_CAMPAIGN_TYPE.SPONSORED : DEBUNK_CAMPAIGN_TYPE.COMMUNITY,
                         }
+
                         setCampaignAmount?.(all?.amount)
                         setStepTwoValues?.(details)
                     }}
                 >
-                    <Form.Item<FieldType>
-                        label="Sponsorhip Amount"
-                        name="amount"
-                        rules={[{ required: true, message: 'Please input your description!' }]}
-                    >
-                        <InputNumber min={1} disabled={!isSponsored} size='large' addonBefore={(
-                            <Select defaultValue="USD" disabled={!isSponsored} onChange={(value) => {
-                                setSelectedCurrency?.(value)
-                            }}>
-                                {sourceCurrencies?.map(entry => <Option key={entry} value={entry}>{entry}</Option>)}
-                            </Select>
-                        )} />
-                        {/* <InputNumber min={1} disabled={!isSponsored} size='large' addonBefore={<SelectBefore type="amount" currency="USD" />} /> */}
-                    </Form.Item>
+                    {isSponsored && (
+                        <Form.Item<FieldType>
+                            label="Sponsorhip Amount"
+                            extra={<Typography.Text style={{ fontSize: 11 }} className="mt-1">The campaign will receive amount in selected currency</Typography.Text>}
+                            name="amount"
+                            rules={[{ required: true, message: 'Please input your description!' }]}
+                        >
+                            <InputNumber min={1} size='large' addonBefore={(
+                                <Select defaultValue="USD" onChange={(value) => {
+                                    setSelectedDestinationCurrency?.(value)
+                                }}>
+                                    {destinationCurrencies?.map(entry => <Option key={entry} value={entry}>{`${entry} ${getCurrencyFlag(entry)}`}</Option>)}
+                                </Select>
+                            )}
+                            />
+                        </Form.Item>
+                    )}
                     <Form.Item<FieldType>
                         label="Campaign Name"
                         name="title"

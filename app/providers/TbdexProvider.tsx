@@ -170,12 +170,14 @@ const TbdexContextProvider = ({ children }: PropsWithChildren) => {
                 //     })
                 // })
 
-                // const newAmount = await response.json()
+                // const response = await response.json()
+                // const newAmount = response?.conversion_result
 
-                // setMonopolyMoney({
-                //     amount: newAmount?.conversion_result,
-                //     currency: destination
-                // })
+                setMonopolyMoney({
+                    // amount: newAmount,
+                    amount: monopolyMoney?.amount,
+                    currency: destination
+                })
             } catch (error: any) {
                 console.log("Error in wallet conversion", error)
             }

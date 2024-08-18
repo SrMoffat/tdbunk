@@ -3,8 +3,15 @@ import { useCreateCampaignContext } from '@/app/providers/CreateCampaignProvider
 import { useTbdexContext } from '@/app/providers/TbdexProvider'
 import { Badge, Card, Flex, Tag, Typography, Tooltip, Avatar, theme } from 'antd'
 import Image from 'next/image'
+import React from 'react'
 
-const DebunkCampaignStats = () => {
+export interface DebunkCampaignStatsProps {
+    isFull: boolean;
+}
+
+const DebunkCampaignStats: React.FC<DebunkCampaignStatsProps> = ({
+    isFull
+}) => {
     const {
         campaignType,
         campaignAmount,
@@ -12,19 +19,19 @@ const DebunkCampaignStats = () => {
         campaignMinEvidences,
         campaignNumOfFactCheckers,
     } = useCreateCampaignContext()
-    const { selectedCurrency } = useTbdexContext()
+    const { selectedDestinationCurrency } = useTbdexContext()
     const { token: { colorPrimary } } = theme.useToken()
 
     const isSponsored = campaignType === 'Sponsored'
     return (
-        <Card className="min-h-80 flex-col w-full">
+        <Card className={`min-h-80 flex-col ${isFull ? 'w-full' : 'w-1/3'}`}>
             {
                 isSponsored && (
                     <Flex className="flex-col">
                         <Typography.Title level={5} style={{ fontWeight: "bold" }}>Campaign Amount</Typography.Title>
                         <Flex className="-mt-2 gap-1 items-center">
                             <Flex className="justify-center">
-                                <Tag className="mt-2" color="gold">{`${selectedCurrency} ${campaignAmount}`}</Tag>
+                                <Tag className="mt-2" color="gold">{`${selectedDestinationCurrency} ${campaignAmount}`}</Tag>
                             </Flex>
                         </Flex>
                     </Flex>

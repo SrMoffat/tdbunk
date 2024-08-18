@@ -11,7 +11,7 @@ import { CreateCampaignContextProvider } from '@/app/providers/CreateCampaignPro
 import { StepContent, StepNavigation, StepTracker, Title } from '@/app/start/campaign/components';
 
 export default function StartCampaignPage() {
-    const [current, setCurrent] = useState(1);
+    const [current, setCurrent] = useState(3);
     const [copied, setCopied] = useState(false);
 
     const steps = [

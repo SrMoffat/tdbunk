@@ -1,9 +1,11 @@
 "use client"
 import { StartCampaign } from '@/app/components/atoms/Icon';
-import { UserStorage } from '@/app/components/molecules/forms/Credentials';
 import useBrowserStorage from '@/app/hooks/useLocalStorage';
+import { CREDENTIALS_LOCAL_STORAGE_KEY, LOCAL_STORAGE_KEY } from '@/app/lib/constants';
 import { Button, Card, Flex, message, Steps } from 'antd';
 import Image from 'next/image';
+
+export interface UserStorage {}
 
 export interface StepTrackerProps {
     current: number;
@@ -65,8 +67,8 @@ export const StepNavigation: React.FC<StepNavigationProps> = ({
     const isLastStep = current === steps.length - 1
 
     const [localStorageData, setLocalUser,] = useBrowserStorage<UserStorage>(
-        'TDBunk',
-        'local'
+        CREDENTIALS_LOCAL_STORAGE_KEY,
+        LOCAL_STORAGE_KEY
     )
 
     const handleDone = () => {

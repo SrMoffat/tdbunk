@@ -1,5 +1,6 @@
 import DebunkingCampaign from "@/app/components/molecules/description/DebunkCampaign";
-import DebunkingSubject from "@/app/components/molecules/description/DebunkSubject";
+import DebunkCampaignStats from "@/app/components/molecules/description/DebunkCampaignStats";
+import DebunkSubject from "@/app/components/molecules/description/DebunkSubject";
 import { Flex, Layout, theme } from "antd";
 
 const StepThree = () => {
@@ -7,9 +8,12 @@ const StepThree = () => {
         token: { colorBgContainer },
     } = theme.useToken()
     return <Layout style={{ backgroundColor: colorBgContainer }}>
-        <Flex className="flex-col self-center">
-            <DebunkingSubject />
-            <DebunkingCampaign />
+        <Flex className="justify-center gap-4 w-full">
+            <DebunkCampaignStats />
+            <Flex className="flex-col justify-between gap-4">
+                <DebunkSubject />
+                <DebunkingCampaign />
+            </Flex>
         </Flex>
     </Layout>
 }

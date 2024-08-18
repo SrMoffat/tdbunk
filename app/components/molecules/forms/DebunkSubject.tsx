@@ -1,9 +1,9 @@
-import { Facebook, Instagram, TikTok, X, Youtube } from '@/app/components/atoms/Icon';
-import { Flex, Form, Input, Typography } from "antd";
-import Image from "next/image";
 import { DebounceSelect } from "@/app/components/atoms";
+import { Facebook, Instagram, TikTok, X, Youtube } from '@/app/components/atoms/Icon';
 import { DEBUNK_SOURCE } from '@/app/lib/constants';
 import { useCreateCampaignContext } from '@/app/providers/CreateCampaignProvider';
+import { Flex, Form, Input, Typography } from "antd";
+import Image from "next/image";
 
 export interface DebunkSubjectProps { }
 export interface FieldType {
@@ -15,7 +15,7 @@ export interface FieldType {
 };
 
 // TO DO: Fetch from some registry?
-const sourcesList = [
+export const sourcesList = [
     {
         name: DEBUNK_SOURCE.TIKTOK,
         icon: TikTok
@@ -38,18 +38,18 @@ const sourcesList = [
     },
 ]
 
-const DebunkSubject: React.FC<DebunkSubjectProps> = () => {
-    const { setStepOneValues, debunkTitle, debunkLink, debunkSource } = useCreateCampaignContext()
+export async function fetchSourcesList() {
+    return sourcesList.map(({ name, icon }: any) => ({
+        label: <Flex className="items-center">
+            <Typography.Text>{name}</Typography.Text>
+            <Image alt={name} width={25} height={25} src={icon} />
+        </Flex>,
+        value: name
+    }))
+}
 
-    async function fetchSourcesList() {
-        return sourcesList.map(({ name, icon }: any) => ({
-            label: <Flex className="items-center">
-                <Typography.Text>{name}</Typography.Text>
-                <Image alt={name} width={25} height={25} src={icon} />
-            </Flex>,
-            value: name
-        }))
-    }
+const DebunkSubjectForm: React.FC<DebunkSubjectProps> = () => {
+    const { setStepOneValues, debunkTitle, debunkLink, debunkSource } = useCreateCampaignContext()
 
     const selected = sourcesList.filter(({ name }) => name === debunkSource)[0]
     return (
@@ -108,6 +108,6 @@ const DebunkSubject: React.FC<DebunkSubjectProps> = () => {
     );
 };
 
-export default DebunkSubject;
+export default DebunkSubjectForm;
 
 

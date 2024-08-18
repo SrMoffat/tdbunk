@@ -1,4 +1,4 @@
-import { TBDexContextProvider } from '@/app/providers/TBDexProviderOld';
+import { TbdexContextProvider } from '@/app/providers/TbdexProvider';
 import ThemeProvider from '@/app/providers/ThemeProvider';
 import { Web5ContextProvider } from '@/app/providers/Web5Provider';
 import { AntdRegistry } from '@ant-design/nextjs-registry';
@@ -22,13 +22,13 @@ export default function RootLayout({
     <html lang="en">
       <body className={inter.className}>
         <Web5ContextProvider>
-          <TBDexContextProvider>
+          <TbdexContextProvider>
             <AntdRegistry>
               <ThemeProvider>
                 {children}
               </ThemeProvider>
             </AntdRegistry>
-          </TBDexContextProvider>
+          </TbdexContextProvider>
         </Web5ContextProvider>
       </body>
     </html>

@@ -32,9 +32,11 @@ const DebunkCampaignStats = () => {
             }
             <Flex className="flex-col mt-5">
                 <Typography.Title level={5} style={{ fontWeight: "bold" }}>Campaign Status</Typography.Title>
-                <Tag className="-mt-1">
-                    <Badge status="default" text="Pendingzzzzz" />
-                </Tag>
+                <Flex>
+                    <Tag className="-mt-1">
+                        <Badge status="default" text="Pending" />
+                    </Tag>
+                </Flex>
             </Flex>
             <Flex className="flex-col mt-5">
                 <Typography.Title level={5} style={{ fontWeight: "bold" }}>Campaign Type</Typography.Title>

@@ -4,6 +4,7 @@ import { CredentialStorage } from "@/app/components/molecules/forms/Credentials"
 import useBrowserStorage from "@/app/hooks/useLocalStorage";
 import { CREDENTIALS_LOCAL_STORAGE_KEY, LOCAL_STORAGE_KEY } from "@/app/lib/constants";
 import { parseJwtToVc } from "@/app/lib/web5";
+import { PRIMARY_GOLD_HEX } from "@/app/providers/ThemeProvider";
 import countries from '@/public/countries.json';
 import { CheckCircleFilled, CheckCircleOutlined } from "@ant-design/icons";
 import { resolveDid } from "@tbdex/http-client";
@@ -127,8 +128,12 @@ const CredentialOption2: React.FC<any> = ({
     }, [])
 
     const handleCardClicked = () => { }
+
+    const isSelected = true
+
+    // ${isSelected ? `border border-yellow-600` : ''}
     return (
-        <Card className='w-[360px] h-[220px]'>
+        <Card className={`w-[360px] h-[220px]`}>
             <Flex onClick={() => handleCardClicked()} className="absolute hover:opacity-70 rounded-md transition-all cursor-pointer">
                 <Image alt="card" src={Card1} width={300} height={300} />
                 <Flex className="absolute left-4 top-4 flex-col">
@@ -143,8 +148,7 @@ const CredentialOption2: React.FC<any> = ({
                 </Flex>
             </Flex>
             {
-                // isSelected
-                true
+                isSelected
                     ? <CheckCircleFilled className='absolute right-0 mr-2' style={{ color: colorPrimary }} />
                     : <CheckCircleOutlined className='absolute right-0 mr-2' style={{ color: 'gray' }} />
             }

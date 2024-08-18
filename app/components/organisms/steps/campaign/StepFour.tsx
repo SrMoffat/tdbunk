@@ -16,7 +16,7 @@ const StepFour = () => {
         token: { colorBgContainer },
     } = theme.useToken()
 
-    const { selectedCurrency, selectedDestinationCurrency } = useTbdexContext()
+    const { selectedCurrency, selectedDestinationCurrency, monopolyMoney } = useTbdexContext()
 
     const [localStorageData] = useBrowserStorage<CredentialStorage>(
         OFFERINGS_LOCAL_STORAGE_KEY,
@@ -37,7 +37,7 @@ const StepFour = () => {
             if (isHit) {
                 console.log("isHit ===>", offering?.pair)
             } else {
-                console.log("isMiss")
+                console.log("isMiss", [sourceCurrencyCode, destinationCurrencyCode])
                 // console.log("isMiss", offering?.pair)
             }
         }
@@ -75,11 +75,13 @@ const StepFour = () => {
         },
     ] as StepProps[];
 
+    console.log("Handle Here", monopolyMoney)
+
     return <Layout style={{ backgroundColor: colorBgContainer }}>
         <Flex className="flex-col">
             <Flex className="justify-between">
                 <Credentials />
-                <WalletBalance />
+                <WalletBalance money={monopolyMoney} />
             </Flex>
             <Flex className="flex-row mt-4 gap-3 justify-between">
                 <Card className="w-full">

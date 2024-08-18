@@ -1,23 +1,27 @@
 "use client"
 import useBrowserStorage from '@/app/hooks/useLocalStorage';
 import { LOCAL_STORAGE_KEY, OFFERINGS_LOCAL_STORAGE_KEY, PFIs } from "@/app/lib/constants";
-import { Offering, resolveDid, TbdexHttpClient } from '@tbdex/http-client';
+import { Offering, TbdexHttpClient } from '@tbdex/http-client';
 import { createContext, PropsWithChildren, useContext, useEffect, useState } from "react";
 
 export interface CredentialProp {
     [key: string]: string[]
 }
 
+export interface MonopolyMoney { currency: string, amount: number }
+
 export interface TbdexContextProps {
     offerings: any[];
     sourceCurrencies: any[];
     selectedCurrency: string;
-    destinationCurrencies: any[];
     credentials: CredentialProp;
+    destinationCurrencies: any[];
+    monopolyMoney: MonopolyMoney;
     selectedDestinationCurrency: string;
     setOfferings: React.Dispatch<React.SetStateAction<any[]>>;
     setSourceCurrencies: React.Dispatch<React.SetStateAction<any[]>>;
     setSelectedCurrency: React.Dispatch<React.SetStateAction<string>>;
+    setMonopolyMoney: React.Dispatch<React.SetStateAction<MonopolyMoney>>;
     setDestinationCurrencies: React.Dispatch<React.SetStateAction<any[]>>;
     setSelectedDestinationCurrency: React.Dispatch<React.SetStateAction<string>>;
     setCredentials: React.Dispatch<React.SetStateAction<CredentialProp | undefined>>;
@@ -135,9 +139,13 @@ const useTbdexContext = (): Partial<TbdexContextProps> => {
 
 const TbdexContextProvider = ({ children }: PropsWithChildren) => {
     const [offerings, setOfferings] = useState<any[]>([])
+    const [selectedCurrency, setSelectedCurrency] = useState<string>('USD')
+    const [monopolyMoney, setMonopolyMoney] = useState<MonopolyMoney>({
+        currency: 'USD',
+        amount: 1000
+    })
     const [credentials, setCredentials] = useState<CredentialProp>()
     const [sourceCurrencies, setSourceCurrencies] = useState<any[]>([])
-    const [selectedCurrency, setSelectedCurrency] = useState<string>('USD')
     const [destinationCurrencies, setDestinationCurrencies] = useState<any[]>([])
     const [selectedDestinationCurrency, setSelectedDestinationCurrency] = useState<string>('USD')
 
@@ -145,6 +153,34 @@ const TbdexContextProvider = ({ children }: PropsWithChildren) => {
         OFFERINGS_LOCAL_STORAGE_KEY,
         LOCAL_STORAGE_KEY
     )
+
+    useEffect(() => {
+        (async () => {
+            try {
+                const amount = monopolyMoney?.amount
+                const source = monopolyMoney?.currency
+                const destination = selectedCurrency
+
+                const response = await fetch('/api/rates', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        source,
+                        destination,
+                        amount
+                    })
+                })
+
+                const newAmount = await response.json()
+
+                setMonopolyMoney({
+                    amount: newAmount?.conversion_result,
+                    currency: destination
+                })
+            } catch (error: any) {
+                console.log("Error in wallet conversion", error)
+            }
+        })()
+    }, [selectedCurrency])
 
     useEffect(() => {
         (async () => {
@@ -182,6 +218,7 @@ const TbdexContextProvider = ({ children }: PropsWithChildren) => {
     return <TbdexContext.Provider value={{
         offerings,
         credentials,
+        monopolyMoney,
         sourceCurrencies,
         selectedCurrency,
         destinationCurrencies,
@@ -189,6 +226,7 @@ const TbdexContextProvider = ({ children }: PropsWithChildren) => {
 
         setOfferings,
         setCredentials,
+        setMonopolyMoney,
         setSelectedCurrency,
         setSourceCurrencies,
         setDestinationCurrencies,

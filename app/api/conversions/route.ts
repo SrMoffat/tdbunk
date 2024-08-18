@@ -6,7 +6,7 @@ import { NextResponse } from "next/server";
 const EXCHANGE_RATE_API_KEY = process.env.EXCHANGE_RATE_API_KEY || '58faa419858f91e90f7ab302'
 const EXCHANGE_RATE_API_URL = 'https://v6.exchangerate-api.com/v6'
 
-interface RequestContext {}
+interface RequestContext { }
 
 const handlePost = createEdgeRouter<NextRequest, RequestContext>();
 
@@ -16,14 +16,15 @@ handlePost
         return await next();
     })
     .post(async (req) => {
-        const { base } = await req.json()
+        const { source, destination, amount } = await req.json()
 
-        const url = `${EXCHANGE_RATE_API_URL}/${EXCHANGE_RATE_API_KEY}/latest/${base}`
+        const baseUrl = `${EXCHANGE_RATE_API_URL}/${EXCHANGE_RATE_API_KEY}/pair/${source}/${destination}`
+        const url = `${amount ? `${baseUrl}/${amount}` : baseUrl}`
 
         const response = await fetch(url);
-        const res = await response.json();
+        const conversion = await response.json();
 
-        return NextResponse.json(res);
+        return NextResponse.json(conversion);
     })
 
 export async function POST(request: NextRequest, ctx: RequestContext) {

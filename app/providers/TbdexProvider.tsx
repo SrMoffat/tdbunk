@@ -170,11 +170,10 @@ const TbdexContextProvider = ({ children }: PropsWithChildren) => {
                 //     })
                 // })
 
-                // const response = await response.json()
-                // const newAmount = response?.conversion_result
+                // const newAmount = await response.json()
 
                 setMonopolyMoney({
-                    // amount: newAmount,
+                    // amount: newAmount?.conversion_result,
                     amount: monopolyMoney?.amount,
                     currency: destination
                 })

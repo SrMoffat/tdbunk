@@ -44,23 +44,23 @@ const StepFour = () => {
         }
     }
 
-    getFormattedOfferings(Object.values(localStorageData!))
+    // getFormattedOfferings(Object.values(localStorageData!))
 
-    const data = Object.values(localStorageData!)
-    // [
-    //     {
-    //         title: "Ant Design Title 1",
-    //     },
-    //     {
-    //         title: "Ant Design Title 2",
-    //     },
-    //     {
-    //         title: "Ant Design Title 3",
-    //     },
-    //     {
-    //         title: "Ant Design Title 4",
-    //     },
-    // ];
+    // const data = Object.values(localStorageData!)
+    const data = [
+        {
+            title: "Ant Design Title 1",
+        },
+        {
+            title: "Ant Design Title 2",
+        },
+        {
+            title: "Ant Design Title 3",
+        },
+        {
+            title: "Ant Design Title 4",
+        },
+    ];
 
     const items = [
         {
@@ -169,7 +169,7 @@ const StepFour = () => {
                             />
                         </Flex>
                     </Flex>
-                    <List
+                    {/* <List
                         pagination={{ position: "bottom", align: "start", pageSize: 4 }}
                         
                         dataSource={data}
@@ -246,7 +246,7 @@ const StepFour = () => {
                                 </List.Item>
                             )
                         }}
-                    />
+                    /> */}
                 </Card>
                 <Flex className="w-1/4 flex flex-row">
                     <Flex className="w-full">

@@ -165,7 +165,7 @@ export const Credentials = () => {
     const [isSelected, setIsSelected] = useState(true)
 
     // @ts-ignore
-    const existingCreds = localStorageData?.credentials
+    const existingCreds = localStorageData?.credentials ?? {}
     const existingCredentials = Object.values(existingCreds).flat()
 
     return (

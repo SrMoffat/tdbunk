@@ -47,7 +47,7 @@ export const SearchOffers = () => {
 
     return (
         <Space.Compact block >
-            <Select defaultValue={selectedCurrency} onChange={(value) => {
+            <Select style={{ width: 130 }} defaultValue={selectedCurrency || 'USD'} onChange={(value) => {
                 setSelectedCurrency?.(value)
             }}>
                 {sourceCurrencies?.map(entry => <Option key={entry} value={entry}>{`${entry} ${getCurrencyFlag(entry)}`}</Option>)}
@@ -56,7 +56,7 @@ export const SearchOffers = () => {
             <Flex className="px-4 border-[0.2px] border-gray-700">
                 <RightCircleFilled style={{ color: colorPrimary }} />
             </Flex>
-            <Select defaultValue={selectedDestinationCurrency} onChange={(value) => {
+            <Select style={{ width: 130 }} defaultValue={selectedDestinationCurrency} onChange={(value) => {
                 setSelectedDestinationCurrency?.(value)
             }}>
                 {destinationCurrencies?.map(entry => <Option key={entry} value={entry}>{`${entry} ${getCurrencyFlag(entry)}`}</Option>)}

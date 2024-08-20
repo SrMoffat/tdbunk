@@ -159,7 +159,7 @@ const TbdexContextProvider = ({ children }: PropsWithChildren) => {
             try {
                 const amount = monopolyMoney?.amount
                 const source = monopolyMoney?.currency
-                const destination = selectedCurrency
+                const destination = selectedCurrency as string
 
                 // const response = await fetch('/api/conversions', {
                 //     method: 'POST',

@@ -9,6 +9,7 @@ import React, { useState } from 'react';
 import FinancialInstitutionCredential from '@/app/components/molecules/cards/FinancialCredential';
 import { useTbdexContext } from '@/app/providers/TbdexProvider';
 import { CREDENTIALS_LOCAL_STORAGE_KEY, LOCAL_STORAGE_KEY } from '@/app/lib/constants';
+import countries from "@/public/countries.json";
 
 export interface UserValue {
     label: string;
@@ -19,7 +20,7 @@ export type CredentialStorage = {} | null
 
 const CredentialsForm: React.FC = () => {
     const { walletDid } = useWeb5Context()
-    const { setCredentials } = useTbdexContext()
+    const { setCredentials, setSelectedCurrency } = useTbdexContext()
     const [isLoading, setIsLoading] = useState(false)
     const [value, setValue] = useState<UserValue[]>([]);
     const [localStorageData, setLocalCredentials] = useBrowserStorage<CredentialStorage>(
@@ -36,6 +37,8 @@ const CredentialsForm: React.FC = () => {
             console.log("Existing credentials", existingCreds)
 
         } else {
+            const defaultCurrencyFromCredential = countries.filter(({ countryCode }) => countryCode === details?.country?.value)[0]?.currencyCode
+            console.log("default currency from credential", defaultCurrencyFromCredential)
             const vc = await generateVc({
                 ...details,
                 did: walletDid
@@ -55,11 +58,12 @@ const CredentialsForm: React.FC = () => {
             })
 
             setLocalCredentials({
+                did: walletDid,
                 credentials: storedVc,
-                did: walletDid
+                defaultCurrency: defaultCurrencyFromCredential,
             })
-
             setCredentials?.(storedVc)
+            // setSelectedCurrency?.(defaultCurrencyFromCredential)
         }
     }
 

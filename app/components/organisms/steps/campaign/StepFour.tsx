@@ -10,14 +10,17 @@ import { OFFERINGS_LOCAL_STORAGE_KEY, LOCAL_STORAGE_KEY } from "@/app/lib/consta
 import { useTbdexContext } from "@/app/providers/TbdexProvider";
 import { RightCircleFilled, UserOutlined } from "@ant-design/icons";
 import { formatDistanceToNow } from 'date-fns';
+import { useEffect, useState } from "react";
 import { Avatar, Card, Flex, Layout, List, Segmented, StepProps, Steps, theme, Typography, Space, Button, Tag } from "antd";
+import MarketRate from "@/app/components/atoms/MarketRate";
 
 const StepFour = () => {
     const {
-        token: { colorBgContainer },
+        token: { colorBgContainer, colorPrimary },
     } = theme.useToken()
 
     const { selectedCurrency, selectedDestinationCurrency, monopolyMoney } = useTbdexContext()
+
 
     const [localStorageData] = useBrowserStorage<CredentialStorage>(
         OFFERINGS_LOCAL_STORAGE_KEY,
@@ -44,81 +47,12 @@ const StepFour = () => {
         }
     }
 
-    // getFormattedOfferings(Object.values(localStorageData!))
+    const storedOfferings = localStorageData
+        ? Object.values(localStorageData!)
+        : []
 
-    // const data = Object.values(localStorageData!)
-    const data = [
-        {
-            title: "Ant Design Title 1",
-        },
-        {
-            title: "Ant Design Title 2",
-        },
-        {
-            title: "Ant Design Title 3",
-        },
-        {
-            title: "Ant Design Title 4",
-        },
-    ];
+    getFormattedOfferings(storedOfferings)
 
-    const items = [
-        {
-            title: <Typography.Text className="text-green-600" style={{ fontSize: 11 }}>{`${selectedCurrency} 1.00`}</Typography.Text>,
-            status: 'process'
-        },
-        {
-            title: '',
-            status: 'wait'
-        },
-        {
-            title: <Typography.Text className="text-green-600" style={{ fontSize: 11 }}>{`${selectedDestinationCurrency} TODO`}</Typography.Text>,
-            status: 'process'
-        },
-    ] as StepProps[];
-
-    const entry = {
-        "did:dht:3fkz5ssfxbriwks3iy5nwys3q5kyx64ettp9wfn1yfekfkiguj1y": {
-            "id": "offering_01j429gbgafa6befma50crvhvs",
-            "createdAt": "2024-07-30T17:02:47.819Z",
-            "requiredClaims": {
-                "type[*]": "KnownCustomerCredential",
-                "issuer": "did:dht:bh8me68fsdb6xuyy3dsh4aanczexga3k3m7fk4ie6hj5jy6inq5y"
-            },
-            "pair": [
-                {
-                    "currencyCode": "GHS",
-                    "unit": 1,
-                    "methods": [
-                        {
-                            "kind": "GHS_BANK_TRANSFER"
-                        }
-                    ]
-                },
-                {
-                    "currencyCode": "USDC",
-                    "unit": 0.1,
-                    "methods": [
-                        {
-                            "kind": "USDC_WALLET_ADDRESS",
-                            "title": "USDC Required Payment Details",
-                            "estimatedSettlementTime": 43200,
-                            "paymentProperties": {
-                                "address": {
-                                    "title": "USDC Wallet Address",
-                                    "description": "Wallet address to pay out USDC to",
-                                    "type": "string"
-                                }
-                            }
-                        }
-                    ]
-                }
-            ]
-        }
-    }
-    const {
-        token: { colorPrimary },
-    } = theme.useToken()
 
     const renderPaymentMethods = (methods: any[]) => {
         const renderPropertyNames = (names: any[]) => {
@@ -161,17 +95,14 @@ const StepFour = () => {
                 <Card className="w-full">
                     <Flex className="items-center w-full">
                         <SearchOffers />
-                        <Flex className="flex-col items-center w-1/3">
-                            <Typography.Text style={{ fontSize: 12 }}>Market Rate</Typography.Text>
-                            <Steps
-                                type="inline"
-                                items={items}
-                            />
-                        </Flex>
+                        <MarketRate
+                            source={selectedCurrency}
+                            destination={selectedDestinationCurrency}
+                        />
                     </Flex>
                     {/* <List
                         pagination={{ position: "bottom", align: "start", pageSize: 4 }}
-                        
+                        loading={!data?.length}
                         dataSource={data}
                         className="mt-4"
                         renderItem={(item, index) => {

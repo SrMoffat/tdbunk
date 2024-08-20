@@ -22,10 +22,10 @@ export const PFIs = [
         name: "🏦 AquaFinance Capital",
         did: "did:dht:3fkz5ssfxbriwks3iy5nwys3q5kyx64ettp9wfn1yfekfkiguj1y",
         currencyPairs: [
-            ["GHS", "USDC"],
-            ["NGN", "KES"],
-            ["KES", "USD"],
-            ["USD", "KES"],
+            ["GHS", "USDC"],//
+            ["NGN", "KES"], //
+            ["KES", "USD"], //
+            ["USD", "KES"],//
         ]
     },
     {

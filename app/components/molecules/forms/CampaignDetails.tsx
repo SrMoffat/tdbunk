@@ -6,6 +6,7 @@ import { useCreateCampaignContext } from "@/app/providers/CreateCampaignProvider
 import { DEBUNK_CAMPAIGN_TYPE } from "@/app/lib/constants";
 import { useTbdexContext } from "@/app/providers/TbdexProvider";
 import { getCurrencyFlag } from "../../atoms/SearchOffersInput";
+import countries from "@/public/countries.json"
 
 const { Option } = Select
 
@@ -29,6 +30,7 @@ export interface FieldType {
 const CampaignDetails: React.FC<CampaignDetailsProps> = () => {
     const {
         sourceCurrencies,
+        selectedCurrency,
         destinationCurrencies,
         setSelectedCurrency,
         setSelectedDestinationCurrency
@@ -144,15 +146,22 @@ const CampaignDetails: React.FC<CampaignDetailsProps> = () => {
                     {isSponsored && (
                         <Form.Item<FieldType>
                             label="Sponsorhip Amount"
-                            extra={<Typography.Text style={{ fontSize: 11 }} className="mt-1">The campaign will receive amount in selected currency</Typography.Text>}
+                            extra={<Typography.Text style={{ fontSize: 11 }} className="mt-1 opacity-50">
+                                The campaign will receive amount in selected currency
+                            </Typography.Text>}
                             name="amount"
-                            rules={[{ required: true, message: 'Please input your description!' }]}
+                            rules={[{ required: true, message: 'Please input the sponsorship amount!' }]}
                         >
                             <InputNumber min={1} size='large' addonBefore={(
-                                <Select defaultValue="USD" onChange={(value) => {
+                                <Select style={{ width: 130 }} defaultValue={'USD'} onChange={(value) => {
                                     setSelectedDestinationCurrency?.(value)
                                 }}>
-                                    {destinationCurrencies?.map(entry => <Option key={entry} value={entry}>{`${entry} ${getCurrencyFlag(entry)}`}</Option>)}
+                                    {destinationCurrencies?.map(entry => {
+                                        const flag = getCurrencyFlag(entry)
+                                        return (
+                                            <Option key={entry} value={entry}>{`${entry} ${flag}`}</Option>
+                                        )
+                                    })}
                                 </Select>
                             )}
                             />
@@ -179,7 +188,6 @@ const CampaignDetails: React.FC<CampaignDetailsProps> = () => {
                         rules={[{ required: true, message: 'Please input number of fact checkers!' }]}
                     >
                         <InputNumber min={1} size='large' />
-                        {/* <InputNumber min={1} size='large' addonBefore={<SelectBefore type="factCheckers" />} /> */}
                     </Form.Item>
                     <Form.Item<FieldType>
                         label="Minimum Evidence Submissions"
@@ -187,7 +195,6 @@ const CampaignDetails: React.FC<CampaignDetailsProps> = () => {
                         rules={[{ required: true, message: 'Please input number of fact checkers!' }]}
                     >
                         <InputNumber min={1} size='large' />
-                        {/* <InputNumber min={1} size='large' addonBefore={<SelectBefore type="minEvidences" />} /> */}
                     </Form.Item>
                 </Form>
             </Flex>

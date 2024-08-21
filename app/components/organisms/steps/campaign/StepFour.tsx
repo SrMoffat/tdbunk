@@ -68,14 +68,14 @@ const renderPaymentMethods = (methods: any[]) => {
         <Flex>
             {methods.map(entry => {
                 const kind = entry.kind
-                const title = entry.title
                 const paymentProperties = entry.paymentProperties
 
                 const paymentPropertyNames = paymentProperties ? Object.keys(paymentProperties) : []
                 return (
-                    <Flex className="border border-red-500 w-full flex-col">
-                        <Typography.Text className="text-xs">{kind}</Typography.Text>
-                        {title}
+                    <Flex className="gap-2 w-full flex-col">
+                        <Flex>
+                            <Tag>{toCapitalizedWords(kind)}</Tag>
+                        </Flex>
                         {renderPropertyNames(paymentPropertyNames)}
                     </Flex>
                 )
@@ -209,38 +209,44 @@ const Offering = (props: any) => {
                         {offeringId}
                     </Tag>
                 </Flex>
-                {/* <Flex className="w-full">
-                    <Flex className="flex-col w-full">
-                        {renderPaymentMethods(offeringFromCurrencyMethods)}
+
+                <Flex className="gap-1">
+                    <Flex className="mt-4 border-[0.3px] border-gray-800 rounded-md p-3 w-[250px] justify-between items-center">
+                        <Flex className="flex-col gap-2">
+                            <Typography.Text className="text-xs" style={{ fontSize: 11 }}>
+                                Required Credential and Issuer:
+                            </Typography.Text>
+                            <Flex>
+                                <Tag className="items-center text-xs" color={hasRequiredCredentials ? 'green' : 'default'}>
+                                    {offeringRequiredClaims?.["type[*]"]}
+                                </Tag>
+                            </Flex>
+                            <Flex>
+                                <Tag>
+                                    <Typography.Text copyable>
+                                        {`${offeringRequiredClaims?.issuer.slice(0, 14)}...${offeringRequiredClaims?.issuer.slice(-6)}`}
+                                    </Typography.Text>
+                                </Tag>
+                            </Flex>
+                        </Flex>
+                        <Flex className="items-center">
+                            {
+                                hasRequiredCredentials
+                                    ? <CheckCircleFilled style={{ color: "#6abe39" }} />
+                                    : <InfoCircleFilled color="gray" />
+                            }
+                        </Flex>
                     </Flex>
-                    <Flex className="flex-col w-full">
-                        {renderPaymentMethods(offeringToCurrencyMethods)}
-                    </Flex>
-                </Flex> */}
-                <Flex className="mt-4 border-[0.3px] border-gray-800 rounded-md p-3 w-[250px] justify-between items-center">
-                    <Flex className="flex-col gap-2">
+                    <Flex className="mt-4 border-[0.3px] border-gray-800 rounded-md p-3 w-[250px] justify-between flex-col">
                         <Typography.Text className="text-xs" style={{ fontSize: 11 }}>
-                            Required Credentials:
+                            Required Recipient Payment Details:
                         </Typography.Text>
-                        <Flex>
-                            <Tag className="items-center text-xs" color={hasRequiredCredentials ? 'green' : 'default'}>
-                                {offeringRequiredClaims?.["type[*]"]}
-                            </Tag>
+                        {/* <Flex className="flex-col w-full">
+                            {renderPaymentMethods(offeringFromCurrencyMethods)}
+                        </Flex> */}
+                        <Flex className="flex-col w-full">
+                            {renderPaymentMethods(offeringToCurrencyMethods)}
                         </Flex>
-                        <Flex>
-                            <Tag>
-                                <Typography.Text copyable>
-                                    {`${offeringRequiredClaims?.issuer.slice(0, 14)}...${offeringRequiredClaims?.issuer.slice(-6)}`}
-                                </Typography.Text>
-                            </Tag>
-                        </Flex>
-                    </Flex>
-                    <Flex className="items-center">
-                        {
-                            hasRequiredCredentials
-                                ? <CheckCircleFilled style={{ color: "#6abe39" }} />
-                                : <InfoCircleFilled color="gray" />
-                        }
                     </Flex>
                 </Flex>
             </Card>
@@ -309,49 +315,7 @@ const StepFour = () => {
                     <List
                         pagination={{ position: "bottom", align: "start", pageSize: 4 }}
                         loading={isLoading}
-                        // dataSource={offerings}
-                        dataSource={[
-                            {
-                                "did:dht:3fkz5ssfxbriwks3iy5nwys3q5kyx64ettp9wfn1yfekfkiguj1y": {
-                                    "id": "offering_01j5ntkh70egbb43nzbs4be2wq",
-                                    "createdAt": "2024-08-19T17:22:53.793Z",
-                                    "requiredClaims": {
-                                        "type[*]": "KnownCustomerCredential",
-                                        "issuer": "did:dht:bh8me68fsdb6xuyy3dsh4aanczexga3k3m7fk4ie6hj5jy6inq5y"
-                                    },
-                                    "pair": [
-                                        {
-                                            "currencyCode": "GHS",
-                                            "unit": 1,
-                                            "methods": [
-                                                {
-                                                    "kind": "GHS_BANK_TRANSFER"
-                                                }
-                                            ]
-                                        },
-                                        {
-                                            "currencyCode": "USDC",
-                                            "unit": 0.1,
-                                            "methods": [
-                                                {
-                                                    "kind": "USDC_WALLET_ADDRESS",
-                                                    "title": "USDC Required Payment Details",
-                                                    "estimatedSettlementTime": 43200,
-                                                    "paymentProperties": {
-                                                        "address": {
-                                                            "title": "USDC Wallet Address",
-                                                            "description": "Wallet address to pay out USDC to",
-                                                            "type": "string"
-                                                        }
-                                                    }
-                                                }
-                                            ]
-                                        }
-                                    ]
-                                }
-                            }
-                        ]}
-
+                        dataSource={offerings}
                         className="mt-4"
                         renderItem={(item, index) => <Offering key={index} offering={item} />}
                     />

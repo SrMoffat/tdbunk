@@ -11,8 +11,20 @@ import { useTbdexContext } from "@/app/providers/TbdexProvider";
 import { RightCircleFilled, ClockCircleOutlined, CheckCircleFilled, InfoCircleFilled } from "@ant-design/icons";
 import { formatDistanceToNow } from 'date-fns';
 import { useEffect, useState } from "react";
-import { Avatar, Card, Flex, Layout, List, Segmented, StepProps, Steps, theme, Typography, Space, Button, Tag } from "antd";
+import { Avatar, Card, Flex, Layout, List, Segmented, StepProps, Steps, theme, Typography, Space, Button, Tag, Rate } from "antd";
 import MarketRate from "@/app/components/atoms/MarketRate";
+
+const toCapitalizedWords = (str: string) => {
+    // Replace any camelCase with space-separated words and snake_case with space-separated words
+    const spacedString = str.replace(/([a-z])([A-Z])/g, '$1 $2').replace(/_/g, ' ');
+
+    // Capitalize the first letter of each word
+    const capitalizedWords = spacedString.replace(/\b\w/g, function (char) {
+        return char.toUpperCase();
+    });
+
+    return capitalizedWords;
+}
 
 const getFormattedOfferings = (offerings: any[], source: string, destination: string) => {
     let direct = []
@@ -47,7 +59,7 @@ const renderPaymentMethods = (methods: any[]) => {
     const renderPropertyNames = (names: any[]) => {
         return (
             <Flex>
-                {names.map(name => <Tag>{name}</Tag>)}
+                {names.map(name => <Tag>{toCapitalizedWords(name)}</Tag>)}
             </Flex>
         )
     }
@@ -57,15 +69,13 @@ const renderPaymentMethods = (methods: any[]) => {
             {methods.map(entry => {
                 const kind = entry.kind
                 const title = entry.title
-                const estimatedSettlementTime = entry.estimatedSettlementTime
                 const paymentProperties = entry.paymentProperties
 
                 const paymentPropertyNames = paymentProperties ? Object.keys(paymentProperties) : []
                 return (
-                    <Flex>
-                        {kind}
+                    <Flex className="border border-red-500 w-full flex-col">
+                        <Typography.Text className="text-xs">{kind}</Typography.Text>
                         {title}
-                        {estimatedSettlementTime}
                         {renderPropertyNames(paymentPropertyNames)}
                     </Flex>
                 )
@@ -123,126 +133,116 @@ const Offering = (props: any) => {
             <Card className="w-full min-h-[200px]">
                 <Flex className="items-center justify-between">
                     <Flex className="gap-3">
-                        <Avatar shape="square" style={{ backgroundColor: '#f56a00', width: 50, height: 50 }}>{pfiName.charAt(0).toUpperCase()}</Avatar>
+                        <Avatar shape="square" style={{ backgroundColor: '#f56a00', width: 60, height: 60 }}>{pfiName.charAt(0).toUpperCase()}</Avatar>
                         <Flex className="flex-col">
-                            <Typography.Title level={5}>
+                            <Typography.Title level={5} style={{ marginTop: -4 }}>
                                 {pfiName}
                             </Typography.Title>
-                            <Typography.Text style={{ fontSize: 12, marginTop: -2 }} copyable>
+                            <Typography.Text style={{ fontSize: 12, marginTop: -4 }} copyable>
                                 {`${pfiDid.slice(0, 14)}...${pfiDid.slice(-8)}`}
                             </Typography.Text>
+                            <Flex className="gap-1">
+                                <Typography.Text className="font-bold text-xs">
+                                    Offered:
+                                </Typography.Text>
+                                <Typography.Text className="text-xs">
+                                    {offeringCreatedTime}
+                                </Typography.Text>
+                            </Flex>
                         </Flex>
                     </Flex>
-                    <Flex>
-
-                        <Tag className="items-center" color="gold">
-                            <Typography.Text>
-                                <ClockCircleOutlined className="mr-1" />
-                                {`${getEstimatedSettlementTime(offeringToCurrencyMethods, true)}s`}
-                            </Typography.Text>
+                    <Flex className="flex-col gap-2">
+                        <Tag className="items-center">
+                            <Rate style={{ fontSize: 11 }} disabled allowHalf defaultValue={2.5} />
                         </Tag>
+                        <Flex className="justify-end">
+                            <Tag className="items-center" color="gold">
+                                <Typography.Text>
+                                    <ClockCircleOutlined className="mr-1" />
+                                    {`${getEstimatedSettlementTime(offeringToCurrencyMethods, true)}s`}
+                                </Typography.Text>
+                            </Tag>
+                        </Flex>
                     </Flex>
                 </Flex>
-                <Flex className="mt-3 flex-col">
-                    <Flex className="gap-1">
-                        <Typography.Text className="font-bold">
-                            Offered:
-                        </Typography.Text>
-                        <Typography.Text>
-                            {offeringCreatedTime}
-                        </Typography.Text>
+                <Flex className="mt-3 justify-between">
+                    <Flex className="flex-col w-full items-start justify-end">
+                        <Flex>
+                            <Button type="primary">Start Payment</Button>
+                        </Flex>
                     </Flex>
-                    <Flex>
+                    <Flex className="w-full justify-end items-end">
+                        <Space.Compact>
+                            <Button className="h-[70px] w-[80px]" disabled>
+                                <Flex className="flex flex-col justify-center items-center">
+                                    <Flex className="text-white" >
+                                        {offeringFromCurrency?.currencyCode}
+                                        {' '}
+                                        {getCurrencyFlag(offeringFromCurrency?.currencyCode)}
+                                    </Flex>
+                                    < Flex className="-mt-1 text-xs text-white" > {`${offeringFromCurrency?.unit}.0`}</Flex>
+                                </Flex>
+                            </Button>
+                            <Button className="h-[70px] w-[50px]">
+                                <RightCircleFilled style={{ color: colorPrimary }} />
+                            </Button>
+                            <Button className="h-[70px] w-[80px]" disabled >
+                                <Flex className="flex flex-col justify-center items-center">
+                                    <Flex className="text-white" >
+                                        {offeringToCurrency?.currencyCode}
+                                        {' '}
+                                        {getCurrencyFlag(offeringToCurrency?.currencyCode)}
+                                    </Flex>
+                                    <Flex className="-mt-1 text-xs text-white" > {offeringToCurrency?.unit} </Flex>
+                                </Flex>
+                            </Button>
+                        </Space.Compact>
+                    </Flex>
+                </Flex>
+            </Card>
+            <Card className="w-full min-h-[200px]">
+                <Flex className="w-full gap-2">
+                    <Typography.Text className="font-bold">
+                        Offer ID:
+                    </Typography.Text>
+                    <Tag className="items-center" >
+                        {offeringId}
+                    </Tag>
+                </Flex>
+                {/* <Flex className="w-full">
+                    <Flex className="flex-col w-full">
                         {renderPaymentMethods(offeringFromCurrencyMethods)}
+                    </Flex>
+                    <Flex className="flex-col w-full">
                         {renderPaymentMethods(offeringToCurrencyMethods)}
                     </Flex>
-
-                    <Flex className="border-[0.2px] rounded-md p-3 w-[250px] justify-between items-center">
-                        <Flex className="flex-col gap-2">
-                            <Typography.Text className="text-xs" style={{ fontSize: 11 }}>
-                                Required Credentials:
-                            </Typography.Text>
-                            <Flex>
-                                <Tag className="items-center text-xs" color={hasRequiredCredentials ? 'green' : 'default'}>
-                                    {offeringRequiredClaims?.["type[*]"]}
-                                </Tag>
-                            </Flex>
-                            <Flex>
-                                <Tag>
-                                    <Typography.Text copyable>
-                                        {`${offeringRequiredClaims?.issuer.slice(0, 14)}...${offeringRequiredClaims?.issuer.slice(-6)}`}
-                                    </Typography.Text>
-                                </Tag>
-                            </Flex>
-                        </Flex>
-                        <Flex className="items-center">
-                            {
-                                hasRequiredCredentials
-                                    ? <CheckCircleFilled style={{ color: "#6abe39" }} />
-                                    : <InfoCircleFilled color="gray" />
-                            }
-                        </Flex>
-                        {/* <Typography.Text className="font-bold">
-                            Requires:
+                </Flex> */}
+                <Flex className="mt-4 border-[0.3px] border-gray-800 rounded-md p-3 w-[250px] justify-between items-center">
+                    <Flex className="flex-col gap-2">
+                        <Typography.Text className="text-xs" style={{ fontSize: 11 }}>
+                            Required Credentials:
                         </Typography.Text>
                         <Flex>
-                            
-                            <Typography.Text className="mr-2">
-                                from
-                            </Typography.Text>
-                            
-                        </Flex> */}
+                            <Tag className="items-center text-xs" color={hasRequiredCredentials ? 'green' : 'default'}>
+                                {offeringRequiredClaims?.["type[*]"]}
+                            </Tag>
+                        </Flex>
+                        <Flex>
+                            <Tag>
+                                <Typography.Text copyable>
+                                    {`${offeringRequiredClaims?.issuer.slice(0, 14)}...${offeringRequiredClaims?.issuer.slice(-6)}`}
+                                </Typography.Text>
+                            </Tag>
+                        </Flex>
                     </Flex>
-                    {/* <Flex className="gap-1">
-                        <Typography.Text className="font-bold">
-                            Offer ID:
-                        </Typography.Text>
-                        <Tag className="items-center" >
-                            {offeringId}
-                        </Tag>
-                    </Flex> */}
+                    <Flex className="items-center">
+                        {
+                            hasRequiredCredentials
+                                ? <CheckCircleFilled style={{ color: "#6abe39" }} />
+                                : <InfoCircleFilled color="gray" />
+                        }
+                    </Flex>
                 </Flex>
-                {/* 
-                <Flex>
-                    <Tag className="items-center" >
-                        {offeringRequiredClaims?.["type[*]"]}
-                    </Tag>
-                    <Typography.Text copyable >
-                        {offeringRequiredClaims?.issuer}
-                    </Typography.Text>
-                </Flex>
-                <Flex>
-                    {offeringToCurrencyMethods?.length} payment methods
-                    {offeringFromCurrencyMethods?.length} payment methods
-                </Flex>
-               */}
-            </Card>
-            <Card className="w-1/2 justify-center flex min-h-[200px]">
-                <Space.Compact>
-                    <Button className="h-[70px] w-[80px]" disabled>
-                        <Flex className="flex flex-col justify-center items-center">
-                            <Flex className="text-white" >
-                                {offeringFromCurrency?.currencyCode}
-                                {' '}
-                                {getCurrencyFlag(offeringFromCurrency?.currencyCode)}
-                            </Flex>
-                            < Flex className="-mt-1 text-xs text-white" > {`${offeringFromCurrency?.unit}.0`}</Flex>
-                        </Flex>
-                    </Button>
-                    <Button className="h-[70px] w-[50px]">
-                        <RightCircleFilled style={{ color: colorPrimary }} />
-                    </Button>
-                    <Button className="h-[70px] w-[80px]" disabled >
-                        <Flex className="flex flex-col justify-center items-center">
-                            <Flex className="text-white" >
-                                {offeringToCurrency?.currencyCode}
-                                {' '}
-                                {getCurrencyFlag(offeringToCurrency?.currencyCode)}
-                            </Flex>
-                            <Flex className="-mt-1 text-xs text-white" > {offeringToCurrency?.unit} </Flex>
-                        </Flex>
-                    </Button>
-                </Space.Compact>
             </Card>
         </List.Item>
 

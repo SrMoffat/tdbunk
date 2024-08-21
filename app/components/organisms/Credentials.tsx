@@ -45,7 +45,9 @@ export interface CredentialOptionProps {
 
 
 const CredentialOption: React.FC<any> = ({
-    vcJwt
+    vcJwt,
+    selectedCard,
+    setSelectedCard
 }) => {
     // issuer name as per docs here: https://www.tbdex.io/hackathon
     const issuerName = 'Ultimate Identity'
@@ -86,11 +88,11 @@ const CredentialOption: React.FC<any> = ({
         })()
     }, [])
 
-    const handleCardClicked = () => { }
+    const handleCardClicked = () => {
+        setSelectedCard(vcJwt)
+    }
 
-    const isSelected = true
-
-    // ${isSelected ? `border border-yellow-600` : ''}
+    const isSelected = selectedCard === vcJwt
     return (
         <Card className={`w-[360px] h-[220px]`}>
             <Flex onClick={() => handleCardClicked()} className="absolute hover:opacity-70 rounded-md transition-all cursor-pointer">
@@ -115,22 +117,17 @@ const CredentialOption: React.FC<any> = ({
     )
 }
 
-export const Credentials = () => {
-    const [localStorageData, setLocalCredentials] = useBrowserStorage<CredentialStorage>(
-        CREDENTIALS_LOCAL_STORAGE_KEY,
-        LOCAL_STORAGE_KEY
-    )
-
-    const [isSelected, setIsSelected] = useState(true)
-
-    // @ts-ignore
-    const existingCreds = localStorageData?.credentials ?? {}
-    const existingCredentials = Object.values(existingCreds).flat()
-
+export const Credentials = (props: any) => {
+    const { selectedCard, setSelectedCard, credentials } = props
     return (
         <Flex className="gap-3">
-            {existingCredentials.map(entry => (
-                <CredentialOption key={entry} vcJwt={entry} />
+            {credentials?.map((entry: any) => (
+                <CredentialOption
+                    key={entry}
+                    vcJwt={entry}
+                    selectedCard={selectedCard}
+                    setSelectedCard={setSelectedCard}
+                />
             ))}
         </Flex>
     )

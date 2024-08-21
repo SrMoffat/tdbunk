@@ -6,7 +6,7 @@ import DebunkSubject from "@/app/components/molecules/description/DebunkSubject"
 import { CredentialStorage } from "@/app/components/molecules/forms/Credentials";
 import { Credentials } from "@/app/components/organisms/Credentials";
 import useBrowserStorage from "@/app/hooks/useLocalStorage";
-import { OFFERINGS_LOCAL_STORAGE_KEY, LOCAL_STORAGE_KEY, PFIs } from "@/app/lib/constants";
+import { OFFERINGS_LOCAL_STORAGE_KEY, LOCAL_STORAGE_KEY, PFIs, CREDENTIALS_LOCAL_STORAGE_KEY } from "@/app/lib/constants";
 import { useTbdexContext } from "@/app/providers/TbdexProvider";
 import { RightCircleFilled, ClockCircleOutlined, CheckCircleFilled, InfoCircleFilled } from "@ant-design/icons";
 import { formatDistanceToNow } from 'date-fns';
@@ -261,10 +261,10 @@ const StepFour = () => {
     } = theme.useToken()
 
     const [isLoading, setIsLoading] = useState(false)
+    const [selectedCard, setSelectedCard] = useState('')
     const [offerings, setOfferings] = useState<any[]>([])
 
     const { selectedCurrency, selectedDestinationCurrency, monopolyMoney } = useTbdexContext()
-
 
     const [localStorageData] = useBrowserStorage<CredentialStorage>(
         OFFERINGS_LOCAL_STORAGE_KEY,
@@ -295,12 +295,26 @@ const StepFour = () => {
         setIsLoading(false)
     }, [selectedCurrency, selectedDestinationCurrency, localStorageData])
 
+    const [localStorageCredentials] = useBrowserStorage<CredentialStorage>(
+        CREDENTIALS_LOCAL_STORAGE_KEY,
+        LOCAL_STORAGE_KEY
+    )
+
+
+    // @ts-ignore
+    const existingCreds = localStorageCredentials?.credentials ?? {}
+    const existingCredentials = Object.values(existingCreds).flat()
+
     console.log("offerings ==>", offerings)
 
     return <Layout style={{ backgroundColor: colorBgContainer }}>
         <Flex className="flex-col">
             <Flex className="justify-between">
-                <Credentials />
+                <Credentials
+                    selectedCard={selectedCard}
+                    setSelectedCard={setSelectedCard}
+                    credentials={existingCredentials}
+                />
                 <WalletBalance money={monopolyMoney} />
             </Flex>
             <Flex className="flex-row mt-4 gap-3 justify-between">

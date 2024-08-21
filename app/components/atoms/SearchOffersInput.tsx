@@ -2,6 +2,7 @@ import { useTbdexContext } from "@/app/providers/TbdexProvider"
 import { RedoOutlined, RightCircleFilled, SearchOutlined } from "@ant-design/icons"
 import { Button, Flex, InputNumber, Select, Space, theme, Typography } from "antd"
 import countries from "@/public/countries.json"
+import { useCreateCampaignContext } from "@/app/providers/CreateCampaignProvider"
 
 const { Option } = Select
 
@@ -41,6 +42,8 @@ export const SearchOffers = () => {
         setSelectedDestinationCurrency
     } = useTbdexContext()
 
+    const {campaignAmount} = useCreateCampaignContext()
+
     // const destinationCountry = countries.filter(entry => entry.currencyCode === selectedDestinationCurrency)[0]?.flag
 
 
@@ -52,7 +55,7 @@ export const SearchOffers = () => {
             }}>
                 {sourceCurrencies?.map(entry => <Option key={entry} value={entry}>{`${entry} ${getCurrencyFlag(entry)}`}</Option>)}
             </Select>
-            <InputNumber defaultValue={12} />
+            <InputNumber defaultValue={campaignAmount} />
             <Flex className="px-4 border-[0.2px] border-gray-700">
                 <RightCircleFilled style={{ color: colorPrimary }} />
             </Flex>

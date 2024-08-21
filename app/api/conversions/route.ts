@@ -16,7 +16,7 @@ handlePost
         return await next();
     })
     .post(async (req) => {
-        const { source, destination, amount, isCrypto } = await req.json()
+        const { source, destination, amount } = await req.json()
 
         const baseUrl = `${EXCHANGE_RATE_API_URL}/${EXCHANGE_RATE_API_KEY}/pair/${source}/${destination}`
         const url = `${amount ? `${baseUrl}/${amount}` : baseUrl}`

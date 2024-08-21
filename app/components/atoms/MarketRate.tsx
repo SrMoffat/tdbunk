@@ -2,27 +2,6 @@ import { useTbdexContext } from '@/app/providers/TbdexProvider';
 import { Flex, Typography, Steps, StepProps } from 'antd';
 import React, { useEffect, useState } from "react";
 
-
-// const getConversionRate = async (source: string, destination: string) => {
-//     setIsLoading(true)
-//     const isSame = source === destination
-
-//     // const response = await 
-
-//     const conversion = '2.00'
-
-//     console.log("Conversion", {
-//         source,
-//         destination
-//     })
-
-//     return isSame ? '1.00' : conversion
-// }
-
-// const data = storedOfferings
-
-// const convertedAmount = await getConversionRate(selectedCurrency as string, selectedDestinationCurrency as string)
-
 const SourceCurrency = (props: any) => {
     const { currency } = props
     return (
@@ -57,22 +36,31 @@ const MarketRate = (props: any) => {
 
     const [isLoading, setIsLoading] = useState(false)
     const [convertedAmount, setConvertedAmount] = useState(1)
-    // const { selectedCurrency, selectedDestinationCurrency } = useTbdexContext()
 
     useEffect(() => {
         setIsLoading(true)
 
         const fetchRates = async () => {
-            const response = await fetch(`/api/rates?source=${source}&destination=${destination}`)
-            const data = await response.json()
+            try {
+                const response = await fetch(`/api/rates?source=${source}&destination=${destination}`)
+                const data = await response.json()
 
-            if (!data.rate) {
-                console.log("Use Paid API", data)
-            } else {
-                console.log("Use Free API", data)
-                setConvertedAmount(data?.rate)
+                if (!data.rate) {
+                    // const responsePaid = await fetch(`/api/conversions`, {
+                    //     method: 'POST',
+                    //     body: JSON.stringify({ source, destination })
+                    // })
+                    // const dataPaid = await responsePaid.json()
+                    // console.log("Use PAID API", dataPaid?.conversion_rate)
+                    // setConvertedAmount(dataPaid?.conversion_rate)
+                } else {
+                    // console.log("Use Free API", data)
+                    setConvertedAmount(data?.rate)
+                }
+                setIsLoading(false)
+            } catch (error: any) {
+                console.log("Fetching rates errored", error)
             }
-            setIsLoading(false)
         }
 
         fetchRates()

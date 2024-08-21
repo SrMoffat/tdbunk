@@ -19,7 +19,7 @@ export enum DEBUNK_CAMPAIGN_TYPE {
 
 export const PFIs = [
     {
-        name: "🏦 AquaFinance Capital",
+        name: "AquaFinance Capital",
         did: "did:dht:3fkz5ssfxbriwks3iy5nwys3q5kyx64ettp9wfn1yfekfkiguj1y",
         currencyPairs: [
             ["GHS", "USDC"],//
@@ -29,7 +29,7 @@ export const PFIs = [
         ]
     },
     {
-        name: "🏦 Flowback Financial",
+        name: "Flowback Financial",
         did: "did:dht:zkp5gbsqgzn69b3y5dtt5nnpjtdq6sxyukpzo68npsf79bmtb9zy",
         currencyPairs: [
             ["USD", "EUR"],
@@ -39,7 +39,7 @@ export const PFIs = [
         ]
     },
     {
-        name: "🏦 Vertex Liquid Assets",
+        name: "Vertex Liquid Assets",
         did: "did:dht:enwguxo8uzqexq14xupe4o9ymxw3nzeb9uug5ijkj9rhfbf1oy5y",
         currencyPairs: [
             ["EUR", "USD"],
@@ -49,7 +49,7 @@ export const PFIs = [
         ]
     },
     {
-        name: "🏦 Titanium Trust",
+        name: "Titanium Trust",
         did: "did:dht:ozn5c51ruo7z63u1h748ug7rw5p1mq3853ytrd5gatu9a8mm8f1o",
         currencyPairs: [
             ["USD", "AUD"],

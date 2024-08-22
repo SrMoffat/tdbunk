@@ -11,8 +11,12 @@ import { useTbdexContext } from "@/app/providers/TbdexProvider";
 import { RightCircleFilled, ClockCircleOutlined, CheckCircleFilled, InfoCircleFilled } from "@ant-design/icons";
 import { formatDistanceToNow } from 'date-fns';
 import { useEffect, useState } from "react";
-import { Avatar, Card, Flex, Layout, List, Segmented, StepProps, Steps, theme, Typography, Space, Button, Tag, Rate } from "antd";
+import { Avatar, Card, Flex, Layout, List, Segmented, StepProps, Steps, theme, Typography, Space, Button, Tag, Rate, Modal } from "antd";
 import MarketRate from "@/app/components/atoms/MarketRate";
+import Link from "next/link"
+import CredentialsForm from '@/app/components/molecules/forms/Credentials';
+import { Offering } from "@tbdex/http-client";
+
 
 const toCapitalizedWords = (str: string) => {
     // Replace any camelCase with space-separated words and snake_case with space-separated words
@@ -41,10 +45,10 @@ const getFormattedOfferings = (offerings: any[], source: string, destination: st
         const isHit = sourceMatches && destinationMatches
 
         if (isHit) {
-            console.log("HIT ===>")
+            // console.log("HIT ===>")
             direct.push(offer)
         } else {
-            console.log("NOT-HIT ===>")
+            // console.log("NOT-HIT ===>")
             hops.push(offering)
         }
     }
@@ -59,7 +63,7 @@ const renderPaymentMethods = (methods: any[]) => {
     const renderPropertyNames = (names: any[]) => {
         return (
             <Flex>
-                {names.map(name => <Tag>{toCapitalizedWords(name)}</Tag>)}
+                {names.map((name, index) => <Tag key={index}>{toCapitalizedWords(name)}</Tag>)}
             </Flex>
         )
     }
@@ -72,7 +76,7 @@ const renderPaymentMethods = (methods: any[]) => {
 
                 const paymentPropertyNames = paymentProperties ? Object.keys(paymentProperties) : []
                 return (
-                    <Flex className="gap-2 w-full flex-col">
+                    <Flex key={entry.kind} className="gap-2 w-full flex-col">
                         <Flex>
                             <Tag>{toCapitalizedWords(kind)}</Tag>
                         </Flex>
@@ -102,12 +106,23 @@ const getEstimatedSettlementTime = (methods: any[], fastest: boolean) => {
         : Math.round((slow + fast) / 2) / 1000
 }
 
-const Offering = (props: any) => {
+const OfferingDetails = (props: any) => {
     const {
         token: { colorPrimary },
     } = theme.useToken()
 
-    const { offering: values } = props
+    const {
+        isSelected,
+        credentials,
+        selectedCard,
+        setIsSelected,
+        createExchange,
+        setSelectedCard,
+        offering: values,
+        unformattedOfferings,
+    } = props
+
+    const [showModal, setShowModal] = useState(false)
 
     const offering = Object.values(values ? values : {})[0] as any
     const pfiDid = Object.keys(values ? values : {})[0] as any
@@ -123,13 +138,63 @@ const Offering = (props: any) => {
 
     const pfiName = PFIs.filter(pfi => pfi?.did === pfiDid)[0]?.name
 
-    const hasRequiredCredentials = true
+    const hasRequiredCredentials = Boolean(credentials?.length)
 
-    console.log("Offering", values)
+    const rawOfferins = unformattedOfferings?.flat() as Offering[]
+    const rawOfferingDetails = rawOfferins.filter(({ metadata: { id } }) => id === offeringId)
 
+    const offerRequiredClaims = rawOfferingDetails[0]?.data?.requiredClaims
+
+    const showPaymentModal = () => {
+        const isReadyForQuote = hasRequiredCredentials && isSelected
+
+        if (isReadyForQuote) {
+            createExchange({
+                vcJwts: credentials,
+                presentationDefinition: offerRequiredClaims
+            })
+        }
+        setShowModal(true)
+    }
+
+    const handleOk = () => {
+        setShowModal(false);
+    };
+
+    const handleCancel = () => {
+        setShowModal(false);
+    };
+
+    const cta = isSelected
+        ? 'Start Payment'
+        : 'Request Credentials'
+
+    const modalTitle = hasRequiredCredentials
+        ? isSelected
+            ? 'All Good'
+            : 'Has Credentials Just Select'
+        : 'Request Credentials'
+
+    const flow = hasRequiredCredentials
+        ? isSelected
+            ? <Flex>Proceed With Payment</Flex>
+            : <Credentials
+                credentials={credentials}
+                isSelected={isSelected}
+                selectedCard={selectedCard}
+                setIsSelected={setIsSelected}
+                setSelectedCard={setSelectedCard}
+            />
+        : <CredentialsForm />
+
+    const issuerDid = offeringRequiredClaims?.['vc.issuer']
+    const issuerVcSchema = offeringRequiredClaims?.['vc.credentialSchema.id']
 
     return (
         <List.Item className="flex flex-row gap-2">
+            <Modal title={modalTitle} open={showModal} onOk={handleOk} onCancel={handleCancel}>
+                {flow}
+            </Modal>
             <Card className="w-full min-h-[200px]">
                 <Flex className="items-center justify-between">
                     <Flex className="gap-3">
@@ -168,7 +233,12 @@ const Offering = (props: any) => {
                 <Flex className="mt-3 justify-between">
                     <Flex className="flex-col w-full items-start justify-end">
                         <Flex>
-                            <Button type="primary">Start Payment</Button>
+                            <Button
+                                onClick={() => showPaymentModal()}
+                                type="primary"
+                            >
+                                {cta}
+                            </Button>
                         </Flex>
                     </Flex>
                     <Flex className="w-full justify-end items-end">
@@ -217,24 +287,22 @@ const Offering = (props: any) => {
                                 Required Credential and Issuer:
                             </Typography.Text>
                             <Flex>
-                                <Tag className="items-center text-xs" color={hasRequiredCredentials ? 'green' : 'default'}>
-                                    {offeringRequiredClaims?.["type[*]"]}
+                                <Tag className="items-center text-xs" color={isSelected ? 'green' : 'default'}>
+                                    <Link href={issuerVcSchema} target="_blank" style={{ color: isSelected ? 'green' : 'default' }}>
+                                        View Credential Structure
+                                    </Link>
                                 </Tag>
                             </Flex>
                             <Flex>
                                 <Tag>
                                     <Typography.Text copyable>
-                                        {`${offeringRequiredClaims?.issuer.slice(0, 14)}...${offeringRequiredClaims?.issuer.slice(-6)}`}
+                                        {`${issuerDid?.slice(0, 14)}...${issuerDid?.slice(-6)}`}
                                     </Typography.Text>
                                 </Tag>
                             </Flex>
                         </Flex>
                         <Flex className="items-center">
-                            {
-                                hasRequiredCredentials
-                                    ? <CheckCircleFilled style={{ color: "#6abe39" }} />
-                                    : <InfoCircleFilled color="gray" />
-                            }
+                            {isSelected && <CheckCircleFilled style={{ color: "#6abe39" }} />}
                         </Flex>
                     </Flex>
                     <Flex className="mt-4 border-[0.3px] border-gray-800 rounded-md p-3 w-[250px] justify-between flex-col">
@@ -261,10 +329,17 @@ const StepFour = () => {
     } = theme.useToken()
 
     const [isLoading, setIsLoading] = useState(false)
+    const [isSelected, setIsSelected] = useState(false)
     const [selectedCard, setSelectedCard] = useState('')
     const [offerings, setOfferings] = useState<any[]>([])
 
-    const { selectedCurrency, selectedDestinationCurrency, monopolyMoney } = useTbdexContext()
+    const {
+        monopolyMoney,
+        createExchange,
+        selectedCurrency,
+        unformattedOfferings,
+        selectedDestinationCurrency,
+    } = useTbdexContext()
 
     const [localStorageData] = useBrowserStorage<CredentialStorage>(
         OFFERINGS_LOCAL_STORAGE_KEY,
@@ -300,18 +375,17 @@ const StepFour = () => {
         LOCAL_STORAGE_KEY
     )
 
-
     // @ts-ignore
     const existingCreds = localStorageCredentials?.credentials ?? {}
     const existingCredentials = Object.values(existingCreds).flat()
-
-    console.log("offerings ==>", offerings)
 
     return <Layout style={{ backgroundColor: colorBgContainer }}>
         <Flex className="flex-col">
             <Flex className="justify-between">
                 <Credentials
+                    isSelected={isSelected}
                     selectedCard={selectedCard}
+                    setIsSelected={setIsSelected}
                     setSelectedCard={setSelectedCard}
                     credentials={existingCredentials}
                 />
@@ -331,7 +405,18 @@ const StepFour = () => {
                         loading={isLoading}
                         dataSource={offerings}
                         className="mt-4"
-                        renderItem={(item, index) => <Offering key={index} offering={item} />}
+                        renderItem={(item, index) => <OfferingDetails
+                            key={index}
+                            offering={item}
+                            isSelected={isSelected}
+                            credentials={existingCredentials}
+                            unformattedOfferings={unformattedOfferings}
+
+                            selectedCard={selectedCard}
+                            setIsSelected={setIsSelected}
+                            createExchange={createExchange}
+                            setSelectedCard={setSelectedCard}
+                        />}
                     />
                 </Card>
                 <Flex className="w-1/4 flex flex-row">

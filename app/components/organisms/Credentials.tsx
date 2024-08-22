@@ -46,7 +46,9 @@ export interface CredentialOptionProps {
 
 const CredentialOption: React.FC<any> = ({
     vcJwt,
+    isSelected,
     selectedCard,
+    setIsSelected,
     setSelectedCard
 }) => {
     // issuer name as per docs here: https://www.tbdex.io/hackathon
@@ -89,10 +91,15 @@ const CredentialOption: React.FC<any> = ({
     }, [])
 
     const handleCardClicked = () => {
-        setSelectedCard(vcJwt)
+        if (selectedCard) {
+            setSelectedCard('')
+        } else {
+            setSelectedCard(vcJwt)
+        }
+
+        setIsSelected(selectedCard === vcJwt)
     }
 
-    const isSelected = selectedCard === vcJwt
     return (
         <Card className={`w-[360px] h-[220px]`}>
             <Flex onClick={() => handleCardClicked()} className="absolute hover:opacity-70 rounded-md transition-all cursor-pointer">
@@ -118,14 +125,22 @@ const CredentialOption: React.FC<any> = ({
 }
 
 export const Credentials = (props: any) => {
-    const { selectedCard, setSelectedCard, credentials } = props
+    const {
+        credentials,
+        isSelected,
+        selectedCard,
+        setIsSelected,
+        setSelectedCard,
+    } = props
     return (
         <Flex className="gap-3">
             {credentials?.map((entry: any) => (
                 <CredentialOption
                     key={entry}
                     vcJwt={entry}
+                    isSelected={isSelected}
                     selectedCard={selectedCard}
+                    setIsSelected={setIsSelected}
                     setSelectedCard={setSelectedCard}
                 />
             ))}

@@ -3,7 +3,7 @@ import { fetchCampaigns, setupCampaignProtocol } from '@/app/lib/web5';
 import { Web5 as Web5Api, type Web5 } from "@web5/api";
 import { PropsWithChildren, createContext, useContext, useEffect, useState } from 'react';
 import { DebunkProps } from '@/app/components/organisms/Debunks';
-import { DidDht, DidResolutionResult } from '@web5/dids';
+import { BearerDid, DidDht, DidResolutionResult } from '@web5/dids';
 
 export interface Web5ContextType {
     web5: Web5 | null;
@@ -13,6 +13,7 @@ export interface Web5ContextType {
     recoveryPhrase: string | null;
     setUserDid: (did: string) => void;
     setWalletDid: (did: string) => void;
+    getBearerDid: () => BearerDid | undefined;
     setCampaigns: React.Dispatch<React.SetStateAction<DebunkProps[]>>;
     setRecoveryPhrase: React.Dispatch<React.SetStateAction<string | null>>;
     resolveDid: (didUri: string) => Promise<DidResolutionResult | undefined>;
@@ -45,6 +46,10 @@ const Web5ContextProvider = ({ children }: PropsWithChildren) => {
         }
     }
 
+    const getBearerDid = () => {
+        return web5Instance?.agent?.agentDid
+    }
+
     useEffect(() => {
         (async () => {
             let recovery
@@ -65,6 +70,7 @@ const Web5ContextProvider = ({ children }: PropsWithChildren) => {
                 web5Client = web5
                 recovery = recoveryPhrase
             }
+
 
             setWalletDid(diduri)
             setWeb5Instance(web5Client)
@@ -87,6 +93,7 @@ const Web5ContextProvider = ({ children }: PropsWithChildren) => {
         resolveDid,
         setWalletDid,
         setCampaigns,
+        getBearerDid,
         setRecoveryPhrase
     }}>
         {children}

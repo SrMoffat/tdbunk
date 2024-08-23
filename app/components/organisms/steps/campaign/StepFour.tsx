@@ -16,6 +16,8 @@ import MarketRate from "@/app/components/atoms/MarketRate";
 import Link from "next/link"
 import CredentialsForm from '@/app/components/molecules/forms/Credentials';
 import { Offering } from "@tbdex/http-client";
+import { useWeb5Context } from "@/app/providers/Web5Provider";
+import { useCreateCampaignContext } from "@/app/providers/CreateCampaignProvider";
 
 
 const toCapitalizedWords = (str: string) => {
@@ -117,6 +119,7 @@ const OfferingDetails = (props: any) => {
         selectedCard,
         setIsSelected,
         createExchange,
+        campaignAmount,
         setSelectedCard,
         offering: values,
         unformattedOfferings,
@@ -142,14 +145,18 @@ const OfferingDetails = (props: any) => {
 
     const rawOfferins = unformattedOfferings?.flat() as Offering[]
     const rawOfferingDetails = rawOfferins.filter(({ metadata: { id } }) => id === offeringId)
+    const rawOffering = rawOfferingDetails[0]
 
-    const offerRequiredClaims = rawOfferingDetails[0]?.data?.requiredClaims
+    const offerRequiredClaims = rawOffering?.data?.requiredClaims
 
     const showPaymentModal = () => {
         const isReadyForQuote = hasRequiredCredentials && isSelected
 
         if (isReadyForQuote) {
             createExchange({
+                offering,
+                rawOffering,
+                campaignAmount,
                 vcJwts: credentials,
                 presentationDefinition: offerRequiredClaims
             })
@@ -333,6 +340,8 @@ const StepFour = () => {
     const [selectedCard, setSelectedCard] = useState('')
     const [offerings, setOfferings] = useState<any[]>([])
 
+    // const {getBearerDid} = useWeb5Context()
+
     const {
         monopolyMoney,
         createExchange,
@@ -340,6 +349,8 @@ const StepFour = () => {
         unformattedOfferings,
         selectedDestinationCurrency,
     } = useTbdexContext()
+
+    const {campaignAmount} = useCreateCampaignContext()
 
     const [localStorageData] = useBrowserStorage<CredentialStorage>(
         OFFERINGS_LOCAL_STORAGE_KEY,
@@ -409,6 +420,7 @@ const StepFour = () => {
                             key={index}
                             offering={item}
                             isSelected={isSelected}
+                            campaignAmount={campaignAmount}
                             credentials={existingCredentials}
                             unformattedOfferings={unformattedOfferings}
 

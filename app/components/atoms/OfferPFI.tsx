@@ -1,5 +1,6 @@
 import { ClockCircleOutlined } from "@ant-design/icons";
 import { Avatar, Flex, Rate, Tag, Typography } from "antd";
+import { formatDistanceToNow } from "date-fns";
 
 export interface PFIDetailsProps {
     pfiDid: string;
@@ -32,7 +33,7 @@ const PFIDetails = (props: PFIDetailsProps) => {
                             Offered:
                         </Typography.Text>
                         <Typography.Text className="text-xs">
-                            {createdAt}
+                            {formatDistanceToNow(createdAt, { addSuffix: true })}
                         </Typography.Text>
                     </Flex>
                 </Flex>

@@ -76,3 +76,100 @@ export const getEstimatedSettlementTime = (methods: any[], fastest: boolean) => 
         ? fast / 1000
         : Math.round((slow + fast) / 2) / 1000
 }
+
+export const formatRequiredClaims = (requiredClaims: any[]) => {
+    let claimDetails = {}
+
+    for (const claim of requiredClaims) {
+        const constraints = claim.constraints.fields
+
+        for (const constraint of constraints) {
+            const path = constraint.path[0].split('$.')[1]
+            const filter = constraint.filter.const
+
+            const result = {
+                [path]: filter
+            }
+
+            claimDetails = {
+                ...claimDetails,
+                ...result
+            }
+        }
+    }
+
+    return claimDetails
+}
+
+export const getPaymentMethodPairs = (methods: any) => {
+    const massagedMethods = []
+
+    for (const method of methods) {
+        const entry = {
+            kind: method.kind,
+            title: method.requiredPaymentDetails.title,
+            estimatedSettlementTime: method.estimatedSettlementTime,
+            paymentProperties: method.requiredPaymentDetails.properties,
+        }
+        massagedMethods.push(entry)
+    }
+
+    return massagedMethods
+}
+
+export const getOfferingPairs = (pfis: any) => {
+    const pairs = []
+    const sourceCurrencies = []
+    const destinationCurrencies = []
+
+    for (const pfi of pfis) {
+        const pfiDid = Object.keys(pfi)[0]
+        const pfiOfferings = pfi[pfiDid]
+
+        for (const offering of pfiOfferings) {
+            const metadata = offering.metadata
+            const data = offering.data
+            const payout = data.payout
+            const payin = data.payin
+            const claims = data.requiredClaims
+            const payoutCurrency = payout.currencyCode
+            const payinCurrency = payin.currencyCode
+
+            const payinMethods = getPaymentMethodPairs(payin.methods)
+            const payoutMethods = getPaymentMethodPairs(payout.methods)
+            const requiredClaims = formatRequiredClaims(claims.input_descriptors)
+
+            const currencyPair = {
+                [pfiDid]: {
+                    id: metadata.id,
+                    createdAt: metadata.createdAt,
+                    offeringFrom: metadata?.from,
+                    requiredClaims,
+                    pair: [
+                        {
+                            currencyCode: payin.currencyCode,
+                            // Using string simply because the original data type was string as in payoutUnitsPerPayinUnit
+                            unit: parseFloat('1'),
+                            methods: payinMethods
+                        },
+                        {
+                            currencyCode: payout.currencyCode,
+                            unit: parseFloat(data.payoutUnitsPerPayinUnit),
+                            methods: payoutMethods
+                        }
+                    ]
+                }
+            }
+
+            pairs.push(currencyPair)
+            sourceCurrencies.push(payinCurrency)
+            destinationCurrencies.push(payoutCurrency)
+        }
+    }
+
+    return {
+        offerings: pairs,
+        sourceCurrencies: [...new Set(sourceCurrencies)],
+        destinationCurrencies: [...new Set(destinationCurrencies)]
+    }
+}

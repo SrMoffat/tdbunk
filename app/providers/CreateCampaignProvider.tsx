@@ -78,18 +78,18 @@ const CreateCampaignContextProvider = ({ children }: PropsWithChildren) => {
         setCampaignNumOfFactCheckersCount(factCheckers)
     }
 
-    console.log("Context", {
-        debunkTitle,
-        debunkLink,
-        debunkSource,
+    // console.log("Context", {
+    //     debunkTitle,
+    //     debunkLink,
+    //     debunkSource,
 
-        campaignName,
-        campaignAmount,
-        campaignType,
-        campaignDescription,
-        campaignMinEvidencesCount,
-        campaignNumOfFactCheckersCount,
-    })
+    //     campaignName,
+    //     campaignAmount,
+    //     campaignType,
+    //     campaignDescription,
+    //     campaignMinEvidencesCount,
+    //     campaignNumOfFactCheckersCount,
+    // })
 
     return (
         <CreateCampaignContext.Provider value={{

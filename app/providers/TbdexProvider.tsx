@@ -6,6 +6,7 @@ import { PresentationDefinitionV2, PresentationExchange } from '@web5/credential
 import { createContext, PropsWithChildren, useContext, useEffect, useState } from "react";
 import { useWeb5Context } from './Web5Provider';
 import { BearerDid } from '@web5/dids';
+import { getOfferingPairs } from '../lib/utils';
 
 export interface CredentialProp {
     [key: string]: string[]
@@ -42,104 +43,6 @@ export interface TbdexContextProps {
 };
 
 export type OfferingStorage = {} | null
-
-const formatRequiredClaims = (requiredClaims: any[]) => {
-    let claimDetails = {}
-
-    for (const claim of requiredClaims) {
-        const constraints = claim.constraints.fields
-
-        for (const constraint of constraints) {
-            const path = constraint.path[0].split('$.')[1]
-            const filter = constraint.filter.const
-
-            const result = {
-                [path]: filter
-            }
-
-            claimDetails = {
-                ...claimDetails,
-                ...result
-            }
-
-        }
-    }
-
-    return claimDetails
-}
-
-const getPaymentMethodPairs = (methods: any) => {
-    const massagedMethods = []
-
-    for (const method of methods) {
-        const entry = {
-            kind: method.kind,
-            title: method.requiredPaymentDetails.title,
-            estimatedSettlementTime: method.estimatedSettlementTime,
-            paymentProperties: method.requiredPaymentDetails.properties,
-        }
-        massagedMethods.push(entry)
-    }
-
-    return massagedMethods
-}
-
-const getOfferingPairs = (pfis: any) => {
-    const pairs = []
-    const sourceCurrencies = []
-    const destinationCurrencies = []
-
-    for (const pfi of pfis) {
-        const pfiDid = Object.keys(pfi)[0]
-        const pfiOfferings = pfi[pfiDid]
-
-        for (const offering of pfiOfferings) {
-            const metadata = offering.metadata
-            const data = offering.data
-            const payout = data.payout
-            const payin = data.payin
-            const claims = data.requiredClaims
-            const payoutCurrency = payout.currencyCode
-            const payinCurrency = payin.currencyCode
-
-            const payinMethods = getPaymentMethodPairs(payin.methods)
-            const payoutMethods = getPaymentMethodPairs(payout.methods)
-            const requiredClaims = formatRequiredClaims(claims.input_descriptors)
-
-            const currencyPair = {
-                [pfiDid]: {
-                    id: metadata.id,
-                    createdAt: metadata.createdAt,
-                    offeringFrom: metadata?.from,
-                    requiredClaims,
-                    pair: [
-                        {
-                            currencyCode: payin.currencyCode,
-                            // Using string simply because the original data type was string as in payoutUnitsPerPayinUnit
-                            unit: parseFloat('1'),
-                            methods: payinMethods
-                        },
-                        {
-                            currencyCode: payout.currencyCode,
-                            unit: parseFloat(data.payoutUnitsPerPayinUnit),
-                            methods: payoutMethods
-                        }
-                    ]
-                }
-            }
-
-            pairs.push(currencyPair)
-            sourceCurrencies.push(payinCurrency)
-            destinationCurrencies.push(payoutCurrency)
-        }
-    }
-
-    return {
-        offerings: pairs,
-        sourceCurrencies: [...new Set(sourceCurrencies)],
-        destinationCurrencies: [...new Set(destinationCurrencies)]
-    }
-}
 
 
 const TbdexContext = createContext<Partial<TbdexContextProps>>({});
@@ -282,16 +185,19 @@ const TbdexContextProvider = ({ children }: PropsWithChildren) => {
                 offering: rawOffering
             })
 
-            // await signRfQ({
-            //     rfq: rfq as Rfq,
-            //     did: getBearerDid?.() as BearerDid
+            await signRfQ({
+                rfq: rfq as Rfq,
+                did: getBearerDid?.() as BearerDid
 
-            // })
+            })
 
-            // TbdexHttpClient.createExchange(rfq as Rfq)
+            TbdexHttpClient.createExchange(rfq as Rfq, {
+                replyTo: 'http://localhost:3000/api/exchanges'
+            })
 
             console.log("Selected Credentials", { selectedCredentials, walletDid, userDid })
             console.log("RFQ=======>", rfq)
+            console.log("getBearerDid?.()", getBearerDid?.())
 
             return ['']
 
@@ -299,6 +205,8 @@ const TbdexContextProvider = ({ children }: PropsWithChildren) => {
             console.log("Something went wrong createExchange", error)
         }
     }
+
+    const fetchExchanges = async () => {}
 
     useEffect(() => {
         (async () => {
@@ -367,6 +275,7 @@ const TbdexContextProvider = ({ children }: PropsWithChildren) => {
             }
         })()
     }, [])
+
     return <TbdexContext.Provider value={{
         offerings,
         credentials,

@@ -52,34 +52,35 @@ const Web5ContextProvider = ({ children }: PropsWithChildren) => {
 
     useEffect(() => {
         (async () => {
-            let recovery
-            let diduri = ''
-            let web5Client = null
+            // let recovery
+            // let diduri = ''
+            // let web5Client = null
 
-            const didExists = false
+            // const didExists = false
 
-            if (didExists) {
-                // Check if DID exists in storage, if so, import it
-                console.log("Handle Did exists")
-            } else {
-                // If not, create one and set it in storage
-                const { web5, did: walletDid, recoveryPhrase } = await Web5Api.connect({
-                    password: process.env.WEB5_PASSWORD // ?? '5PC{*?e|ix48'
-                });
-                diduri = walletDid
-                web5Client = web5
-                recovery = recoveryPhrase
-            }
+            // if (didExists) {
+            //     // Check if DID exists in storage, if so, import it
+            //     console.log("Handle Did exists")
+            // } else {
+            //     // If not, create one and set it in storage
+            //     const { web5, did: walletDid, recoveryPhrase } = await Web5Api.connect({
+            //         password: process.env.WEB5_PASSWORD ?? '5PC{*?e|ix48'
+            //     });
+            //     diduri = walletDid
+            //     web5Client = web5
+            //     recovery = recoveryPhrase
+            // }
 
 
-            setWalletDid(diduri)
-            setWeb5Instance(web5Client)
-            setRecoveryPhrase(recoveryPhrase)
+            console.log("Details")
+            // setWalletDid(diduri)
+            // setWeb5Instance(web5Client)
+            // setRecoveryPhrase(recoveryPhrase)
 
-            await setupCampaignProtocol(web5Client, diduri)
+            // await setupCampaignProtocol(web5Client, diduri)
 
-            const campaigns = await fetchCampaigns(web5Client, diduri)
-            setCampaigns(campaigns)
+            // const campaigns = await fetchCampaigns(web5Client, diduri)
+            // setCampaigns(campaigns)
         })()
     }, [])
 

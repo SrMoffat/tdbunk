@@ -43,20 +43,27 @@ const AssetExchangePFIDetails = ({
 }: AssetExchangePFIDetailsProps) => {
     return (
         <Card className="w-full min-h-[200px]">
-            <PFIDetails pfiName={pfiName} createdAt={offeringCreatedAt} pfiDid={pfiDid}
-                estimatedSettlementTime={getEstimatedSettlementTime(offeringToCurrencyMethods, true)} />
+            <PFIDetails
+                pfiDid={pfiDid}
+                pfiName={pfiName}
+                createdAt={offeringCreatedAt}
+                estimatedSettlementTime={getEstimatedSettlementTime(offeringToCurrencyMethods, true)}
+            />
             <Flex className="mt-3 justify-between">
-                <AssetExachangeAction cta={cta} showModal={showPaymentModal} />
+                <AssetExachangeAction
+                    cta={cta}
+                    showModal={showPaymentModal}
+                />
                 <AssetExchangeRates
-                    fromCurrencyCode={fromCurrencyCode}
-                    fromCurrencyFlag={fromCurrencyFlag}
+                    toUnit={toUnit}
                     fromUnit={fromUnit}
                     toCurrencyCode={toCurrencyCode}
                     toCurrencyFlag={toCurrencyFlag}
-                    toUnit={toUnit} />
+                    fromCurrencyFlag={fromCurrencyFlag}
+                    fromCurrencyCode={fromCurrencyCode}
+                />
             </Flex>
         </Card>
-
     )
 }
 
@@ -165,10 +172,10 @@ const OfferingDetails = (props: any) => {
                 toCurrencyFlag={getCurrencyFlag(offeringToCurrency?.currencyCode)}
             />
             <AssetExchangeOffer
-                isSelected={isSelected}
                 issuerDid={issuerDid}
-                issuerVcSchema={issuerVcSchema}
+                isSelected={isSelected}
                 offeringId={offeringId}
+                issuerVcSchema={issuerVcSchema}
                 offeringToCurrencyMethods={offeringToCurrencyMethods}
             />
         </List.Item>

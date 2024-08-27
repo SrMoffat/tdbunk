@@ -49,7 +49,7 @@ const OfferCard = ({
     offeringToCurrencyMethods
 }: OfferCardProps) => {
     return (
-        <Card className="w-full min-h-[200px]">
+        <Card className="w-[470px] min-h-[200px]">
             <Flex className="w-full gap-2">
                 <Typography.Text className="font-bold">
                     Offer ID:

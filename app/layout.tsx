@@ -1,3 +1,4 @@
+import { CampaignsContextProvider } from '@/app/providers/CampaignsProvider';
 import { TbdexContextProvider } from '@/app/providers/TbdexProvider';
 import ThemeProvider from '@/app/providers/ThemeProvider';
 import { Web5ContextProvider } from '@/app/providers/Web5Provider';
@@ -5,6 +6,8 @@ import { AntdRegistry } from '@ant-design/nextjs-registry';
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
+
+
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -22,13 +25,15 @@ export default function RootLayout({
     <html lang="en">
       <body className={inter.className}>
         <Web5ContextProvider>
-          <TbdexContextProvider>
-            <AntdRegistry>
-              <ThemeProvider>
-                {children}
-              </ThemeProvider>
-            </AntdRegistry>
-          </TbdexContextProvider>
+          <CampaignsContextProvider>
+            <TbdexContextProvider>
+              <AntdRegistry>
+                <ThemeProvider>
+                  {children}
+                </ThemeProvider>
+              </AntdRegistry>
+            </TbdexContextProvider>
+          </CampaignsContextProvider>
         </Web5ContextProvider>
       </body>
     </html>

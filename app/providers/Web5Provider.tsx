@@ -1,5 +1,5 @@
 'use client'
-import { fetchCampaigns, setupCampaignProtocol } from '@/app/lib/web5';
+import { fetchCampaigns, setupTdbunkProtocol } from '@/app/lib/web5';
 import { Web5 as Web5Api, type Web5 } from "@web5/api";
 import { PropsWithChildren, createContext, useContext, useEffect, useState } from 'react';
 import { DebunkProps } from '@/app/components/organisms/Debunks';
@@ -52,35 +52,47 @@ const Web5ContextProvider = ({ children }: PropsWithChildren) => {
 
     useEffect(() => {
         (async () => {
-            // let recovery
-            // let diduri = ''
-            // let web5Client = null
+            try {
+                let recovery
+                let diduri = ''
+                let web5Client = null
 
-            // const didExists = false
+                const didExists = false
 
-            // if (didExists) {
-            //     // Check if DID exists in storage, if so, import it
-            //     console.log("Handle Did exists")
-            // } else {
-            //     // If not, create one and set it in storage
-            //     const { web5, did: walletDid, recoveryPhrase } = await Web5Api.connect({
-            //         password: process.env.WEB5_PASSWORD ?? '5PC{*?e|ix48'
-            //     });
-            //     diduri = walletDid
-            //     web5Client = web5
-            //     recovery = recoveryPhrase
-            // }
+                if (didExists) {
+                    // Check if DID exists in storage, if so, import it
+                    console.log("Handle Did exists")
+                } else {
+                    // If not, create one and set it in storage
+                    const { web5, did: walletDid, recoveryPhrase } = await Web5Api.connect({
+                        // password: process.env.WEB5_PASSWORD ?? '5PC{*?e|ix48',
+                        sync: '5s'
+                    });
+
+                    diduri = walletDid
+                    web5Client = web5
+                    recovery = recoveryPhrase
+                }
 
 
-            console.log("Details")
-            // setWalletDid(diduri)
-            // setWeb5Instance(web5Client)
-            // setRecoveryPhrase(recoveryPhrase)
+                console.log("Details", {
+                    web5Client,
+                    diduri,
+                    recovery
+                })
 
-            // await setupCampaignProtocol(web5Client, diduri)
+                setWalletDid(diduri)
+                setWeb5Instance(web5Client)
+                setRecoveryPhrase(recoveryPhrase)
 
-            // const campaigns = await fetchCampaigns(web5Client, diduri)
-            // setCampaigns(campaigns)
+                await setupTdbunkProtocol(web5Client, diduri)
+
+                // const campaigns = await fetchCampaigns(web5Client, diduri)
+                // setCampaigns(campaigns)
+
+            } catch (error: any) {
+                console.log("UseEffect mounted error", error)
+            }
         })()
     }, [])
 

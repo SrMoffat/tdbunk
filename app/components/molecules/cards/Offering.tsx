@@ -172,6 +172,7 @@ const OfferingDetails = (props: any) => {
                 toCurrencyFlag={getCurrencyFlag(offeringToCurrency?.currencyCode)}
             />
             <AssetExchangeOffer
+                isRecommended
                 issuerDid={issuerDid}
                 isSelected={isSelected}
                 offeringId={offeringId}

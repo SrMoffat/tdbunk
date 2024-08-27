@@ -172,32 +172,32 @@ const TbdexContextProvider = ({ children }: PropsWithChildren) => {
             const offeringToCurrencyMethods = offeringToCurrency?.methods
 
 
-            const rfq = await createRfQ({
-                offering,
-                amount: campaignAmount,
-                payinMethods: offeringFromCurrencyMethods,
-                payoutMethods: offeringToCurrencyMethods,
-                credentials
-            })
+            // const rfq = await createRfQ({
+            //     offering,
+            //     amount: campaignAmount,
+            //     payinMethods: offeringFromCurrencyMethods,
+            //     payoutMethods: offeringToCurrencyMethods,
+            //     credentials
+            // })
 
-            await validateOffering({
-                rfq,
-                offering: rawOffering
-            })
+            // await validateOffering({
+            //     rfq,
+            //     offering: rawOffering
+            // })
 
-            await signRfQ({
-                rfq: rfq as Rfq,
-                did: getBearerDid?.() as BearerDid
+            // await signRfQ({
+            //     rfq: rfq as Rfq,
+            //     did: getBearerDid?.() as BearerDid
 
-            })
+            // })
 
-            TbdexHttpClient.createExchange(rfq as Rfq, {
-                replyTo: 'http://localhost:3000/api/exchanges'
-            })
+            // TbdexHttpClient.createExchange(rfq as Rfq, {
+            //     replyTo: 'http://localhost:3000/api/exchanges'
+            // })
 
-            console.log("Selected Credentials", { selectedCredentials, walletDid, userDid })
-            console.log("RFQ=======>", rfq)
-            console.log("getBearerDid?.()", getBearerDid?.())
+            // console.log("Selected Credentials", { selectedCredentials, walletDid, userDid })
+            // console.log("RFQ=======>", rfq)
+            // console.log("getBearerDid?.()", getBearerDid?.())
 
             return ['']
 

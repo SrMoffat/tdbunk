@@ -42,7 +42,7 @@ const AssetExchangePFIDetails = ({
     offeringToCurrencyMethods,
 }: AssetExchangePFIDetailsProps) => {
     return (
-        <Card className="w-full min-h-[200px]">
+        <Card className="border w-full min-h-[200px]">
             <PFIDetails
                 pfiDid={pfiDid}
                 pfiName={pfiName}
@@ -134,7 +134,7 @@ const OfferingDetails = (props: any) => {
     const modalTitle = hasRequiredCredentials
         ? isSelected
             ? 'All Good'
-            : 'Has Credentials Just Select'
+            : 'Select Credential'
         : 'Request Credentials'
 
     const flow = hasRequiredCredentials
@@ -154,7 +154,7 @@ const OfferingDetails = (props: any) => {
 
     return (
         <List.Item className="flex flex-row gap-2">
-            <Modal title={modalTitle} open={showModal} onOk={handleOk} onCancel={handleCancel}>
+            <Modal width={800} title={modalTitle} open={showModal} onOk={handleOk} onCancel={handleCancel}>
                 {flow}
             </Modal>
             <AssetExchangePFIDetails
@@ -167,7 +167,7 @@ const OfferingDetails = (props: any) => {
                 offeringCreatedAt={offeringCreatedAt}
                 toCurrencyCode={offeringToCurrency?.currencyCode}
                 offeringToCurrencyMethods={offeringToCurrencyMethods}
-                fromCurrencyCode={offeringFromCurrency?.toCurrencyCode}
+                fromCurrencyCode={offeringFromCurrency?.currencyCode}
                 fromCurrencyFlag={getCurrencyFlag(offeringFromCurrency?.currencyCode)}
                 toCurrencyFlag={getCurrencyFlag(offeringToCurrency?.currencyCode)}
             />

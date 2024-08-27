@@ -41,7 +41,7 @@ export const createDwnCampaign = async (web5: Web5Api | null) => {
         "@type": "campaign",
         "title": "Debunk Test Campaign",
         "description": "Debunk Test Campaign Descriptions Here Goes",
-        "author": "did:dht:4w4wzgk9xsgotg1fpw813f6uiigjtm8udnbm7bz1targa38fzymy",
+        "author": "did:dht:b3tits968u8rdoxiec3qpb9tizg57zbspgn1mattogi7n3bfmc4y",
         // "recipient": newTodo.value.recipientDID,
     }
 
@@ -53,7 +53,7 @@ export const createDwnCampaign = async (web5: Web5Api | null) => {
                 protocolPath: 'campaign',
                 schema: TdbunkProtocol.types.campaign.schema,
                 dataFormat: TdbunkProtocol.types.campaign.dataFormats[0],
-                recipient: "did:dht:teyigdaxi7oydpjsohpmfrscqa3schy5sxsa4ten1ydsyrxts5ay"
+                recipient: "did:dht:b3tits968u8rdoxiec3qpb9tizg57zbspgn1mattogi7n3bfmc4y"
             }
         });
 
@@ -62,7 +62,7 @@ export const createDwnCampaign = async (web5: Web5Api | null) => {
 
         console.log("campaign =====+++-->", campaign)
 
-        const response = await record?.send("did:dht:teyigdaxi7oydpjsohpmfrscqa3schy5sxsa4ten1ydsyrxts5ay");
+        const response = await record?.send("did:dht:b3tits968u8rdoxiec3qpb9tizg57zbspgn1mattogi7n3bfmc4y");
 
         console.log("Data", response?.status)
 
@@ -120,42 +120,19 @@ export const setupTdbunkProtocol = async (web5: Web5Api | null, did: string) => 
                 }
             });
 
+            // const isConfigured = configureStatus.detail === 'Accepted'
+            if (protocol) {
+                const { status: remoteStatus } = await protocol.send(did);
+                const isInstalled = remoteStatus.detail === 'Accepted'
+
+                console.log("Local Protocol Installation Status", {
+                    status: remoteStatus.detail,
+                    isInstalled
+                })
+            }
+            
             console.log('Protocol configured', configureStatus, protocol);
         }
-
-        // await createDwnCampaign(web5)
-        await fetchCampaigns(web5, did)
-
-        // configure protocol on local DWN
-        // const { status: configureStatus, protocol } = await web5.dwn.protocols.configure({
-        //     message: {
-        //         definition: protocolDefinition,
-        //     }
-        // });
-        // const { protocol, status: localStatus } =
-        //     await web5!.dwn.protocols.configure({
-        //         message: {
-        //             definition: TdbunkProtocol,
-        //         },
-        //     });
-
-        // const isConfigured = localStatus.detail === 'Accepted'
-
-        // console.log("Local Protocol Configuration Status", {
-        //     status: localStatus.detail,
-        //     isConfigured,
-        //     protocol
-        // })
-
-        // if (protocol) {
-        //     const { status: remoteStatus } = await protocol.send(did);
-        //     const isInstalled = remoteStatus.detail === 'Accepted'
-
-        //     console.log("Local Protocol Installation Status", {
-        //         status: remoteStatus.detail,
-        //         isInstalled
-        //     })
-        // }
     } catch (error: any) {
         console.log("Error setting up campaign protocol", error);
     }

@@ -49,8 +49,7 @@ const AssetExchangeOffer = ({
     offeringToCurrencyMethods
 }: AssetExchangeOfferProps) => {
     return (
-        <Card className="w-full min-h-[200px]">
-
+        <Card className="w-1/2 min-h-[200px]">
             <Flex className="w-full gap-2">
                 <Typography.Text className="font-bold">
                     Offer ID:

@@ -1,5 +1,5 @@
 'use client'
-import { fetchCampaigns, setupTdbunkProtocol } from '@/app/lib/web5';
+import { createDwnCampaign, fetchCampaigns, setupTdbunkProtocol } from '@/app/lib/web5';
 import { Web5 as Web5Api, type Web5 } from "@web5/api";
 import { PropsWithChildren, createContext, useContext, useEffect, useState } from 'react';
 import { DebunkProps } from '@/app/components/organisms/Debunks';
@@ -85,9 +85,13 @@ const Web5ContextProvider = ({ children }: PropsWithChildren) => {
                 setWeb5Instance(web5Client)
                 setRecoveryPhrase(recoveryPhrase)
 
-                await setupTdbunkProtocol(web5Client, diduri)
+                // await setupTdbunkProtocol(web5Client, diduri)
+                // await createDwnCampaign(web5Client)
 
                 // const campaigns = await fetchCampaigns(web5Client, diduri)
+
+                // console.log('campaigns array', campaigns);
+
                 // setCampaigns(campaigns)
 
             } catch (error: any) {

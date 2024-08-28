@@ -31,7 +31,7 @@ const AssetExchangeRates = ({
                             {' '}
                             {fromCurrencyFlag}
                         </Flex>
-                        < Flex className="-mt-1 text-xs text-white" > {`${fromUnit}`}</Flex>
+                        <Flex className="-mt-1 text-xs text-white" > {`${fromUnit}`}</Flex>
                     </Flex>
                 </Button>
                 <Button className="h-[70px] w-[50px]">

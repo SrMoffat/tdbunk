@@ -4,13 +4,15 @@ import { Credentials } from "@/app/components/organisms/Credentials";
 import { PFIs } from "@/app/lib/constants";
 import { getEstimatedSettlementTime } from "@/app/lib/utils";
 import { Offering } from "@tbdex/http-client";
-import { Card, Flex, List, Modal } from "antd";
+import { Button, Card, Flex, List, Modal } from "antd";
 import { formatDistanceToNow } from 'date-fns';
 import { useState } from "react";
 import AssetExachangeAction from "../../atoms/OfferAction";
 import AssetExchangeOffer from "../../atoms/OfferDetails";
 import AssetExchangeRates from "../../atoms/OfferExchangeRates";
 import PFIDetails from "../../atoms/OfferPFI";
+import MakePayment from "../forms/MakePayment";
+
 
 export interface AssetExchangePFIDetailsProps {
     cta: string;
@@ -25,6 +27,11 @@ export interface AssetExchangePFIDetailsProps {
     offeringCreatedAt: string;
     showPaymentModal: () => void;
     offeringToCurrencyMethods: any[];
+}
+
+export enum PaymentStage {
+    REQUEST_QUOTE = 'REQUEST_QUOTE',
+    MAKE_TRANSFER = 'MAKE_TRANSFER',
 }
 
 const AssetExchangePFIDetails = ({
@@ -81,6 +88,7 @@ const OfferingDetails = (props: any) => {
     } = props
 
     const [showModal, setShowModal] = useState(false)
+    const [paymentStage, setPaymentState] = useState<PaymentStage>(PaymentStage.REQUEST_QUOTE)
 
     const offering = Object.values(values ? values : {})[0] as any
     const pfiDid = Object.keys(values ? values : {})[0] as any
@@ -104,6 +112,8 @@ const OfferingDetails = (props: any) => {
 
     const offerRequiredClaims = rawOffering?.data?.requiredClaims
 
+    const isRequestQuote = paymentStage === PaymentStage.REQUEST_QUOTE
+
     const showPaymentModal = () => {
         const isReadyForQuote = hasRequiredCredentials && isSelected
 
@@ -116,30 +126,45 @@ const OfferingDetails = (props: any) => {
                 presentationDefinition: offerRequiredClaims
             })
         }
+
         setShowModal(true)
     }
 
     const handleOk = () => {
-        setShowModal(false);
+        if (isRequestQuote) {
+            setPaymentState(PaymentStage.MAKE_TRANSFER)
+        } else {
+            setShowModal(false);
+        }
     };
 
     const handleCancel = () => {
-        setShowModal(false);
+        if (isRequestQuote) {
+            setShowModal(false);
+        } else {
+            setPaymentState(PaymentStage.REQUEST_QUOTE)
+        }
     };
 
     const cta = isSelected
-        ? 'Start Payment'
+        ? 'Start Transfer'
         : 'Request Credentials'
 
     const modalTitle = hasRequiredCredentials
         ? isSelected
-            ? 'All Good'
+            ? isRequestQuote
+                ? 'Request for Quote'
+                : 'Make Transfer'
             : 'Select Credential'
         : 'Request Credentials'
 
     const flow = hasRequiredCredentials
         ? isSelected
-            ? <Flex>Proceed With Payment</Flex>
+            ? <MakePayment
+                offering={rawOffering}
+                isRequestQuote={isRequestQuote}
+                campaignAmount={campaignAmount}
+            />
             : <Credentials
                 credentials={credentials}
                 isSelected={isSelected}
@@ -152,9 +177,35 @@ const OfferingDetails = (props: any) => {
     const issuerDid = offeringRequiredClaims?.['vc.issuer']
     const issuerVcSchema = offeringRequiredClaims?.['vc.credentialSchema.id']
 
+    const isPaymentStep = hasRequiredCredentials && isSelected
+
+    const destinationCurrencyCode = rawOffering?.data?.payout?.currencyCode
+
+
+
+    const cancelText = isRequestQuote
+        ? 'Cancel'
+        : 'Cancel Transfer'
+
+    const submitText = isRequestQuote
+        ? 'Request for Quote'
+        : `Transfer ${destinationCurrencyCode} ${campaignAmount}`
+
     return (
         <List.Item className="flex flex-row gap-2">
-            <Modal width={800} title={modalTitle} open={showModal} onOk={handleOk} onCancel={handleCancel}>
+            <Modal
+                width={800}
+                open={showModal}
+                title={modalTitle}
+                footer={isPaymentStep ? [
+                    <Button danger key="back" onClick={handleCancel}>
+                        {cancelText}
+                    </Button>,
+                    <Button key="submit" type="primary" onClick={handleOk}>
+                        {submitText}
+                    </Button>
+                ] : []}
+            >
                 {flow}
             </Modal>
             <AssetExchangePFIDetails

@@ -1,8 +1,7 @@
-import { useTbdexContext } from '@/app/providers/TbdexProvider';
-import { Flex, Typography, Steps, StepProps } from 'antd';
-import React, { useEffect, useState } from "react";
+import { Flex, Steps, Typography } from 'antd';
+import { useEffect, useState } from "react";
 
-const SourceCurrency = (props: any) => {
+export const SourceCurrency = (props: any) => {
     const { currency } = props
     return (
         <Typography.Text
@@ -14,7 +13,7 @@ const SourceCurrency = (props: any) => {
     )
 }
 
-const DestinationCurrency = (props: any) => {
+export const DestinationCurrency = (props: any) => {
     const {
         currency,
         isLoading,

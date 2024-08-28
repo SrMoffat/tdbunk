@@ -9,7 +9,6 @@ import { DestinationCurrency, SourceCurrency } from "../../atoms/MarketRate";
 
 const { Countdown } = Statistic
 
-
 const RequestForQuote = (props: any) => {
     const [form] = Form.useForm();
 
@@ -26,6 +25,8 @@ const RequestForQuote = (props: any) => {
     const payinMethods = payin?.methods
     const payoutMethods = payout?.methods
 
+    const exchangeRate = offeringData?.payoutUnitsPerPayinUnit
+
     const fromCurrencyFlag = getCurrencyFlag(fromCurrency)
     const toCurrencyFlag = getCurrencyFlag(toCurrency)
 
@@ -35,18 +36,13 @@ const RequestForQuote = (props: any) => {
         payout: {}
     })
 
-    console.log("requiredPaymentDetails", requiredPaymentDetails)
-
     const {
         token: { colorPrimary, colorBgContainer },
     } = theme.useToken()
 
     const renderRequiredDetails = (details: any[], type: string) => {
-        const isPayin = type === 'payin'
-        const isPayout = type === 'payout'
-
         return (
-            <Flex className="flex-col">
+            <Flex className="flex-col w-full">
                 {
                     details.map((entry: any) => {
                         const {
@@ -69,8 +65,6 @@ const RequestForQuote = (props: any) => {
                             >
                                 <Input.Password
                                     onChange={event => {
-                                        // const prev = { payin: {}, payout: {} }
-                                        // const prev = 
                                         const details = {
                                             [name]: event?.target?.value
                                         }
@@ -83,7 +77,6 @@ const RequestForQuote = (props: any) => {
                                                     ...details
                                                 }
                                             }
-                                            // ...details
                                         }))
                                     }}
                                     style={{ width: '100%' }} name={name} placeholder={title} />
@@ -130,9 +123,6 @@ const RequestForQuote = (props: any) => {
                     const results = getRequiredDetails(entry)
 
                     const isAssumedStoredBalance = !requiredPaymentDetailsTitle && !results.length
-
-
-                    // console.log("Results", results)
                     return (
                         <Flex key={entry?.kind} className="flex-col">
                             <Flex className="flex-col">

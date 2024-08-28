@@ -30,13 +30,21 @@ const RequestForQuote = (props: any) => {
     const toCurrencyFlag = getCurrencyFlag(toCurrency)
 
     const [toValue, setToValue] = useState<number>(0)
+    const [requiredPaymentDetails, setRequiredPaymentDetails] = useState<any>({
+        payin: {},
+        payout: {}
+    })
 
+    console.log("requiredPaymentDetails", requiredPaymentDetails)
 
     const {
         token: { colorPrimary, colorBgContainer },
     } = theme.useToken()
 
-    const renderRequiredDetails = (details: any[]) => {
+    const renderRequiredDetails = (details: any[], type: string) => {
+        const isPayin = type === 'payin'
+        const isPayout = type === 'payout'
+
         return (
             <Flex className="flex-col">
                 {
@@ -49,7 +57,7 @@ const RequestForQuote = (props: any) => {
                         } = entry
                         return (
                             <Form.Item
-                                key={entry?.name}
+                                key={name}
                                 required
                                 label={label}
                                 className="w-full"
@@ -60,6 +68,24 @@ const RequestForQuote = (props: any) => {
                                 </Typography.Text>}
                             >
                                 <Input.Password
+                                    onChange={event => {
+                                        // const prev = { payin: {}, payout: {} }
+                                        // const prev = 
+                                        const details = {
+                                            [name]: event?.target?.value
+                                        }
+                                        console.log("Dynamic Value", details)
+                                        setRequiredPaymentDetails((prev: any) => ({
+                                            ...prev,
+                                            ...{
+                                                [type]: {
+                                                    ...prev[type],
+                                                    ...details
+                                                }
+                                            }
+                                            // ...details
+                                        }))
+                                    }}
                                     style={{ width: '100%' }} name={name} placeholder={title} />
                             </Form.Item>
                         )
@@ -93,7 +119,7 @@ const RequestForQuote = (props: any) => {
         return results
     }
 
-    const renderPaymentMethods = (methods: any) => {
+    const renderPaymentMethods = (methods: any, type: string) => {
         return (
             <Flex className="w-full">
                 {methods.map((entry: any) => {
@@ -139,7 +165,7 @@ const RequestForQuote = (props: any) => {
                                             layout="vertical"
                                             style={{ width: '100%' }}
                                         >
-                                            {renderRequiredDetails(results)}
+                                            {renderRequiredDetails(results, type)}
                                         </Form>
                                 }
                             </Flex>
@@ -181,7 +207,7 @@ const RequestForQuote = (props: any) => {
                     </Space.Compact>
                 </Flex>
                 <Flex className="w-full mt-2">
-                    {renderPaymentMethods(payinMethods)}
+                    {renderPaymentMethods(payinMethods, 'payin')}
                 </Flex>
             </Card>
             <Flex>
@@ -214,7 +240,7 @@ const RequestForQuote = (props: any) => {
                     </Space.Compact>
                 </Flex>
                 <Flex className="w-full mt-2">
-                    {renderPaymentMethods(payoutMethods)}
+                    {renderPaymentMethods(payoutMethods, 'payout')}
                 </Flex>
             </Card>
         </Flex>

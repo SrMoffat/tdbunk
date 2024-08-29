@@ -262,7 +262,7 @@ const TbdexContextProvider = ({ children }: PropsWithChildren) => {
                     destinationCurrencies
                 } = getOfferingPairs(offeringsData)
 
-                console.log(unformattedOfferings)
+                // console.log(unformattedOfferings)
 
                 setOfferings(offerings)
                 setLocalOfferings(offerings)

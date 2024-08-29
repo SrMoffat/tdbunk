@@ -18,8 +18,9 @@ export interface StepContentProps {
 }
 
 export interface StepNavigationProps {
-    current: number;
     steps: any[];
+    current: number;
+    nextButtonDisabled: boolean;
     setCurrent: React.Dispatch<React.SetStateAction<number>>
 }
 
@@ -58,8 +59,10 @@ export const StepContent: React.FC<StepContentProps> = ({
 }
 
 export const StepNavigation: React.FC<StepNavigationProps> = ({
-    current,
     steps,
+    current,
+    nextButtonDisabled,
+
     setCurrent
 }) => {
     const isNotFirstStep = current > 0
@@ -93,7 +96,7 @@ export const StepNavigation: React.FC<StepNavigationProps> = ({
     return (
         <Flex className="w-[calc(100%-8rem)] justify-between">
             {isNotFirstStep ? <Button onClick={() => prev()}>Back</Button> : <Button className="opacity-0 cursor-none pointer-events-none" />}
-            {hasMoreSteps && <Button disabled={isNextButtonDisabled()} type="primary" onClick={() => next()}>Next</Button>}
+            {hasMoreSteps && <Button disabled={nextButtonDisabled} type="primary" onClick={() => next()}>Next</Button>}
             {isLastStep && <Button disabled type="primary" onClick={() => handleDone()}>Done</Button>}
         </Flex>
     )

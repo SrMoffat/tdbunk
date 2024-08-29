@@ -5,48 +5,47 @@ import StepFour from '@/app/components/organisms/steps/campaign/StepFour';
 import StepOne from '@/app/components/organisms/steps/campaign/StepOne';
 import StepThree from '@/app/components/organisms/steps/campaign/StepThree';
 import StepTwo from '@/app/components/organisms/steps/campaign/StepTwo';
-import { Flex, Layout } from 'antd';
-import { useEffect, useState } from 'react';
 import { CreateCampaignContextProvider } from '@/app/providers/CreateCampaignProvider';
 import { StepContent, StepNavigation, StepTracker, Title } from '@/app/start/campaign/components';
+import { Flex, Layout } from 'antd';
+import { useState } from 'react';
+
+export enum StartCampaignSteps {
+    CREDENTIALS = 'Credentials',
+    CAMPAIGN_DETAILS = 'Campaign Details',
+    VERIFY_DETAILS = 'Verify Details',
+    START_CAMPAIGN = 'Start Campaign',
+}
 
 export default function StartCampaignPage() {
-    const [current, setCurrent] = useState(3);
-    const [copied, setCopied] = useState(false);
+    const [current, setCurrent] = useState<number>(0);
+    const [nextButtonDisabled, setNextButtonDisabled] = useState<boolean>(true);
+
+    const commonProps = {
+        nextButtonDisabled,
+        setNextButtonDisabled
+    }
 
     const steps = [
         {
-            title: 'Credentials',
-            content: <StepOne />,
+            title: StartCampaignSteps.CREDENTIALS,
+            content: <StepOne {...commonProps} />,
         },
         {
-            title: 'Campaign Details',
+            title: StartCampaignSteps.CAMPAIGN_DETAILS,
             content: <StepTwo />,
         },
         {
-            title: 'Verify Details',
+            title: StartCampaignSteps.VERIFY_DETAILS,
             content: <StepThree />,
         },
         {
-            title: 'Start Campaign',
+            title: StartCampaignSteps.START_CAMPAIGN,
             content: <StepFour />,
         },
     ];
 
-    const items = steps.map((item) => ({ key: item.title, title: item.title }));
-
-    useEffect(() => {
-        let timer: string | number | NodeJS.Timeout | undefined
-        if (copied) {
-            timer = setTimeout(() => {
-                setCopied(false)
-            }, 1000)
-        }
-
-        return () => {
-            clearTimeout(timer)
-        }
-    }, [copied])
+    const items = steps.map(({ title }) => ({ key: title, title }));
 
     return (
         <Layout className="h-screen">
@@ -54,9 +53,20 @@ export default function StartCampaignPage() {
                 <LandingHeader />
                 <Flex className=" items-center flex-col pt-12 gap-5 h-auto mb-4">
                     <Title />
-                    <StepTracker current={current} items={items} />
-                    <StepContent current={current} steps={steps} />
-                    <StepNavigation setCurrent={setCurrent} current={current} steps={steps} />
+                    <StepTracker
+                        items={items}
+                        current={current}
+                    />
+                    <StepContent
+                        steps={steps}
+                        current={current}
+                    />
+                    <StepNavigation
+                        steps={steps}
+                        current={current}
+                        setCurrent={setCurrent}
+                        nextButtonDisabled={nextButtonDisabled}
+                    />
                 </Flex>
                 <Footer />
             </CreateCampaignContextProvider>

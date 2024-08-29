@@ -15,10 +15,7 @@ const handlePost = createEdgeRouter<NextRequest, RequestContext>();
 
 handlePost
     .use(async (req, event, next) => {
-        const start = Date.now();
         cors()
-        const end = Date.now();
-        console.log(`Request took ${end - start} ms`);
         return await next();
     })
     .post(async (req) => {

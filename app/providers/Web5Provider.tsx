@@ -6,6 +6,7 @@ import { DebunkProps } from '@/app/components/organisms/Debunks';
 import { BearerDid, DidDht, DidResolutionResult } from '@web5/dids';
 
 export interface Web5ContextType {
+    credentials: any[];
     web5: Web5 | null;
     userDid: string | null;
     walletDid: string | null;
@@ -14,6 +15,7 @@ export interface Web5ContextType {
     setUserDid: (did: string) => void;
     setWalletDid: (did: string) => void;
     getBearerDid: () => BearerDid | undefined;
+    setCredentials: React.Dispatch<React.SetStateAction<any[]>>;
     setCampaigns: React.Dispatch<React.SetStateAction<DebunkProps[]>>;
     setRecoveryPhrase: React.Dispatch<React.SetStateAction<string | null>>;
     resolveDid: (didUri: string) => Promise<DidResolutionResult | undefined>;
@@ -30,6 +32,7 @@ const useWeb5Context = (): Partial<Web5ContextType> => {
 }
 
 const Web5ContextProvider = ({ children }: PropsWithChildren) => {
+    const [credentials, setCredentials] = useState<any[]>([]);
     const [userDid, setUserDid] = useState<string | null>(null);
     const [walletDid, setWalletDid] = useState<string | null>(null);
     const [campaigns, setCampaigns] = useState<DebunkProps[]>([]);
@@ -53,37 +56,38 @@ const Web5ContextProvider = ({ children }: PropsWithChildren) => {
     useEffect(() => {
         (async () => {
             try {
-                let recovery
-                let diduri = ''
-                let web5Client = null
+                console.log("Do nothing for now")
+                // let recovery
+                // let diduri = ''
+                // let web5Client = null
 
-                const didExists = false
+                // const didExists = false
 
-                if (didExists) {
-                    // Check if DID exists in storage, if so, import it
-                    console.log("Handle Did exists")
-                } else {
-                    // If not, create one and set it in storage
-                    const { web5, did: walletDid, recoveryPhrase } = await Web5Api.connect({
-                        // password: process.env.WEB5_PASSWORD ?? '5PC{*?e|ix48',
-                        sync: '5s'
-                    });
+                // if (didExists) {
+                //     // Check if DID exists in storage, if so, import it
+                //     console.log("Handle Did exists")
+                // } else {
+                //     // If not, create one and set it in storage
+                //     const { web5, did: walletDid, recoveryPhrase } = await Web5Api.connect({
+                //         // password: process.env.WEB5_PASSWORD ?? '5PC{*?e|ix48',
+                //         sync: '5s'
+                //     });
 
-                    diduri = walletDid
-                    web5Client = web5
-                    recovery = recoveryPhrase
-                }
+                //     diduri = walletDid
+                //     web5Client = web5
+                //     recovery = recoveryPhrase
+                // }
 
 
-                console.log("Details", {
-                    web5Client,
-                    diduri,
-                    recovery
-                })
+                // console.log("Details", {
+                //     web5Client,
+                //     diduri,
+                //     recovery
+                // })
 
-                setWalletDid(diduri)
-                setWeb5Instance(web5Client)
-                setRecoveryPhrase(recoveryPhrase)
+                // setWalletDid(diduri)
+                // setWeb5Instance(web5Client)
+                // setRecoveryPhrase(recoveryPhrase)
 
                 // await setupTdbunkProtocol(web5Client, diduri)
                 // await createDwnCampaign(web5Client)
@@ -104,13 +108,16 @@ const Web5ContextProvider = ({ children }: PropsWithChildren) => {
         userDid,
         walletDid,
         campaigns,
+        credentials,
         recoveryPhrase,
         web5: web5Instance,
+
         setUserDid,
         resolveDid,
         setWalletDid,
         setCampaigns,
         getBearerDid,
+        setCredentials,
         setRecoveryPhrase
     }}>
         {children}

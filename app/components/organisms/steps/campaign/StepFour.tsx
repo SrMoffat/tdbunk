@@ -53,13 +53,6 @@ const StepFour = () => {
             selectedDestinationCurrency as string
         )
 
-        console.log("Final Step", {
-            // selectedDestinationCurrency,
-            // selectedCurrency,
-            // storedOfferings,
-            direct
-        })
-
         setOfferings(direct)
         setIsLoading(false)
     }, [selectedCurrency, selectedDestinationCurrency, localStorageData])

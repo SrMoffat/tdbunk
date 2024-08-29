@@ -15,10 +15,17 @@ export interface UserValue {
     label: string;
     value: string;
 }
+export interface CredentialsFormProps {
+    nextButtonDisabled: boolean;
+    setNextButtonDisabled: React.Dispatch<React.SetStateAction<boolean>>
+}
 
 export type CredentialStorage = {} | null
 
-const CredentialsForm: React.FC = () => {
+const CredentialsForm: React.FC<CredentialsFormProps> = ({
+    nextButtonDisabled,
+    setNextButtonDisabled
+}) => {
     const { walletDid } = useWeb5Context()
     const { setCredentials, setSelectedCurrency } = useTbdexContext()
     const [isLoading, setIsLoading] = useState(false)
@@ -80,10 +87,12 @@ const CredentialsForm: React.FC = () => {
     }
 
     const onFinish: FormProps<FieldType>['onFinish'] = async (values) => {
+        setNextButtonDisabled(false)
         await generateCredential(values)
     };
 
     const onFinishFailed: FormProps<FieldType>['onFinishFailed'] = (errorInfo) => {
+        setNextButtonDisabled(true)
         console.log('Failed:', errorInfo);
     };
 
@@ -128,12 +137,19 @@ const CredentialsForm: React.FC = () => {
                             name="email"
                             rules={[{ required: true, message: 'Please input your email!' }]}
                         >
-                            <Input size='large' placeholder='Enter your email' allowClear />
+                            <Input type='email' size='large' placeholder='Enter your email' allowClear />
+                        </Form.Item>
+                        <Form.Item<FieldType>
+                            label="Password"
+                            name="password"
+                            rules={[{ required: true, message: 'Please input your password!' }]}
+                        >
+                            <Input.Password type='password' size='large' placeholder='Enter your password' allowClear />
                         </Form.Item>
                         <Form.Item<FieldType>
                             label="Country"
                             name="country"
-                            rules={[{ required: true, message: 'Please input your country!' }]}
+                            rules={[{ required: true, message: 'Please input your country of residence!' }]}
                         >
                             <DebounceSelect
                                 value={value}

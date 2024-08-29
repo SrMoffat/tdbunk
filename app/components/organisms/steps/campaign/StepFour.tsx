@@ -33,7 +33,7 @@ const StepFour = () => {
         selectedDestinationCurrency,
     } = useTbdexContext()
 
-    const {campaignAmount} = useCreateCampaignContext()
+    const { campaignAmount } = useCreateCampaignContext()
 
     const [localStorageData] = useBrowserStorage<CredentialStorage>(
         OFFERINGS_LOCAL_STORAGE_KEY,
@@ -88,7 +88,10 @@ const StepFour = () => {
             <Flex className="flex-row mt-4 gap-3 justify-between">
                 <Card className="w-full">
                     <Flex className="items-center w-full">
-                        <SearchOffers />
+                        <SearchOffers
+                            isLoading={isLoading}
+                            setIsLoading={setIsLoading}
+                        />
                         <MarketRate
                             source={selectedCurrency}
                             destination={selectedDestinationCurrency}

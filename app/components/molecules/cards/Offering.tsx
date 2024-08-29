@@ -161,9 +161,13 @@ const OfferingDetails = (props: any) => {
     const flow = hasRequiredCredentials
         ? isSelected
             ? <MakePayment
+                pfiDid={pfiDid}
+                pfiName={pfiName}
                 offering={rawOffering}
                 isRequestQuote={isRequestQuote}
                 campaignAmount={campaignAmount}
+                offeringCreatedAt={offeringCreatedAt}
+                offeringToCurrencyMethods={offeringToCurrencyMethods}
             />
             : <Credentials
                 credentials={credentials}

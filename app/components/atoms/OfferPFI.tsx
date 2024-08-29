@@ -18,7 +18,7 @@ const PFIDetails = (props: PFIDetailsProps) => {
     } = props
 
     return (
-        <Flex className="items-center justify-between">
+        <Flex className="items-center justify-between w-full">
             <Flex className="gap-3">
                 <Avatar shape="square" style={{ backgroundColor: '#f56a00', width: 60, height: 60 }}>{pfiName.charAt(0).toUpperCase()}</Avatar>
                 <Flex className="flex-col">

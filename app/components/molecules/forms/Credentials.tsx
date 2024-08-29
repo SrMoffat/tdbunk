@@ -1,20 +1,30 @@
 import { DebounceSelect } from '@/app/components/atoms';
+import FinancialInstitutionCredential from '@/app/components/molecules/cards/FinancialCredential';
 import useBrowserStorage from '@/app/hooks/useLocalStorage';
 import { FieldType, generateVc } from '@/app/lib/api';
-import { parseJwtToVc } from '@/app/lib/web5';
-import { useWeb5Context } from '@/app/providers/Web5Provider';
-import type { FormProps } from 'antd';
-import { Button, Flex, Form, Input, Typography } from 'antd';
-import React, { useState } from 'react';
-import FinancialInstitutionCredential from '@/app/components/molecules/cards/FinancialCredential';
-import { useTbdexContext } from '@/app/providers/TbdexProvider';
 import { CREDENTIALS_LOCAL_STORAGE_KEY, LOCAL_STORAGE_KEY } from '@/app/lib/constants';
+import { parseJwtToVc } from '@/app/lib/web5';
+import { useTbdexContext } from '@/app/providers/TbdexProvider';
+import { useWeb5Context } from '@/app/providers/Web5Provider';
 import countries from "@/public/countries.json";
+import {
+    useMutation
+} from '@tanstack/react-query';
+import type { FormProps } from 'antd';
+import { Button, Flex, Form, Input, Typography, notification, Space } from 'antd';
+import React, { useState } from 'react';
+
+type NotificationType = 'success' | 'info' | 'warning' | 'error';
 
 export interface UserValue {
     label: string;
     value: string;
 }
+export interface NotificationDetails {
+    message: string;
+    description: string
+}
+
 export interface CredentialsFormProps {
     nextButtonDisabled: boolean;
     setNextButtonDisabled: React.Dispatch<React.SetStateAction<boolean>>
@@ -28,51 +38,82 @@ const CredentialsForm: React.FC<CredentialsFormProps> = ({
 }) => {
     const { walletDid } = useWeb5Context()
     const { setCredentials, setSelectedCurrency } = useTbdexContext()
-    const [isLoading, setIsLoading] = useState(false)
-    const [value, setValue] = useState<UserValue[]>([]);
+
+    const [api, contextHolder] = notification.useNotification();
     const [localStorageData, setLocalCredentials] = useBrowserStorage<CredentialStorage>(
         CREDENTIALS_LOCAL_STORAGE_KEY,
         LOCAL_STORAGE_KEY
     )
 
+    const [isLoading, setIsLoading] = useState(false)
+    const [value, setValue] = useState<UserValue[]>([]);
+
+    const openNotificationWithIcon = (type: NotificationType, { message, description }: NotificationDetails) => {
+        api[type]({
+            message,
+            description
+        });
+    };
+
     const createOrUpdateCredentials = async (details: any) => {
-        setIsLoading(true)
-
-        if (localStorageData) {
-            // @ts-ignore
-            const existingCreds = localStorageData?.credentials
-            console.log("Existing credentials", existingCreds)
-
-        } else {
-            const defaultCurrencyFromCredential = countries.filter(({ countryCode }) => countryCode === details?.country?.value)[0]?.currencyCode
-            console.log("default currency from credential", defaultCurrencyFromCredential)
-            const vc = await generateVc({
-                ...details,
-                did: walletDid
-            })
-
-            const parsedVc = parseJwtToVc(vc)
-
-            const vcGranularTypes = parsedVc?.vcDataModel?.type
-            const vcConcatenateTypes = vcGranularTypes.join(":")
-
-            const storedVc = {
-                [vcConcatenateTypes]: [vc]
-            }
-
-            console.log("Data does not existss created VC", {
-                vc, parsedVc, vcConcatenateTypes, storedVc
-            })
-
-            setLocalCredentials({
-                did: walletDid,
-                credentials: storedVc,
-                defaultCurrency: defaultCurrencyFromCredential,
-            })
-            setCredentials?.(storedVc)
-            // setSelectedCurrency?.(defaultCurrencyFromCredential)
+        try {
+            console.log("Sikhelelaa", details)
+        } catch (error: any) {
+            console.log("createOrUpdateCredentials here", error)
         }
+        // setIsLoading(true)
+
+        // if (localStorageData) {
+        //     // @ts-ignore
+        //     const existingCreds = localStorageData?.credentials
+        //     console.log("Existing credentials", existingCreds)
+
+        // } else {
+        //     const defaultCurrencyFromCredential = countries.filter(({ countryCode }) => countryCode === details?.country?.value)[0]?.currencyCode
+        //     console.log("default currency from credential", defaultCurrencyFromCredential)
+        //     const vc = await generateVc({
+        //         ...details,
+        //         did: walletDid
+        //     })
+
+        //     const parsedVc = parseJwtToVc(vc)
+
+        //     const vcGranularTypes = parsedVc?.vcDataModel?.type
+        //     const vcConcatenateTypes = vcGranularTypes.join(":")
+
+        //     const storedVc = {
+        //         [vcConcatenateTypes]: [vc]
+        //     }
+
+        //     console.log("Data does not existss created VC", {
+        //         vc, parsedVc, vcConcatenateTypes, storedVc
+        //     })
+
+        //     setLocalCredentials({
+        //         did: walletDid,
+        //         credentials: storedVc,
+        //         defaultCurrency: defaultCurrencyFromCredential,
+        //     })
+        //     setCredentials?.(storedVc)
+        //     // setSelectedCurrency?.(defaultCurrencyFromCredential)
+        // }
     }
+
+    const { isPending, mutateAsync: createCredentials } = useMutation({
+        mutationFn: createOrUpdateCredentials,
+        onSuccess: () => {
+            openNotificationWithIcon('success', {
+                message: 'Credential Created!',
+                description: 'Your credential has been sucesfully created!'
+            })
+        },
+        onError: () => {
+            openNotificationWithIcon('error', {
+                message: 'Credential Creation Failed!',
+                description: 'Something went wrong. Please try again.'
+            })
+        }
+    })
 
     const generateCredential = async (details: any) => {
         setIsLoading(true)
@@ -88,7 +129,8 @@ const CredentialsForm: React.FC<CredentialsFormProps> = ({
 
     const onFinish: FormProps<FieldType>['onFinish'] = async (values) => {
         setNextButtonDisabled(false)
-        await generateCredential(values)
+        await createCredentials(values)
+        // await generateCredential(values)
     };
 
     const onFinishFailed: FormProps<FieldType>['onFinishFailed'] = (errorInfo) => {
@@ -108,11 +150,15 @@ const CredentialsForm: React.FC<CredentialsFormProps> = ({
         }))
     }
 
+
+
+
     // @ts-ignore
     const existingCreds = localStorageData?.credentials
 
     return (
         <Flex className="flex-col">
+            {contextHolder}
             {!existingCreds && <Typography.Text className="font-bold mb-4">Create Credential</Typography.Text>}
             {existingCreds
                 ? (
@@ -162,7 +208,7 @@ const CredentialsForm: React.FC<CredentialsFormProps> = ({
                             />
                         </Form.Item>
                         <Form.Item>
-                            <Button type="primary" htmlType="submit" loading={isLoading}>
+                            <Button type="primary" htmlType="submit" loading={isPending}>
                                 Create
                             </Button>
                         </Form.Item>

@@ -1,4 +1,5 @@
 import { CampaignsContextProvider } from '@/app/providers/CampaignsProvider';
+import TanstackProvider from '@/app/providers/TanstackProvider';
 import { TbdexContextProvider } from '@/app/providers/TbdexProvider';
 import ThemeProvider from '@/app/providers/ThemeProvider';
 import { Web5ContextProvider } from '@/app/providers/Web5Provider';
@@ -7,14 +8,13 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 
-
-
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "TDBunk",
   description: "Dismiss DISinformation and MISinformation through a cross-border crowdfunded investigation to debuunk (TDBunk) by crowdsourced investigators.",
 };
+
 
 export default function RootLayout({
   children,
@@ -24,17 +24,19 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <Web5ContextProvider>
-          <CampaignsContextProvider>
-            <TbdexContextProvider>
-              <AntdRegistry>
-                <ThemeProvider>
-                  {children}
-                </ThemeProvider>
-              </AntdRegistry>
-            </TbdexContextProvider>
-          </CampaignsContextProvider>
-        </Web5ContextProvider>
+        <TanstackProvider>
+          <Web5ContextProvider>
+            <CampaignsContextProvider>
+              <TbdexContextProvider>
+                <AntdRegistry>
+                  <ThemeProvider>
+                    {children}
+                  </ThemeProvider>
+                </AntdRegistry>
+              </TbdexContextProvider>
+            </CampaignsContextProvider>
+          </Web5ContextProvider>
+        </TanstackProvider>
       </body>
     </html>
   );

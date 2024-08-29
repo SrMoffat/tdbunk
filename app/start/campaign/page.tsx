@@ -6,6 +6,7 @@ import StepOne from '@/app/components/organisms/steps/campaign/StepOne';
 import StepThree from '@/app/components/organisms/steps/campaign/StepThree';
 import StepTwo from '@/app/components/organisms/steps/campaign/StepTwo';
 import { CreateCampaignContextProvider } from '@/app/providers/CreateCampaignProvider';
+import { useWeb5Context } from '@/app/providers/Web5Provider';
 import { StepContent, StepNavigation, StepTracker, Title } from '@/app/start/campaign/components';
 import { Flex, Layout } from 'antd';
 import { useState } from 'react';
@@ -18,12 +19,26 @@ export enum StartCampaignSteps {
 }
 
 export default function StartCampaignPage() {
+    const {
+        setUserDid,
+        setCredentials,
+        setWeb5Instance,
+        setUserBearerDid,
+        setRecoveryPhrase,
+    } = useWeb5Context()
+
     const [current, setCurrent] = useState<number>(0);
     const [nextButtonDisabled, setNextButtonDisabled] = useState<boolean>(true);
 
     const commonProps = {
         nextButtonDisabled,
-        setNextButtonDisabled
+        setNextButtonDisabled,
+
+        setUserDid,
+        setCredentials,
+        setWeb5Instance,
+        setUserBearerDid,
+        setRecoveryPhrase,
     }
 
     const steps = [

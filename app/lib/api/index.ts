@@ -13,6 +13,11 @@ export type ExchangeRate = {
     destination: string;
 }
 
+export interface UserValue {
+    label: string;
+    value: string;
+}
+
 export const generateVc = async (data: UserDetails) => {
     const response = await fetch('/api/credentials', {
         method: 'POST',
@@ -31,4 +36,16 @@ export const getExchangeRate = async (data: ExchangeRate) => {
     const vc = await response.json()
 
     return vc
+}
+
+export async function fetchUserList(countryName: string): Promise<UserValue[]> {
+    const response = await fetch('/countries.json')
+    const data = await response.json()
+
+    const similar = data.filter((country: any) => country?.countryName.toLowerCase().includes(countryName.toLowerCase()))
+
+    return similar.map(({ countryName, flag, countryCode }: any) => ({
+        label: `${countryName} ${flag}`,
+        value: countryCode
+    }))
 }

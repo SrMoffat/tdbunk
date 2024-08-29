@@ -8,15 +8,24 @@ import useBrowserStorage from '@/app/hooks/useLocalStorage';
 import { CREDENTIALS_LOCAL_STORAGE_KEY, LOCAL_STORAGE_KEY } from '@/app/lib/constants';
 import { useWeb5Context } from '@/app/providers/Web5Provider';
 import countries from '@/public/countries.json';
+import { Web5 } from '@web5/api';
+import { BearerDid } from '@web5/dids';
 import { Flex, Layout, Segmented, theme } from 'antd';
 import Image from 'next/image';
 import React, { useState } from 'react';
+import { BearerIdentity } from '@web5/agent';
+
 
 export interface UserStorage { }
 
 export interface StepOneProps {
     nextButtonDisabled: boolean;
-    setNextButtonDisabled: React.Dispatch<React.SetStateAction<boolean>>
+    setNextButtonDisabled: React.Dispatch<React.SetStateAction<boolean>>;
+    setUserDid: React.Dispatch<React.SetStateAction<string | null>> | undefined;
+    setWeb5Instance: React.Dispatch<React.SetStateAction<Web5 | null>> | undefined;
+    setCredentials: React.Dispatch<React.SetStateAction<{ [x: string]: any[]; }>> | undefined;
+    setRecoveryPhrase: React.Dispatch<React.SetStateAction<string | null | undefined>> | undefined;
+    setUserBearerDid: React.Dispatch<React.SetStateAction<BearerDid | BearerIdentity | null | undefined>> | undefined;
 }
 
 export enum CredentialMode {
@@ -42,6 +51,12 @@ export const STEP_ONE_TAB_OPTIONS = [
 
 const StepOne: React.FC<StepOneProps> = ({
     nextButtonDisabled,
+
+    setUserDid,
+    setCredentials,
+    setWeb5Instance,
+    setUserBearerDid,
+    setRecoveryPhrase,
     setNextButtonDisabled
 }) => {
     const [open, setOpen] = useState<boolean>(false);
@@ -56,8 +71,6 @@ const StepOne: React.FC<StepOneProps> = ({
     const {
         token: { colorBgContainer },
     } = theme.useToken()
-
-
 
     const isCreate = mode === CredentialMode.CREATE
     const isRequest = mode === CredentialMode.REQUEST
@@ -86,8 +99,6 @@ const StepOne: React.FC<StepOneProps> = ({
         ),
         value: name
     }))
-
-
 
     const showModal = () => {
         setOpen(true);
@@ -123,8 +134,18 @@ const StepOne: React.FC<StepOneProps> = ({
             </Flex>
             {
                 isCreate && <CreateCredential
+                    stateCredentials={existingStateCreds}
+                    noCredentialsFound={noCredentialsFound}
                     nextButtonDisabled={nextButtonDisabled}
-                    setNextButtonDisabled={setNextButtonDisabled} />
+                    localStorageCredentials={existingLocalStorageCreds}
+
+                    setUserDid={setUserDid}
+                    setCredentials={setCredentials}
+                    setWeb5Instance={setWeb5Instance}
+                    setUserBearerDid={setUserBearerDid}
+                    setRecoveryPhrase={setRecoveryPhrase}
+                    setNextButtonDisabled={setNextButtonDisabled}
+                />
             }
             {isRequest && <RequestCredential showDrawer={showDrawer} />}
             {isImport && <ImportCredential />}

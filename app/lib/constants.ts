@@ -18,6 +18,14 @@ export enum DEBUNK_CAMPAIGN_TYPE {
 }
 
 export const PFIs = [
+    /**
+     {
+      name: "Silver Star v2",
+        did: "did:dht:bu9r4zeaes9krexj9rconthxkupomo7paporsfeth86a6d1cpz4y",
+        currencyPairs: [
+        ]
+     }
+     */
     {
         name: "AquaFinance Capital",
         did: "did:dht:3fkz5ssfxbriwks3iy5nwys3q5kyx64ettp9wfn1yfekfkiguj1y",
@@ -61,5 +69,6 @@ export const PFIs = [
 ]
 
 export const LOCAL_STORAGE_KEY = 'local'
+export const WALLET_LOCAL_STORAGE_KEY = 'TDBunk:Wallet'
 export const OFFERINGS_LOCAL_STORAGE_KEY = 'TDBunk:Offerings'
 export const CREDENTIALS_LOCAL_STORAGE_KEY = 'TDBunk:Credentials'

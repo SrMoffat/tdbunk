@@ -56,7 +56,7 @@ const useTbdexContext = (): Partial<TbdexContextProps> => {
 };
 
 const TbdexContextProvider = ({ children }: PropsWithChildren) => {
-    const { walletDid, userDid, getBearerDid } = useWeb5Context()
+    const { userDid } = useWeb5Context()
     const [offerings, setOfferings] = useState<any[]>([])
     const [unformattedOfferings, setUnformattedOfferings] = useState<any[]>([])
     const [selectedCurrency, setSelectedCurrency] = useState<string>('USD')
@@ -104,7 +104,7 @@ const TbdexContextProvider = ({ children }: PropsWithChildren) => {
                 metadata: {
                     // from: "did:dht:y5nzf5rh5gh8wc86kcquj1erat1391qwzayx1ki93hq64484x9jy",
                     // to: "did:dht:3fkz5ssfxbriwks3iy5nwys3q5kyx64ettp9wfn1yfekfkiguj1y",
-                    from: walletDid as string,
+                    from: userDid as string,
                     to: offering?.offeringFrom,
                     protocol: '1.0',
                 },

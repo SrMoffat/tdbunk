@@ -173,3 +173,7 @@ export const getOfferingPairs = (pfis: any) => {
         destinationCurrencies: [...new Set(destinationCurrencies)]
     }
 }
+
+export const getCurrencyFromCountry = (countries: any[], country: string) => {
+    return countries.filter(({ countryCode }) => countryCode === country)[0]?.currencyCode
+}

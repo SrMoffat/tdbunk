@@ -1,27 +1,34 @@
 'use client'
-import { createDwnCampaign, fetchCampaigns, setupTdbunkProtocol } from '@/app/lib/web5';
-import { Web5 as Web5Api, type Web5 } from "@web5/api";
-import { PropsWithChildren, createContext, useContext, useEffect, useState } from 'react';
 import { DebunkProps } from '@/app/components/organisms/Debunks';
-import { BearerDid, DidDht, DidResolutionResult } from '@web5/dids';
+import { type Web5 } from "@web5/api";
+import { BearerDid, DidResolutionResult } from '@web5/dids';
+import { BearerIdentity } from '@web5/agent';
+
+import { PropsWithChildren, createContext, useContext, useEffect, useState } from 'react';
+import { CredentialStorage } from '../components/molecules/forms/Credentials';
+import useBrowserStorage from '../hooks/useLocalStorage';
+import { WALLET_LOCAL_STORAGE_KEY, LOCAL_STORAGE_KEY } from '../lib/constants';
 
 export interface Web5ContextType {
-    credentials: any[];
     web5: Web5 | null;
     userDid: string | null;
-    walletDid: string | null;
     campaigns: DebunkProps[];
     recoveryPhrase: string | null;
-    setUserDid: (did: string) => void;
-    setWalletDid: (did: string) => void;
-    getBearerDid: () => BearerDid | undefined;
-    setCredentials: React.Dispatch<React.SetStateAction<any[]>>;
+    credentials: { [x: string]: any[]; };
+    userBearerDid: BearerDid | BearerIdentity | null;
+    setUserDid: React.Dispatch<React.SetStateAction<string | null>>;
     setCampaigns: React.Dispatch<React.SetStateAction<DebunkProps[]>>;
-    setRecoveryPhrase: React.Dispatch<React.SetStateAction<string | null>>;
+    setWeb5Instance: React.Dispatch<React.SetStateAction<Web5 | null>>;
     resolveDid: (didUri: string) => Promise<DidResolutionResult | undefined>;
+    setCredentials: React.Dispatch<React.SetStateAction<{ [x: string]: any[]; }>>;
+    setRecoveryPhrase: React.Dispatch<React.SetStateAction<string | null | undefined>>;
+    setUserBearerDid: React.Dispatch<React.SetStateAction<BearerDid | BearerIdentity | null | undefined>>;
 }
 
 const Web5Context = createContext<Partial<Web5ContextType>>({})
+
+export type WalletStorage = {} | null
+
 
 const useWeb5Context = (): Partial<Web5ContextType> => {
     const context = useContext(Web5Context)
@@ -32,26 +39,17 @@ const useWeb5Context = (): Partial<Web5ContextType> => {
 }
 
 const Web5ContextProvider = ({ children }: PropsWithChildren) => {
-    const [credentials, setCredentials] = useState<any[]>([]);
+    const [credentials, setCredentials] = useState<{ [x: string]: any[]; }>({});
     const [userDid, setUserDid] = useState<string | null>(null);
-    const [walletDid, setWalletDid] = useState<string | null>(null);
     const [campaigns, setCampaigns] = useState<DebunkProps[]>([]);
     const [web5Instance, setWeb5Instance] = useState<Web5 | null>(null);
-    const [recoveryPhrase, setRecoveryPhrase] = useState<string | null>(null);
+    const [recoveryPhrase, setRecoveryPhrase] = useState<string | null | undefined>(null);
+    const [userBearerDid, setUserBearerDid] = useState<BearerDid | BearerIdentity | null | undefined>(null);
 
-    const resolveDid = async (didUri: string): Promise<DidResolutionResult | undefined> => {
-        try {
-            const resolvedDhtDid = await DidDht.resolve(didUri);
-            // console.log("Resolved DID", resolvedDhtDid)
-            return resolvedDhtDid
-        } catch (error: any) {
-            console.log("Resolution error", error)
-        }
-    }
-
-    const getBearerDid = () => {
-        return web5Instance?.agent?.agentDid
-    }
+    const [_, setLocalWallet] = useBrowserStorage<WalletStorage>(
+        WALLET_LOCAL_STORAGE_KEY,
+        LOCAL_STORAGE_KEY
+    )
 
     useEffect(() => {
         (async () => {
@@ -104,21 +102,33 @@ const Web5ContextProvider = ({ children }: PropsWithChildren) => {
         })()
     }, [])
 
+
+    useEffect(() => {
+        const wallet = {
+            userDid,
+            userBearerDid,
+            // recoveryPhrase
+        }
+
+        // To Do: What are the best practices for managing DIDs and BearerDids?
+        // We are storing them in local storage here
+        setLocalWallet(wallet)
+    }, [userDid, userBearerDid, recoveryPhrase])
+
     return <Web5Context.Provider value={{
         userDid,
-        walletDid,
         campaigns,
         credentials,
+        userBearerDid,
         recoveryPhrase,
         web5: web5Instance,
 
         setUserDid,
-        resolveDid,
-        setWalletDid,
         setCampaigns,
-        getBearerDid,
         setCredentials,
-        setRecoveryPhrase
+        setWeb5Instance,
+        setUserBearerDid,
+        setRecoveryPhrase,
     }}>
         {children}
     </Web5Context.Provider>

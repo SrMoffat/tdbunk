@@ -1,136 +1,160 @@
 import { DebounceSelect } from '@/app/components/atoms';
 import FinancialInstitutionCredential from '@/app/components/molecules/cards/FinancialCredential';
+import { CreateCredentialProps } from '@/app/components/molecules/forms/CreateCredential';
 import useBrowserStorage from '@/app/hooks/useLocalStorage';
-import { FieldType, generateVc } from '@/app/lib/api';
+import { fetchUserList, FieldType, generateVc, UserValue } from '@/app/lib/api';
 import { CREDENTIALS_LOCAL_STORAGE_KEY, LOCAL_STORAGE_KEY } from '@/app/lib/constants';
-import { parseJwtToVc } from '@/app/lib/web5';
+import { getCurrencyFromCountry } from '@/app/lib/utils';
+import { initWeb5, parseJwtToVc } from '@/app/lib/web5';
+import { useNotificationContext } from '@/app/providers/NotificationProvider';
 import { useTbdexContext } from '@/app/providers/TbdexProvider';
 import { useWeb5Context } from '@/app/providers/Web5Provider';
-import countries from "@/public/countries.json";
-import {
-    useMutation
-} from '@tanstack/react-query';
+import countries from '@/public/countries.json';
+import { useMutation } from '@tanstack/react-query';
 import type { FormProps } from 'antd';
-import { Button, Flex, Form, Input, Typography, notification, Space } from 'antd';
-import React, { useState } from 'react';
+import { Button, Flex, Form, Input, Typography } from 'antd';
+import React, { useEffect, useState } from 'react';
 
-type NotificationType = 'success' | 'info' | 'warning' | 'error';
 
-export interface UserValue {
-    label: string;
-    value: string;
-}
-export interface NotificationDetails {
-    message: string;
-    description: string
-}
-
-export interface CredentialsFormProps {
-    nextButtonDisabled: boolean;
-    setNextButtonDisabled: React.Dispatch<React.SetStateAction<boolean>>
-}
 
 export type CredentialStorage = {} | null
 
-const CredentialsForm: React.FC<CredentialsFormProps> = ({
-    nextButtonDisabled,
-    setNextButtonDisabled
-}) => {
-    const { walletDid } = useWeb5Context()
-    const { setCredentials, setSelectedCurrency } = useTbdexContext()
+export interface CreateCredentialFormDetails {
+    email?: string | undefined;
+    password?: string | undefined;
+    country?: any
+}
 
-    const [api, contextHolder] = notification.useNotification();
+const CredentialsForm: React.FC<CreateCredentialProps> = ({
+    stateCredentials,
+    noCredentialsFound,
+    nextButtonDisabled,
+    localStorageCredentials,
+
+    setUserDid,
+    setWeb5Instance,
+    setUserBearerDid,
+    setRecoveryPhrase,
+    setNextButtonDisabled,
+}) => {
+    const { userDid } = useWeb5Context()
+    const { setSelectedCurrency } = useTbdexContext()
+    const { notify } = useNotificationContext()
+
     const [localStorageData, setLocalCredentials] = useBrowserStorage<CredentialStorage>(
         CREDENTIALS_LOCAL_STORAGE_KEY,
         LOCAL_STORAGE_KEY
     )
 
-    const [isLoading, setIsLoading] = useState(false)
     const [value, setValue] = useState<UserValue[]>([]);
+    const [credentials, setCredentials] = useState<{ [x: string]: any[]; }>({});
 
-    const openNotificationWithIcon = (type: NotificationType, { message, description }: NotificationDetails) => {
-        api[type]({
-            message,
-            description
-        });
-    };
-
-    const createOrUpdateCredentials = async (details: any) => {
+    const createOrUpdateCredentials = async (details: CreateCredentialFormDetails) => {
         try {
-            console.log("Sikhelelaa", details)
+            if (noCredentialsFound) {
+                // Recheck local storage?
+                const local = localStorageData as any
+                const localCreds = local?.credentials
+
+                if (localCreds) {
+                    const hasCreds = localCreds.length
+                    console.log("Found creds in local storage", {
+                        hasCreds,
+                        details,
+                        stateCredentials,
+                        localStorageCredentials
+                    })
+                } else {
+                    // Get currency
+                    const defaultCurrencyFromCredential = getCurrencyFromCountry(countries, details?.country?.value)
+
+                    // Create DWN and Did
+                    const { web5, did, bearerDid, recoveryPhrase } = await initWeb5({
+                        password: details?.password as string
+                    })
+
+                    setUserDid?.(did)
+                    setWeb5Instance?.(web5)
+                    setUserBearerDid?.(bearerDid)
+                    setRecoveryPhrase?.(recoveryPhrase)
+
+                    // Create new credential
+                    const vc = await generateVc({
+                        ...details,
+                        did
+                    })
+
+                    // Parse VC to get metadata
+                    const parsedVc = parseJwtToVc(vc)
+
+                    const vcGranularTypes = parsedVc?.vcDataModel?.type
+                    const vcConcatenateTypes = vcGranularTypes.join(":")
+
+                    const storedVc = {
+                        [vcConcatenateTypes]: [vc]
+                    }
+
+                    // Store formatted VC in state and local storage
+                    // To Do: Best practices around this? Maybe store VCs in DWN?
+                    setCredentials?.(storedVc)
+                    setLocalCredentials({
+                        did,
+                        credentials: storedVc,
+                        defaultCurrency: defaultCurrencyFromCredential,
+                    })
+                    setSelectedCurrency?.(defaultCurrencyFromCredential)
+
+                    console.log("Data does not existss created VC", {
+                        vc, parsedVc, vcConcatenateTypes, storedVc,
+                        setSelectedCurrency,
+                        userDid, 
+                        did
+                    })
+
+                    console.log("Create new credential", {
+                        details,
+                        web5,
+                        did,
+                        recoveryPhrase,
+                        bearerDid,
+                        stateCredentials,
+                        localStorageCredentials,
+                        defaultCurrencyFromCredential
+                    })
+                }
+            } else {
+                // Credentials found, check to avoid duplicates?
+                console.log("Credentials found, check to avoid duplicates?", {
+                    details,
+                    stateCredentials,
+                    localStorageCredentials
+                })
+            }
         } catch (error: any) {
             console.log("createOrUpdateCredentials here", error)
         }
-        // setIsLoading(true)
-
-        // if (localStorageData) {
-        //     // @ts-ignore
-        //     const existingCreds = localStorageData?.credentials
-        //     console.log("Existing credentials", existingCreds)
-
-        // } else {
-        //     const defaultCurrencyFromCredential = countries.filter(({ countryCode }) => countryCode === details?.country?.value)[0]?.currencyCode
-        //     console.log("default currency from credential", defaultCurrencyFromCredential)
-        //     const vc = await generateVc({
-        //         ...details,
-        //         did: walletDid
-        //     })
-
-        //     const parsedVc = parseJwtToVc(vc)
-
-        //     const vcGranularTypes = parsedVc?.vcDataModel?.type
-        //     const vcConcatenateTypes = vcGranularTypes.join(":")
-
-        //     const storedVc = {
-        //         [vcConcatenateTypes]: [vc]
-        //     }
-
-        //     console.log("Data does not existss created VC", {
-        //         vc, parsedVc, vcConcatenateTypes, storedVc
-        //     })
-
-        //     setLocalCredentials({
-        //         did: walletDid,
-        //         credentials: storedVc,
-        //         defaultCurrency: defaultCurrencyFromCredential,
-        //     })
-        //     setCredentials?.(storedVc)
-        //     // setSelectedCurrency?.(defaultCurrencyFromCredential)
-        // }
     }
 
     const { isPending, mutateAsync: createCredentials } = useMutation({
         mutationFn: createOrUpdateCredentials,
         onSuccess: () => {
-            openNotificationWithIcon('success', {
+            setNextButtonDisabled(false)
+            notify?.('success', {
                 message: 'Credential Created!',
                 description: 'Your credential has been sucesfully created!'
             })
         },
         onError: () => {
-            openNotificationWithIcon('error', {
+            setNextButtonDisabled(true)
+            notify?.('error', {
                 message: 'Credential Creation Failed!',
                 description: 'Something went wrong. Please try again.'
             })
         }
     })
 
-    const generateCredential = async (details: any) => {
-        setIsLoading(true)
-
-        try {
-            await createOrUpdateCredentials(details)
-        } catch (error: any) {
-            console.log("Request errored here", error)
-        } finally {
-            setIsLoading(false)
-        }
-    }
-
     const onFinish: FormProps<FieldType>['onFinish'] = async (values) => {
-        setNextButtonDisabled(false)
         await createCredentials(values)
-        // await generateCredential(values)
     };
 
     const onFinishFailed: FormProps<FieldType>['onFinishFailed'] = (errorInfo) => {
@@ -138,33 +162,20 @@ const CredentialsForm: React.FC<CredentialsFormProps> = ({
         console.log('Failed:', errorInfo);
     };
 
-    async function fetchUserList(countryName: string): Promise<UserValue[]> {
-        const response = await fetch('/countries.json')
-        const data = await response.json()
-
-        const similar = data.filter((country: any) => country?.countryName.toLowerCase().includes(countryName.toLowerCase()))
-
-        return similar.map(({ countryName, flag, countryCode }: any) => ({
-            label: `${countryName} ${flag}`,
-            value: countryCode
-        }))
-    }
-
-
-
-
-    // @ts-ignore
-    const existingCreds = localStorageData?.credentials
+    useEffect(() => {
+        console.log("Create credential form mounted", { stateCredentials, localStorageCredentials })
+    }, [])
 
     return (
         <Flex className="flex-col">
-            {contextHolder}
-            {!existingCreds && <Typography.Text className="font-bold mb-4">Create Credential</Typography.Text>}
-            {existingCreds
+            {noCredentialsFound && <Typography.Text className="font-bold mb-4">Create Credential</Typography.Text>}
+            {!noCredentialsFound
                 ? (
                     <Flex className="w-full justify-center">
                         <Flex className="w-1/6">
-                            <FinancialInstitutionCredential existingCreds={existingCreds} />
+                            <FinancialInstitutionCredential
+                                credentials={credentials}
+                            />
                         </Flex>
                     </Flex>
                 )

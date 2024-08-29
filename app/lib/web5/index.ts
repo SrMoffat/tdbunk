@@ -1,9 +1,11 @@
 import { TdbunkProtocol } from "@/app/web5Protocols/tdbunk.protocol";
+import { Web5PlatformAgent } from '@web5/agent';
 import { Web5 as Web5Api } from "@web5/api";
-import { VerifiableCredential } from "@web5/credentials";
-import { type VerifiableCredential as VC } from "@web5/credentials";
+import { VerifiableCredential, type VerifiableCredential as VC } from "@web5/credentials";
 import { Jwk, LocalKeyManager } from "@web5/crypto";
-import { DidDht } from '@web5/dids';
+import { DidDht, DidResolutionResult } from '@web5/dids';
+
+const DWN_SYNC_INTERVAL = '5s'
 
 const localKeyManager = new LocalKeyManager();
 
@@ -164,6 +166,43 @@ export const generateDid = async () => {
     }
 }
 
+export const resolveDid = async (didUri: string): Promise<DidResolutionResult | undefined> => {
+    try {
+        const resolvedDhtDid = await DidDht.resolve(didUri);
+        // console.log("Resolved DID", resolvedDhtDid)
+        return resolvedDhtDid
+    } catch (error: any) {
+        console.log("Resolution error", error)
+    }
+}
+
 export const parseJwtToVc = (signedVcJwt: any): VC => {
     return VerifiableCredential.parseJwt({ vcJwt: signedVcJwt })
+}
+
+export const createWeb5Instance = () => {
+
+}
+
+export async function initWeb5({ password }: { password: string }) {
+    const { web5, did, recoveryPhrase } = await Web5Api.connect({
+        password,
+        sync: DWN_SYNC_INTERVAL
+    });
+    const agent = web5.agent as Web5PlatformAgent
+    const bearerDid = await agent.identity.get({ didUri: did });
+    // const identites = await agent.identity.list();
+    return {
+        web5,
+        did,
+        bearerDid,
+        recoveryPhrase,
+    };
+}
+
+export async function getBearerDid(web5: Web5Api, did: string) {
+    const agent = web5.agent as Web5PlatformAgent
+    const bearerDid = await agent.identity.get({ didUri: did });
+    // const identites = await agent.identity.list();
+    return bearerDid;
 }

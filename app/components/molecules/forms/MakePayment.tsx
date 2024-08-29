@@ -298,8 +298,8 @@ const MakeTransfer = (props: any) => {
 
     console.log("received values ==>", requiredPaymentDetails)
     return (
-        <Flex className="border w-full gap-1 flex-col">
-            <Button size="small" style={{ width: 140 }} onClick={() => setPasswordVisible((prevState) => !prevState)}>
+        <Flex className="w-full gap-1 flex-col">
+            <Button className="mb-3" style={{ width: 140 }} onClick={() => setPasswordVisible((prevState) => !prevState)}>
                 {passwordVisible ? 'Hide Details' : 'Show Details'}
             </Button>
 
@@ -443,12 +443,14 @@ const MakePayment = (props: any) => {
             ) : (
                 <Flex className="w-full justify-between mb-4 gap-4 mt-4">
                     <Flex className="w-full">
-                        <PFIDetails
-                            pfiDid={pfiDid}
-                            pfiName={pfiName}
-                            createdAt={offeringCreatedAt}
-                            estimatedSettlementTime={getEstimatedSettlementTime(offeringToCurrencyMethods, true)}
-                        />
+                        <Card className="w-full">
+                            <PFIDetails
+                                pfiDid={pfiDid}
+                                pfiName={pfiName}
+                                createdAt={offeringCreatedAt}
+                                estimatedSettlementTime={getEstimatedSettlementTime(offeringToCurrencyMethods, true)}
+                            />
+                        </Card>
                     </Flex>
                     <Flex className="w-1/2 justify-end items-start">
                         <Tag color={quoteExpired ? 'red' : 'default'}>

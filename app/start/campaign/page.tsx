@@ -5,11 +5,15 @@ import StepFour from '@/app/components/organisms/steps/campaign/StepFour';
 import StepOne from '@/app/components/organisms/steps/campaign/StepOne';
 import StepThree from '@/app/components/organisms/steps/campaign/StepThree';
 import StepTwo from '@/app/components/organisms/steps/campaign/StepTwo';
+import useBrowserStorage from '@/app/hooks/useLocalStorage';
+import { CREDENTIALS_LOCAL_STORAGE_KEY, LOCAL_STORAGE_KEY } from '@/app/lib/constants';
 import { CreateCampaignContextProvider } from '@/app/providers/CreateCampaignProvider';
 import { useWeb5Context } from '@/app/providers/Web5Provider';
 import { StepContent, StepNavigation, StepTracker, Title } from '@/app/start/campaign/components';
 import { Flex, Layout } from 'antd';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+
+export interface UserStorage { }
 
 export enum StartCampaignSteps {
     CREDENTIALS = 'Credentials',
@@ -18,8 +22,41 @@ export enum StartCampaignSteps {
     START_CAMPAIGN = 'Start Campaign',
 }
 
+const isNextButtonDisabledForStepOne = (localStorageData: any, credentials: any[]) => {
+    // @ts-ignore
+    const existingLocalStorageCreds = localStorageData?.credentials
+    const localStorageCredentials = existingLocalStorageCreds
+        ? Object.values(existingLocalStorageCreds)
+        : []
+    const localCredentials = localStorageCredentials.flat()
+    const hasLocalCreds = localCredentials.length > 0
+
+    const stateCredentials = credentials
+        ? Object.values(credentials)
+        : []
+    const contextCredentials = stateCredentials.flat()
+    const hasStateCreds = contextCredentials.length > 0
+
+    console.log("Activate", {
+        hasLocalCreds,
+        localCredentials,
+
+        hasStateCreds,
+        contextCredentials,
+
+        isDisabled: !(hasStateCreds || hasLocalCreds)
+    })
+
+    // return hasStateCreds || hasLocalCreds
+    //     ? false
+    //     : true
+    return !(hasStateCreds || hasLocalCreds)
+}
+
 export default function StartCampaignPage() {
     const {
+        credentials,
+
         setUserDid,
         setCredentials,
         setWeb5Instance,
@@ -29,6 +66,11 @@ export default function StartCampaignPage() {
 
     const [current, setCurrent] = useState<number>(0);
     const [nextButtonDisabled, setNextButtonDisabled] = useState<boolean>(true);
+
+    const [localStorageData] = useBrowserStorage<UserStorage>(
+        CREDENTIALS_LOCAL_STORAGE_KEY,
+        LOCAL_STORAGE_KEY
+    )
 
     const commonProps = {
         nextButtonDisabled,
@@ -61,6 +103,16 @@ export default function StartCampaignPage() {
     ];
 
     const items = steps.map(({ title }) => ({ key: title, title }));
+
+    useEffect(() => {
+        const isDisabled = isNextButtonDisabledForStepOne(
+            localStorageData,
+            credentials as unknown as any[]
+        )
+
+        setNextButtonDisabled(isDisabled)
+        console.log("isDisabled", isDisabled)
+    }, [])
 
     return (
         <Layout className="h-screen">

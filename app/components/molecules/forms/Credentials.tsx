@@ -3,7 +3,7 @@ import FinancialInstitutionCredential from '@/app/components/molecules/cards/Fin
 import { CreateCredentialProps } from '@/app/components/molecules/forms/CreateCredential';
 import useBrowserStorage from '@/app/hooks/useLocalStorage';
 import { fetchUserList, FieldType, generateVc, UserValue } from '@/app/lib/api';
-import { CREDENTIALS_LOCAL_STORAGE_KEY, LOCAL_STORAGE_KEY } from '@/app/lib/constants';
+import { CREDENTIALS_LOCAL_STORAGE_KEY, LOCAL_STORAGE_KEY, WALLET_LOCAL_STORAGE_KEY } from '@/app/lib/constants';
 import { getCurrencyFromCountry } from '@/app/lib/utils';
 import { initWeb5, parseJwtToVc } from '@/app/lib/web5';
 import { useNotificationContext } from '@/app/providers/NotificationProvider';
@@ -15,9 +15,9 @@ import type { FormProps } from 'antd';
 import { Button, Flex, Form, Input, Typography } from 'antd';
 import React, { useEffect, useState } from 'react';
 
-
-
 export type CredentialStorage = {} | null
+
+export type WalletStorage = {} | null
 
 export interface CreateCredentialFormDetails {
     email?: string | undefined;
@@ -32,6 +32,7 @@ const CredentialsForm: React.FC<CreateCredentialProps> = ({
     localStorageCredentials,
 
     setUserDid,
+    setCredentials,
     setWeb5Instance,
     setUserBearerDid,
     setRecoveryPhrase,
@@ -45,9 +46,14 @@ const CredentialsForm: React.FC<CreateCredentialProps> = ({
         CREDENTIALS_LOCAL_STORAGE_KEY,
         LOCAL_STORAGE_KEY
     )
+    const [_, setLocalWallet] = useBrowserStorage<WalletStorage>(
+        WALLET_LOCAL_STORAGE_KEY,
+        LOCAL_STORAGE_KEY
+    )
 
     const [value, setValue] = useState<UserValue[]>([]);
-    const [credentials, setCredentials] = useState<{ [x: string]: any[]; }>({});
+    // const [credentials, setCredentials] = useState<{ [x: string]: any[]; }>({});
+    
 
     const createOrUpdateCredentials = async (details: CreateCredentialFormDetails) => {
         try {
@@ -102,7 +108,7 @@ const CredentialsForm: React.FC<CreateCredentialProps> = ({
                         credentials: storedVc,
                         defaultCurrency: defaultCurrencyFromCredential,
                     })
-                    setSelectedCurrency?.(defaultCurrencyFromCredential)
+                    setNextButtonDisabled(false)
 
                     console.log("Data does not existss created VC", {
                         vc, parsedVc, vcConcatenateTypes, storedVc,
@@ -162,9 +168,9 @@ const CredentialsForm: React.FC<CreateCredentialProps> = ({
         console.log('Failed:', errorInfo);
     };
 
-    useEffect(() => {
-        console.log("Create credential form mounted", { stateCredentials, localStorageCredentials })
-    }, [])
+    // useEffect(() => {
+    //     console.log("Create credential form mounted", { stateCredentials, localStorageCredentials })
+    // }, [])
 
     return (
         <Flex className="flex-col">
@@ -174,7 +180,8 @@ const CredentialsForm: React.FC<CreateCredentialProps> = ({
                     <Flex className="w-full justify-center">
                         <Flex className="w-1/6">
                             <FinancialInstitutionCredential
-                                credentials={credentials}
+                                stateCredentials={stateCredentials}
+                                localStorageCredentials={localStorageCredentials}
                             />
                         </Flex>
                     </Flex>

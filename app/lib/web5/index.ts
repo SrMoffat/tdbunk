@@ -4,6 +4,7 @@ import { Web5 as Web5Api } from "@web5/api";
 import { VerifiableCredential, type VerifiableCredential as VC } from "@web5/credentials";
 import { Jwk, LocalKeyManager } from "@web5/crypto";
 import { DidDht, DidResolutionResult } from '@web5/dids';
+import { CREDENTIAL_TYPES, VC_JWT_MIME_TYPE } from "../constants";
 
 const DWN_SYNC_INTERVAL = '5s'
 
@@ -132,7 +133,7 @@ export const setupTdbunkProtocol = async (web5: Web5Api | null, did: string) => 
                     isInstalled
                 })
             }
-            
+
             console.log('Protocol configured', configureStatus, protocol);
         }
     } catch (error: any) {
@@ -205,4 +206,30 @@ export async function getBearerDid(web5: Web5Api, did: string) {
     const bearerDid = await agent.identity.get({ didUri: did });
     // const identites = await agent.identity.list();
     return bearerDid;
+}
+
+export async function storeVcJwtInDwn(web5: Web5Api, vcJwt: string, did: string) {
+    const { record } = await web5.dwn.records.create({
+        data: vcJwt,
+        message: {
+            schema: CREDENTIAL_TYPES.KNOWN_CUSTOMER_CREDENTIAL,
+            dataFormat: VC_JWT_MIME_TYPE,
+        },
+    });
+
+    return await record?.send(did);
+}
+
+export async function fetchVcJwtFromDwn(web5: Web5Api, did: string) {
+    const response = await web5.dwn.records.query({
+        from: did,
+        message: {
+            filter: {
+                schema: CREDENTIAL_TYPES.KNOWN_CUSTOMER_CREDENTIAL,
+                dataFormat: VC_JWT_MIME_TYPE,
+            },
+        },
+    });
+
+    return await response?.records?.[0]?.data?.text()
 }

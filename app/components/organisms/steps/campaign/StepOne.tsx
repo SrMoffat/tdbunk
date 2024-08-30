@@ -12,7 +12,7 @@ import { Web5 } from '@web5/api';
 import { BearerDid } from '@web5/dids';
 import { Flex, Layout, Segmented, theme } from 'antd';
 import Image from 'next/image';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { BearerIdentity } from '@web5/agent';
 
 
@@ -61,6 +61,7 @@ const StepOne: React.FC<StepOneProps> = ({
 }) => {
     const [open, setOpen] = useState<boolean>(false);
     const [copied, setCopied] = useState<boolean>(false)
+    const [noCredentials, setNoCredentials] = useState<boolean>(true);
     const [mode, setMode] = useState<CredentialMode>(CredentialMode.CREATE);
 
     const { credentials: existingStateCreds } = useWeb5Context()
@@ -76,16 +77,74 @@ const StepOne: React.FC<StepOneProps> = ({
     const isRequest = mode === CredentialMode.REQUEST
     const isImport = mode === CredentialMode.IMPORT
 
+
+
+    // console.log("Data", {
+    //     noCredentialsFound,
+    //     existingStateCreds,
+    //     existingLocalStorageCreds
+    // })
+
+
     // @ts-ignore
     const existingLocalStorageCreds = localStorageData?.credentials
 
-    const noCredentialsFound = !existingLocalStorageCreds && !existingStateCreds?.length
+    useEffect(() => {
+        if (existingLocalStorageCreds) {
+            const allCredentials = Object.values(existingLocalStorageCreds)
+            const localCredentials = allCredentials.flat()
 
-    console.log("Data", {
-        noCredentialsFound,
-        existingStateCreds,
-        existingLocalStorageCreds
-    })
+            const localCreds = localCredentials.length > 0
+
+            if (localCreds) {
+                setNoCredentials(false)
+            }
+
+            console.log("Something needs to be updated and local has?/", {
+                noCredentials,
+                allCredentials,
+                localCredentials,
+                existingStateCreds,
+                existingLocalStorageCreds
+            })
+
+        } else if (existingStateCreds) {
+            const allCredentials = Object.values(existingStateCreds)
+            const stateCredentials = allCredentials.flat()
+
+            const stateCreds = stateCredentials.length > 0
+
+            if (stateCreds) {
+                setNoCredentials(false)
+            }
+
+
+            console.log("Something needs to be updated and state has?/", {
+                noCredentials,
+                allCredentials,
+                stateCredentials,
+                existingStateCreds,
+                existingLocalStorageCreds
+            })
+        }
+
+
+    }, [existingStateCreds, existingLocalStorageCreds])
+
+    useEffect(() => {
+        const noCredentialsFound = !existingLocalStorageCreds && !existingStateCreds?.length
+
+        if (noCredentialsFound) {
+            console.log("No credentials found")
+            setNoCredentials(noCredentialsFound)
+        } else {
+            setNoCredentials(false)
+            console.log("Credentials found pick?", {
+                existingLocalStorageCreds,
+                existingStateCreds
+            })
+        }
+    }, [])
 
     const options = STEP_ONE_TAB_OPTIONS.map(({ name, icon }) => ({
         label: (
@@ -128,14 +187,14 @@ const StepOne: React.FC<StepOneProps> = ({
                         // showModal()
                     }}
                     options={options}
-                    disabled={!nextButtonDisabled}
+                    disabled={!nextButtonDisabled || !noCredentials}
                     style={{ backgroundColor: "#334155", height: 118 }}
                 />
             </Flex>
             {
                 isCreate && <CreateCredential
+                    noCredentialsFound={noCredentials}
                     stateCredentials={existingStateCreds}
-                    noCredentialsFound={noCredentialsFound}
                     nextButtonDisabled={nextButtonDisabled}
                     localStorageCredentials={existingLocalStorageCreds}
 

@@ -17,6 +17,13 @@ export enum DEBUNK_CAMPAIGN_TYPE {
     SPONSORED = 'Sponsored'
 }
 
+export enum CREDENTIAL_TYPES {
+    KNOWN_CUSTOMER_CREDENTIAL = 'KnownCustomerCredential',
+    VERIFIABLE_CREDENTIAL = 'VerifiableCredential',
+}
+
+export const VC_JWT_MIME_TYPE = 'application/vc+jwt'
+
 export const PFIs = [
     /**
      {

@@ -1,15 +1,14 @@
 "use client"
 import { Card1, Evidence, TBDVCLogoYellow, ValidCredential } from "@/app/components/atoms/Icon";
-import { parseJwtToVc } from "@/app/lib/web5";
-import { useWeb5Context } from "@/app/providers/Web5Provider";
+import { parseJwtToVc, resolveDid } from "@/app/lib/web5";
+import countries from '@/public/countries.json';
 import { VerifiableCredential } from "@web5/credentials";
 import { DidResolutionResult } from "@web5/dids";
-import { Card, Drawer, Flex, Typography, Tag, theme } from "antd";
+import { Card, Drawer, Flex, Tag, Typography } from "antd";
 import { formatDistanceToNow } from 'date-fns';
 import Image from "next/image";
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
-import countries from '@/public/countries.json'
 
 export interface CredentialSubject {
     name: string;
@@ -64,7 +63,6 @@ export const CredentialCard: React.FC<CredentialCardProps> = ({
                 </Flex>
             </Flex>
         </Flex>
-
     )
 }
 
@@ -110,9 +108,7 @@ export const extractVcDocumentDetails = (vc: VerifiableCredential) => {
 }
 
 const FinancialInstitutionCredential = (props: any) => {
-    const { existingCreds } = props;
-
-    const { resolveDid } = useWeb5Context()
+    const { stateCredentials, localStorageCredentials } = props;
 
     const [open, setOpen] = useState(false);
     const [copied, setCopied] = useState(false)
@@ -127,13 +123,12 @@ const FinancialInstitutionCredential = (props: any) => {
     const getDidDdocument = async (didUri: string) => {
         const did = await resolveDid?.(didUri)
         setVcIssuerDidDocument(did)
-        return did
-    }
 
-    const getVcDidDocument = (creds: any) => {
-        const createdFinancialCred = Object.values(creds).flat()[0]
-        const parsedVc = parseJwtToVc(createdFinancialCred)
-        return parsedVc
+        console.log("getDidDdocument", {
+            didUri,
+            did
+        })
+        return did
     }
 
     const handleCardClicked = () => {
@@ -154,11 +149,43 @@ const FinancialInstitutionCredential = (props: any) => {
     }
 
     useEffect(() => {
-        const parsedVc = getVcDidDocument(existingCreds)
-        const { issuerUri, data } = extractVcDocumentDetails(parsedVc)
-        setVcMetadata(data)
-        getDidDdocument(issuerUri)
-        setCredentialDidDocument(parsedVc)
+        let jwtCredentials: any = []
+        let parsedCredentials: any = []
+
+        if (localStorageCredentials) {
+            const localCredentials = Object.values(localStorageCredentials)
+            jwtCredentials = localCredentials.flat()
+            console.log("Local Storage State", {
+                stateCredentials,
+                localStorageCredentials
+            })
+
+        } else if (stateCredentials) {
+            const contextCredentials = Object.values(stateCredentials)
+            jwtCredentials = contextCredentials.flat()
+            console.log("Context State Storage State", {
+                stateCredentials,
+                localStorageCredentials
+            })
+
+        }
+
+        for (const jwt of jwtCredentials) {
+            const parsedCred = parseJwtToVc(jwt)
+            const { issuerUri, data } = extractVcDocumentDetails(parsedCred)
+
+            parsedCredentials = [...parsedCredentials, {
+                rawCred: parsedCred,
+                formattedCred: data,
+                issuer: issuerUri
+            }]
+        }
+
+        // To Do: Handle multiple credential case
+        const cred = parsedCredentials[0]
+        setVcMetadata(cred?.formattedCred)
+        getDidDdocument(cred?.issuer)
+        setCredentialDidDocument(cred?.rawCred)
     }, [])
 
     return (

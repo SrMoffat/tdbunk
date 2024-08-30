@@ -27,7 +27,6 @@ export interface Web5ContextType {
 
 const Web5Context = createContext<Partial<Web5ContextType>>({})
 
-export type WalletStorage = {} | null
 
 
 const useWeb5Context = (): Partial<Web5ContextType> => {
@@ -46,10 +45,7 @@ const Web5ContextProvider = ({ children }: PropsWithChildren) => {
     const [recoveryPhrase, setRecoveryPhrase] = useState<string | null | undefined>(null);
     const [userBearerDid, setUserBearerDid] = useState<BearerDid | BearerIdentity | null | undefined>(null);
 
-    const [_, setLocalWallet] = useBrowserStorage<WalletStorage>(
-        WALLET_LOCAL_STORAGE_KEY,
-        LOCAL_STORAGE_KEY
-    )
+
 
     useEffect(() => {
         (async () => {
@@ -110,9 +106,7 @@ const Web5ContextProvider = ({ children }: PropsWithChildren) => {
             // recoveryPhrase
         }
 
-        // To Do: What are the best practices for managing DIDs and BearerDids?
-        // We are storing them in local storage here
-        setLocalWallet(wallet)
+        
     }, [userDid, userBearerDid, recoveryPhrase])
 
     return <Web5Context.Provider value={{

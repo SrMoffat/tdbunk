@@ -53,7 +53,7 @@ export const CredentialCard: React.FC<CredentialCardProps> = ({
                 <Image alt="card" src={Card1} width={300} height={300} />
                 <Flex className="absolute left-4 top-4 flex-col">
                     <Image alt="LogoIcon" src={TBDVCLogoYellow} width={40} height={40} />
-                    <Link href={vcServiceUrl} style={{ fontSize: 10, marginTop: 8 }}>Ultimate Identity</Link>
+                    <Link target="_blank" href={vcServiceUrl} style={{ fontSize: 10, marginTop: 8 }}>Ultimate Identity</Link>
                 </Flex>
                 <Flex className="absolute left-4 top-20 flex-col">
                     <Typography.Text style={{ fontSize: 12 }}>{`${name}`}</Typography.Text>

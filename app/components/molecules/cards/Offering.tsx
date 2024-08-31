@@ -6,7 +6,7 @@ import { getEstimatedSettlementTime } from "@/app/lib/utils";
 import { Offering } from "@tbdex/http-client";
 import { Button, Card, Flex, List, Modal } from "antd";
 import { formatDistanceToNow } from 'date-fns';
-import { useState } from "react";
+import { SetStateAction, useState } from "react";
 import AssetExachangeAction from "../../atoms/OfferAction";
 import AssetExchangeOffer from "../../atoms/OfferDetails";
 import AssetExchangeRates from "../../atoms/OfferExchangeRates";
@@ -49,7 +49,7 @@ const AssetExchangePFIDetails = ({
     offeringToCurrencyMethods,
 }: AssetExchangePFIDetailsProps) => {
     return (
-        <Card className="border w-full min-h-[200px]">
+        <Card className="w-full min-h-[200px]">
             <PFIDetails
                 pfiDid={pfiDid}
                 pfiName={pfiName}
@@ -176,7 +176,20 @@ const OfferingDetails = (props: any) => {
                 setIsSelected={setIsSelected}
                 setSelectedCard={setSelectedCard}
             />
-        : <CredentialsForm />
+        : <CredentialsForm
+            nextButtonDisabled={false}
+            noCredentialsFound={false}
+            localStorageCredentials={[]}
+            stateCredentials={undefined}
+            setNextButtonDisabled={function (value: SetStateAction<boolean>): void {
+                throw new Error("Function not implemented.");
+            }}
+            setUserDid={undefined}
+            setWeb5Instance={undefined}
+            setCredentials={undefined}
+            setRecoveryPhrase={undefined}
+            setUserBearerDid={undefined}
+        />
 
     const issuerDid = offeringRequiredClaims?.['vc.issuer']
     const issuerVcSchema = offeringRequiredClaims?.['vc.credentialSchema.id']

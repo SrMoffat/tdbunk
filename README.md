@@ -41,3 +41,14 @@ Manage their digital identity information. Mobile Wallet also acts as a self-cus
 It creates a DID for the user and securely stores the private keys for that DID directly on-device.
 
 It stores Verifiable Credentials issued to the user directly on-device.
+
+Key Management
+Document Management
+Credential Management
+Financial Management
+
+
+logo
+name
+service url
+did

@@ -18,8 +18,13 @@ export enum DEBUNK_CAMPAIGN_TYPE {
 }
 
 export enum CREDENTIAL_TYPES {
-    KNOWN_CUSTOMER_CREDENTIAL = 'KnownCustomerCredential',
     VERIFIABLE_CREDENTIAL = 'VerifiableCredential',
+    MEDICAL_CREDENTIAL = 'TDBunkMedicalCredential',
+    FINANCIAL_CREDENTIAL = 'TDBunkFinancialCredential',
+    GOVERNMENT_CREDENTIAL = 'TDBunkGovernmentCredential',
+    KNOWN_CUSTOMER_CREDENTIAL = 'KnownCustomerCredential',
+    EDUCATIONAL_CREDENTIAL = 'TDBunkEducationalCredential',
+    PROFESSIONAL_CREDENTIAL = 'TDBunkProfessionalCredential',
 }
 
 export const VC_JWT_MIME_TYPE = 'application/vc+jwt'

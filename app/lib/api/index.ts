@@ -18,7 +18,7 @@ export interface UserValue {
     value: string;
 }
 
-export const generateVc = async (data: UserDetails) => {
+export const generateUltimateIdentifierVc = async (data: UserDetails) => {
     const response = await fetch('/api/credentials', {
         method: 'POST',
         body: JSON.stringify(data)

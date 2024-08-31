@@ -233,3 +233,73 @@ export async function fetchVcJwtFromDwn(web5: Web5Api, did: string) {
 
     return await response?.records?.[0]?.data?.text()
 }
+
+export async function generateTdbunkFinancialVc(){
+    // const vc = await VerifiableCredential.create({
+    //     type: 'EmploymentCredential',
+    //     issuer: employer.uri,
+    //     subject: employee.uri,
+    //     expirationDate: '2023-09-30T12:34:56Z',
+    //     data: {
+    //         "position": "Software Developer",
+    //         "startDate": "2023-04-01T12:34:56Z",
+    //         "employmentStatus": "Contractor"
+    //     }
+    // });
+}
+
+export async function generateTdbunkGovernmentVc(){
+    // const vc = await VerifiableCredential.create({
+    //     type: 'EmploymentCredential',
+    //     issuer: employer.uri,
+    //     subject: employee.uri,
+    //     expirationDate: '2023-09-30T12:34:56Z',
+    //     data: {
+    //         "position": "Software Developer",
+    //         "startDate": "2023-04-01T12:34:56Z",
+    //         "employmentStatus": "Contractor"
+    //     }
+    // });
+}
+
+export async function generateTdbunkProfessionalVc(){
+    // const vc = await VerifiableCredential.create({
+    //     type: 'EmploymentCredential',
+    //     issuer: employer.uri,
+    //     subject: employee.uri,
+    //     expirationDate: '2023-09-30T12:34:56Z',
+    //     data: {
+    //         "position": "Software Developer",
+    //         "startDate": "2023-04-01T12:34:56Z",
+    //         "employmentStatus": "Contractor"
+    //     }
+    // });
+}
+
+export async function generateTdbunkEducationalVc(){
+    // const vc = await VerifiableCredential.create({
+    //     type: 'EmploymentCredential',
+    //     issuer: employer.uri,
+    //     subject: employee.uri,
+    //     expirationDate: '2023-09-30T12:34:56Z',
+    //     data: {
+    //         "position": "Software Developer",
+    //         "startDate": "2023-04-01T12:34:56Z",
+    //         "employmentStatus": "Contractor"
+    //     }
+    // });
+}
+
+export async function generateTdbunkMedicalVc(){
+    // const vc = await VerifiableCredential.create({
+    //     type: 'EmploymentCredential',
+    //     issuer: employer.uri,
+    //     subject: employee.uri,
+    //     expirationDate: '2023-09-30T12:34:56Z',
+    //     data: {
+    //         "position": "Software Developer",
+    //         "startDate": "2023-04-01T12:34:56Z",
+    //         "employmentStatus": "Contractor"
+    //     }
+    // });
+}

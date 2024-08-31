@@ -2,7 +2,7 @@ import { DebounceSelect } from '@/app/components/atoms';
 import FinancialInstitutionCredential from '@/app/components/molecules/cards/FinancialCredential';
 import { CreateCredentialProps } from '@/app/components/molecules/forms/CreateCredential';
 import useBrowserStorage from '@/app/hooks/useLocalStorage';
-import { fetchUserList, FieldType, generateVc, UserValue } from '@/app/lib/api';
+import { fetchUserList, FieldType, generateUltimateIdentifierVc, UserValue } from '@/app/lib/api';
 import { CREDENTIALS_LOCAL_STORAGE_KEY, LOCAL_STORAGE_KEY, WALLET_LOCAL_STORAGE_KEY } from '@/app/lib/constants';
 import { getCurrencyFromCountry } from '@/app/lib/utils';
 import { initWeb5, parseJwtToVc, storeVcJwtInDwn } from '@/app/lib/web5';
@@ -85,7 +85,7 @@ const CredentialsForm: React.FC<CreateCredentialProps> = ({
                     setRecoveryPhrase?.(recoveryPhrase)
 
                     // Create new credential
-                    const vc = await generateVc({
+                    const vc = await generateUltimateIdentifierVc({
                         ...details,
                         did
                     })

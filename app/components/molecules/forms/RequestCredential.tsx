@@ -7,16 +7,50 @@ import {
     MedicalCredentialCard,
     ProfessionalCredentialCard
 } from '@/app/components/molecules/cards';
-import { toCapitalizedWords } from "@/app/lib/utils";
-import { Collapse, CollapseProps, Flex, Typography, Modal } from 'antd';
+import { Collapse, CollapseProps, Flex, Typography, Modal, Alert, Button } from 'antd';
+import { CREDENTIAL_TYPES, CREDENTIALS_LOCAL_STORAGE_KEY, LOCAL_STORAGE_KEY } from '@/app/lib/constants';
+import { Card1, Card3, Card4, Card5, LogoIcon2, TBDVCLogoYellow } from '@/app/components/atoms/Icon';
+import FinancialInstitutionCredential from '../cards/FinancialCredential';
 import { useState } from 'react';
-import { CREDENTIAL_TYPES } from '@/app/lib/constants';
-import { Card1, Card2, Card3, Card4, Card5, LogoIcon2, TBDVCLogoYellow } from '@/app/components/atoms/Icon';
+import FinancialCredentialForm from "../forms/FinancialCredential";
+import { createFinancialCredential } from '@/app/lib/web5';
+import { getCurrencyFromCountry } from '@/app/lib/utils';
+import useBrowserStorage from '@/app/hooks/useLocalStorage';
+import { CredentialStorage } from './Credentials';
+import countries from '@/public/countries.json';
+
 
 const RequestCredential = (props: any) => {
-    const { showDrawer } = props
+    const {
+        stateCredentials,
+        noCredentialsFound,
+        nextButtonDisabled,
+        hasRequiredCredentials,
+        localStorageCredentials,
+
+        setUserDid,
+        setCredentials,
+        setWeb5Instance,
+        setUserBearerDid,
+        setRecoveryPhrase,
+        setNextButtonDisabled,
+    } = props
+
     const [showModal, setShowModal] = useState(false)
 
+    const commonProps = {
+        noCredentialsFound,
+        stateCredentials,
+        nextButtonDisabled,
+        localStorageCredentials,
+
+        setUserDid,
+        setCredentials,
+        setWeb5Instance,
+        setUserBearerDid,
+        setRecoveryPhrase,
+        setNextButtonDisabled
+    }
 
     const credentialsTypes = [
         {
@@ -29,7 +63,7 @@ const RequestCredential = (props: any) => {
             type: CREDENTIAL_TYPES.GOVERNMENT_CREDENTIAL,
             issuerName: "TDBunk Identity",
             logo: LogoIcon2,
-            card: Card2
+            card: Card5
         },
         {
             type: CREDENTIAL_TYPES.PROFESSIONAL_CREDENTIAL,
@@ -43,14 +77,27 @@ const RequestCredential = (props: any) => {
             logo: LogoIcon2,
             card: Card4
         },
-        {
-            type: CREDENTIAL_TYPES.MEDICAL_CREDENTIAL,
-            issuerName: "TDBunk Identity",
-            logo: LogoIcon2,
-            card: Card5
-        }
     ]
 
+    const financialProps = {
+        ...credentialsTypes[0],
+        ...commonProps
+    }
+
+    const governmentProps = {
+        ...credentialsTypes[1],
+        ...commonProps
+    }
+
+    const professionalProps = {
+        ...credentialsTypes[2],
+        ...commonProps
+    }
+
+    const educationalProps = {
+        ...credentialsTypes[3],
+        ...commonProps
+    }
 
     const items: CollapseProps['items'] = [
         {
@@ -58,49 +105,128 @@ const RequestCredential = (props: any) => {
             label: 'Financial Insitution',
             children:
                 // <FinancialCredentialCard showDrawer={showDrawer} />
-                <CredentialIssuerCard {...credentialsTypes[0]} />
+                <CredentialIssuerCard {...financialProps} />
         },
         {
             key: '2',
             label: 'Government Institution',
             children:
                 // <GovernmentCredentialCard showDrawer={showDrawer} />
-                <CredentialIssuerCard {...credentialsTypes[1]} />
+                <CredentialIssuerCard {...governmentProps} />
         },
         {
             key: '3',
             label: 'Professional Institution',
             children:
                 // <ProfessionalCredentialCard showDrawer={showDrawer} />
-                <CredentialIssuerCard {...credentialsTypes[2]} />
+                <CredentialIssuerCard {...professionalProps} />
         },
         {
             key: '4',
             label: 'Educational Institution',
             children:
                 // <EducationCredentialCard showDrawer={showDrawer} />
-                <CredentialIssuerCard {...credentialsTypes[3]} />
-        },
-        {
-            key: '5',
-            label: 'Medical Institution',
-            children:
-                // <MedicalCredentialCard showDrawer={showDrawer} />
-                <CredentialIssuerCard {...credentialsTypes[4]} />
+                <CredentialIssuerCard {...educationalProps} />
         },
     ];
 
-    // const financialCredential = type === CREDENTIAL_TYPES.FINANCIAL_CREDENTIAL
+    const [formData, setFormData] = useState({})
 
-    // const flow = financialCredential
-    //     ? 'FinancialCredential'
-    //     : 'Here'
+    const [localStorageData, setLocalCredentials] = useBrowserStorage<CredentialStorage>(
+        CREDENTIALS_LOCAL_STORAGE_KEY,
+        LOCAL_STORAGE_KEY
+    )
+
+    // const hasCredentials = true
+    const hasCredentials = !noCredentialsFound
+    const hasRequiredCredential = hasRequiredCredentials
+
+    const onClose = () => {
+        setShowModal(false);
+    };
+
+    const handleCancel = () => {
+        setShowModal(false);
+    };
+
+    const handleOk = async () => {
+        // @ts-ignore
+        const details = formData[CREDENTIAL_TYPES.FINANCIAL_CREDENTIAL]
+        console.log("Request credential", details)
+
+        // const result = await createFinancialCredential(details)
+        // const {
+        //     did,
+        //     web5,
+        //     storedVc,
+        //     bearerDid,
+        //     recoveryPhrase
+        // } = result as any
+        // console.log("Result", result)
+        // const defaultCurrencyFromCredential = getCurrencyFromCountry(countries, details?.country?.value)
+
+        // setUserDid?.(did)
+        // setWeb5Instance?.(web5)
+        // setUserBearerDid?.(bearerDid)
+        // setRecoveryPhrase?.(recoveryPhrase)
+        // setCredentials?.(storedVc)
+        // setLocalCredentials({
+        //     did,
+        //     credentials: storedVc,
+        //     defaultCurrency: defaultCurrencyFromCredential,
+        // })
+        // setNextButtonDisabled(false)
+    };
+
 
     return (
         <Flex className="flex-col">
-            <Typography.Text className="font-bold mb-4">Verifiable Credential Issuers</Typography.Text>
-            {/* <CredentialIssuerCard /> */}
-            <Collapse accordion items={items} />
+            <Modal
+                width={800}
+                open={showModal}
+                onClose={onClose}
+                title={`Request Credential`}
+                footer={[
+                    <Button danger key="back" onClick={handleCancel}>
+                        Cancel
+                    </Button>,
+                    <Button key="submit" type="primary" onClick={handleOk}>
+                        Request Credential
+                    </Button>
+                ]}
+            >
+                <FinancialCredentialForm setFormData={setFormData} />
+            </Modal>
+            {!hasCredentials && <Typography.Text className="font-bold mb-4">Verifiable Credential Issuers</Typography.Text>}
+            {
+                hasCredentials
+                    ? hasRequiredCredential
+                        ? 'All Good'
+                        : <Flex className="flex-col gap-4 items-center">
+                            <Flex>
+                                <Alert
+                                    message="Missing Credentials"
+                                    showIcon
+                                    description="You have created a credential but you are yet to create a required one."
+                                    type="warning"
+                                    action={
+                                        <Button onClick={() => setShowModal(true)} className="ml-3" type="primary">
+                                            Request Credential
+                                        </Button>
+                                    }
+                                />
+                            </Flex>
+                            <Flex className="w-full justify-center">
+                                <Flex className="w-1/6">
+                                    <FinancialInstitutionCredential
+                                        stateCredentials={stateCredentials}
+                                        localStorageCredentials={localStorageCredentials}
+                                    />
+                                </Flex>
+                            </Flex>
+                        </Flex>
+                    : <Collapse accordion items={items} />
+            }
         </Flex>
     );
 };

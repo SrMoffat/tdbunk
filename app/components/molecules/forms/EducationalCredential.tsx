@@ -1,10 +1,25 @@
 import { DebounceSelect } from '@/app/components/atoms';
 import { fetchUserList, FieldType, UserValue } from '@/app/lib/api';
-import { Button, Form, Input } from 'antd';
-import type { FormProps } from 'antd';
+import { CREDENTIAL_TYPES } from '@/app/lib/constants';
+import { Button, Form, Input, Flex, DatePicker } from 'antd';
+import type { FormProps, DatePickerProps } from 'antd';
 import { useState } from 'react';
 
-export default function EducationalCredential() {
+export interface EducationalCredentialFieldType {
+    nameOfInstituion: string;
+    nameOfCourse: string;
+    startDate: string;
+    endDate: string;
+};
+
+export interface EducationalCredentialProps {
+    setFormData: any
+    //() => React.Dispatch<React.SetStateAction<{ [key: CREDENTIAL_TYPES]: { }; }>>
+}
+
+export default function EducationalCredential({
+    setFormData
+ }: EducationalCredentialProps) {
     const onFinish: FormProps<FieldType>['onFinish'] = async (values) => {
         console.log('Values:', values);
 
@@ -14,51 +29,60 @@ export default function EducationalCredential() {
         console.log('Failed:', errorInfo);
     };
 
+    const onChange: DatePickerProps['onChange'] = (date, dateString) => {
+        console.log(date, dateString);
+    };
+
     const [value, setValue] = useState<UserValue[]>([]);
   return (
       <Form
-          name="basic"
+          name="educationalCredential"
           layout="vertical"
           className='w-full'
           autoComplete="off"
-          onFinish={onFinish}
-
-          onFinishFailed={onFinishFailed}
+          onValuesChange={(_, all) => {
+              setFormData((prev: any) => ({
+                  ...prev,
+                  [CREDENTIAL_TYPES.EDUCATIONAL_CREDENTIAL]: {
+                      ...all
+                  }
+              }))
+          }}
       >
-          <Form.Item<FieldType>
-              label="Email"
-              name="email"
-              rules={[{ required: true, message: 'Please input your email!' }]}
+          <Form.Item<EducationalCredentialFieldType>
+              label="Name of Instituion"
+              name="nameOfInstituion"
+              rules={[{ required: true, message: 'Please input name of instituion!' }]}
           >
-              <Input type='email' size='large' placeholder='Enter your email' allowClear />
+              <Input type='text' size='large' placeholder='Enter name of instituion' allowClear />
           </Form.Item>
-          <Form.Item<FieldType>
-              label="Password"
-              name="password"
-              rules={[{ required: true, message: 'Please input your password!' }]}
+          <Form.Item<EducationalCredentialFieldType>
+              label="Name of Course"
+              name="nameOfCourse"
+              rules={[{ required: true, message: 'Please input name of course!' }]}
           >
-              <Input.Password type='password' size='large' placeholder='Enter your password' allowClear />
+              <Input type='text' size='large' placeholder='Enter name of course' allowClear />
           </Form.Item>
-          <Form.Item<FieldType>
-              label="Country"
-              name="country"
-              rules={[{ required: true, message: 'Please input your country of residence!' }]}
-          >
-              <DebounceSelect
-                  value={value}
-                  placeholder="Select your country"
-                  fetchOptions={fetchUserList}
-                  onChange={(newValue) => {
-                      setValue(newValue as UserValue[]);
-                  }}
-                  style={{ width: '100%' }}
-              />
-          </Form.Item>
-          <Form.Item>
-              <Button type="primary" htmlType="submit" loading={true}>
-                  Create
-              </Button>
-          </Form.Item>
+          <Flex className="w-full">
+              <Flex className="w-full">
+                  <Form.Item<EducationalCredentialFieldType>
+                      label="Start Date"
+                      name="startDate"
+                      rules={[{ required: true, message: 'Please input the start date!' }]}
+                  >
+                      <DatePicker onChange={onChange} />
+                  </Form.Item>
+              </Flex>
+              <Flex className="w-full">
+                  <Form.Item<EducationalCredentialFieldType>
+                      label="End Date"
+                      name="endDate"
+                      rules={[{ required: true, message: 'Please input the end date!' }]}
+                  >
+                      <DatePicker onChange={onChange} />
+                  </Form.Item>
+              </Flex>
+          </Flex>
       </Form>
   )
 }

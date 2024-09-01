@@ -5,7 +5,7 @@ import CreateCredential from '@/app/components/molecules/forms/CreateCredential'
 import ImportCredential from '@/app/components/molecules/forms/ImportCredential';
 import RequestCredential from '@/app/components/molecules/forms/RequestCredential';
 import useBrowserStorage from '@/app/hooks/useLocalStorage';
-import { CREDENTIALS_LOCAL_STORAGE_KEY, LOCAL_STORAGE_KEY } from '@/app/lib/constants';
+import { CREDENTIAL_TYPES, CREDENTIALS_LOCAL_STORAGE_KEY, LOCAL_STORAGE_KEY } from '@/app/lib/constants';
 import { useWeb5Context } from '@/app/providers/Web5Provider';
 import countries from '@/public/countries.json';
 import { Web5 } from '@web5/api';
@@ -62,6 +62,7 @@ const StepOne: React.FC<StepOneProps> = ({
     const [open, setOpen] = useState<boolean>(false);
     const [copied, setCopied] = useState<boolean>(false)
     const [noCredentials, setNoCredentials] = useState<boolean>(true);
+    const [hasRequiredCredentials, setHasRequiredCredentials] = useState<boolean>(false);
     const [mode, setMode] = useState<CredentialMode>(CredentialMode.CREATE);
 
     const { credentials: existingStateCreds } = useWeb5Context()
@@ -100,7 +101,14 @@ const StepOne: React.FC<StepOneProps> = ({
                 setNoCredentials(false)
             }
 
+            const allCredentialTypes = Object.keys(existingLocalStorageCreds)[0]
+            const localCredentialType = allCredentialTypes?.split(":")[1]
+            const isKcc = localCredentialType === CREDENTIAL_TYPES.KNOWN_CUSTOMER_CREDENTIAL
+
+            setHasRequiredCredentials(isKcc)
+
             console.log("Something needs to be updated and local has?/", {
+                isKcc,
                 noCredentials,
                 allCredentials,
                 localCredentials,
@@ -118,8 +126,14 @@ const StepOne: React.FC<StepOneProps> = ({
                 setNoCredentials(false)
             }
 
+            const allCredentialTypes = Object.keys(existingStateCreds)[0]
+            const stateCredentialType = allCredentialTypes?.split(":")[1]
+            const isKcc = stateCredentialType === CREDENTIAL_TYPES.KNOWN_CUSTOMER_CREDENTIAL
+
+            setHasRequiredCredentials(isKcc)
 
             console.log("Something needs to be updated and state has?/", {
+                isKcc,
                 noCredentials,
                 allCredentials,
                 stateCredentials,
@@ -170,6 +184,21 @@ const StepOne: React.FC<StepOneProps> = ({
     const onClose = () => {
         setOpen(false);
     };
+
+    const commonProps = {
+        noCredentialsFound: noCredentials,
+        stateCredentials: existingStateCreds,
+        nextButtonDisabled,
+        hasRequiredCredentials,
+        localStorageCredentials: existingLocalStorageCreds,
+
+        setUserDid,
+        setCredentials,
+        setWeb5Instance,
+        setUserBearerDid,
+        setRecoveryPhrase,
+        setNextButtonDisabled
+    }
     return (
         <Layout style={{ backgroundColor: colorBgContainer }}>
             <CredentialDocumentDrawer
@@ -193,20 +222,13 @@ const StepOne: React.FC<StepOneProps> = ({
             </Flex>
             {
                 isCreate && <CreateCredential
-                    noCredentialsFound={noCredentials}
-                    stateCredentials={existingStateCreds}
-                    nextButtonDisabled={nextButtonDisabled}
-                    localStorageCredentials={existingLocalStorageCreds}
-
-                    setUserDid={setUserDid}
-                    setCredentials={setCredentials}
-                    setWeb5Instance={setWeb5Instance}
-                    setUserBearerDid={setUserBearerDid}
-                    setRecoveryPhrase={setRecoveryPhrase}
-                    setNextButtonDisabled={setNextButtonDisabled}
+                    {...commonProps}
                 />
             }
-            {isRequest && <RequestCredential showDrawer={showDrawer} />}
+            {isRequest && <RequestCredential
+                {...commonProps}
+                showDrawer={showDrawer}
+            />}
             {isImport && <ImportCredential />}
         </Layout>
     );

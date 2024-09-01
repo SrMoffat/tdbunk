@@ -1,12 +1,11 @@
 "use client"
 import useBrowserStorage from '@/app/hooks/useLocalStorage';
-import { LOCAL_STORAGE_KEY, OFFERINGS_LOCAL_STORAGE_KEY, PFIs } from "@/app/lib/constants";
-import { Offering, TbdexHttpClient, Rfq } from '@tbdex/http-client';
+import { LOCAL_STORAGE_KEY, OFFERINGS_LOCAL_STORAGE_KEY, PFIs, SPECIAL_PFI } from "@/app/lib/constants";
+import { Offering, TbdexHttpClient } from '@tbdex/http-client';
 import { PresentationDefinitionV2, PresentationExchange } from '@web5/credentials';
 import { createContext, PropsWithChildren, useContext, useEffect, useState } from "react";
-import { useWeb5Context } from './Web5Provider';
-import { BearerDid } from '@web5/dids';
 import { getOfferingPairs } from '../lib/utils';
+import { useWeb5Context } from './Web5Provider';
 
 export interface CredentialProp {
     [key: string]: string[]
@@ -74,83 +73,6 @@ const TbdexContextProvider = ({ children }: PropsWithChildren) => {
         LOCAL_STORAGE_KEY
     )
 
-    const validateOffering = async ({
-        rfq,
-        offering
-    }: any) => {
-        try {
-            await rfq.verifyOfferingRequirements(offering)
-
-        } catch (error: any) {
-            console.log("Offering validation failed", error)
-        }
-    }
-
-    const createRfQ = async ({
-        offering,
-        amount,
-        payinMethods,
-        payoutMethods,
-        credentials
-    }: {
-        offering: any
-        amount: any
-        payinMethods: any
-        payoutMethods: any
-        credentials: any
-    }) => {
-        try {
-            const rfq = Rfq.create({
-                metadata: {
-                    // from: "did:dht:y5nzf5rh5gh8wc86kcquj1erat1391qwzayx1ki93hq64484x9jy",
-                    // to: "did:dht:3fkz5ssfxbriwks3iy5nwys3q5kyx64ettp9wfn1yfekfkiguj1y",
-                    from: userDid as string,
-                    to: offering?.offeringFrom,
-                    protocol: '1.0',
-                },
-                data: {
-                    // offeringId: 'offering_01j5wtrktnftvrwazzvgfk6r3z',
-                    offeringId: offering?.id,
-                    payin: {
-                        amount: amount?.toString(),
-                        // TO DO: Add UI for user to select the payin method
-                        // kind: 'GHS_BANK_TRANSFER',
-                        kind: payinMethods[0]?.kind,
-                        paymentDetails: {}
-                    },
-                    payout: {
-                        // kind: 'USDC_WALLET_ADDRESS',
-                        kind: payoutMethods[0]?.kind,
-                        paymentDetails: {
-                            address: '0xuuiehiuhie'
-                        }
-                    },
-                    claims: credentials
-                }
-            })
-
-            return rfq
-
-        } catch (error: any) {
-            console.log("Create RFQ Failed", error)
-
-        }
-    }
-
-    const signRfQ = async ({
-        rfq,
-        did
-    }: {
-        rfq: Rfq
-        did: BearerDid
-    }) => {
-        try {
-            await rfq.sign(did)
-        } catch (error: any) {
-            console.log("Signing RFQ errored", error)
-        }
-    }
-
     const createExchange = async (details: CreateExchangeArgs) => {
         try {
             const {
@@ -206,7 +128,6 @@ const TbdexContextProvider = ({ children }: PropsWithChildren) => {
         }
     }
 
-    const fetchExchanges = async () => {}
 
     useEffect(() => {
         (async () => {
@@ -256,6 +177,18 @@ const TbdexContextProvider = ({ children }: PropsWithChildren) => {
                     unformattedOfferings.push(offers)
                 }
 
+                const specialOfferings = await TbdexHttpClient.getOfferings({
+                    pfiDid: SPECIAL_PFI.did
+                })
+
+                console.log("Special Offerings", specialOfferings)
+
+                const {
+                    offerings: specialOffers,
+                    sourceCurrencies: specialOffersSourceCurrencies,
+                    destinationCurrencies: specialOffersDestinationCurrencies
+                } = getOfferingPairs(offeringsData)
+
                 const {
                     offerings,
                     sourceCurrencies,
@@ -263,6 +196,11 @@ const TbdexContextProvider = ({ children }: PropsWithChildren) => {
                 } = getOfferingPairs(offeringsData)
 
                 // console.log(unformattedOfferings)
+                console.log("Special Offerings", { 
+                    specialOffersSourceCurrencies,
+                    specialOffersDestinationCurrencies
+                 })
+
 
                 setOfferings(offerings)
                 setLocalOfferings(offerings)

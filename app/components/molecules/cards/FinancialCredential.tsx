@@ -47,6 +47,14 @@ export const CredentialCard: React.FC<CredentialCardProps> = ({
     const expiration = expiry ? formatDistanceToNow(new Date(expiry), { addSuffix: true }) : ''
 
     const country = countries.filter(entry => entry?.countryCode === countryCode)[0]
+
+    const nameParts = name?.split(":")
+
+    const hasParts = nameParts?.length
+
+    const renderName = hasParts
+        ? `${nameParts[0]} ${nameParts[1]}`
+        : name
     return (
         <Flex className="h-[200px]">
             <Flex onClick={handleCardClicked} className="absolute hover:opacity-70 rounded-md transition-all cursor-pointer">
@@ -56,7 +64,7 @@ export const CredentialCard: React.FC<CredentialCardProps> = ({
                     <Link target="_blank" href={vcServiceUrl} style={{ fontSize: 10, marginTop: 8 }}>Ultimate Identity</Link>
                 </Flex>
                 <Flex className="absolute left-4 top-20 flex-col">
-                    <Typography.Text style={{ fontSize: 12 }}>{`${name}`}</Typography.Text>
+                    <Typography.Text style={{ fontSize: 12 }}>{`${renderName}`}</Typography.Text>
                     <Typography.Text style={{ fontSize: 12 }}>{`${country?.countryName} ${country?.flag}`}</Typography.Text>
                     <Typography.Text style={{ fontSize: 9, marginTop: 10 }}>{`Issued: ${issuance}`}</Typography.Text>
                     <Typography.Text style={{ fontSize: 9 }}>{`Expires: ${expiration}`}</Typography.Text>

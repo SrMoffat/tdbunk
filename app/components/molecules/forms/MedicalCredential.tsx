@@ -17,13 +17,15 @@ export default function MedicalCredential() {
     const [value, setValue] = useState<UserValue[]>([]);
   return (
       <Form
-          name="basic"
+          name="medicalCredential"
           layout="vertical"
           className='w-full'
           autoComplete="off"
-          onFinish={onFinish}
-
-          onFinishFailed={onFinishFailed}
+          onValuesChange={(_, all) => {
+              console.log("Values Medical Credential", {
+                  all
+              })
+          }}
       >
           <Form.Item<FieldType>
               label="Email"

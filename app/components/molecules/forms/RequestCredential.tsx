@@ -4,7 +4,6 @@ import {
     EducationCredentialCard,
     // FinancialCredentialCard,
     GovernmentCredentialCard,
-    MedicalCredentialCard,
     ProfessionalCredentialCard
 } from '@/app/components/molecules/cards';
 import { Collapse, CollapseProps, Flex, Typography, Modal, Alert, Button } from 'antd';
@@ -37,6 +36,8 @@ const RequestCredential = (props: any) => {
     } = props
 
     const [showModal, setShowModal] = useState(false)
+    const [createdCredentialType, setCreatedCredentialType] = useState<CREDENTIAL_TYPES>()
+
 
     const commonProps = {
         noCredentialsFound,
@@ -49,7 +50,8 @@ const RequestCredential = (props: any) => {
         setWeb5Instance,
         setUserBearerDid,
         setRecoveryPhrase,
-        setNextButtonDisabled
+        setNextButtonDisabled,
+        setCreatedCredentialType
     }
 
     const credentialsTypes = [
@@ -178,6 +180,34 @@ const RequestCredential = (props: any) => {
         // setNextButtonDisabled(false)
     };
 
+    const financialCredential = createdCredentialType === CREDENTIAL_TYPES.KNOWN_CUSTOMER_CREDENTIAL
+    const governmentCredential = createdCredentialType === CREDENTIAL_TYPES.GOVERNMENT_CREDENTIAL
+    const professionalCredential = createdCredentialType === CREDENTIAL_TYPES.PROFESSIONAL_CREDENTIAL
+    const educationalCredential = createdCredentialType === CREDENTIAL_TYPES.EDUCATIONAL_CREDENTIAL
+
+    // TO DO: Clean this up 🤢
+    const credentialCard = financialCredential
+        ? <FinancialInstitutionCredential
+            stateCredentials={stateCredentials}
+            localStorageCredentials={localStorageCredentials}
+        />
+        : governmentCredential
+            ? <GovernmentCredentialCard
+                stateCredentials={stateCredentials}
+                localStorageCredentials={localStorageCredentials}
+            />
+            : professionalCredential
+                ? <ProfessionalCredentialCard
+                    stateCredentials={stateCredentials}
+                    localStorageCredentials={localStorageCredentials}
+                />
+                : educationalCredential
+                    ? <EducationCredentialCard
+                        stateCredentials={stateCredentials}
+                        localStorageCredentials={localStorageCredentials}
+                    />
+                    : 'Here'
+
 
     return (
         <Flex className="flex-col">
@@ -218,10 +248,7 @@ const RequestCredential = (props: any) => {
                             </Flex>
                             <Flex className="w-full justify-center">
                                 <Flex className="w-1/6">
-                                    <FinancialInstitutionCredential
-                                        stateCredentials={stateCredentials}
-                                        localStorageCredentials={localStorageCredentials}
-                                    />
+                                    {credentialCard}
                                 </Flex>
                             </Flex>
                         </Flex>

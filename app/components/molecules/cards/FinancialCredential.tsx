@@ -86,20 +86,32 @@ const DrawerHeader: React.FC<DrawerHeaderProps> = ({
     </Flex>)
 }
 
+export interface CredentialParsedMetadata {
+    id?: string;
+    name?: string;
+    countryOfResidence?: string;
+    firstName?: string;
+    lastName?: string;
+    idNumber?: string;
+    phoneNumber?: string;
+    dateOfBirth?: string;
+}
+
 export const extractVcDocumentDetails = (vc: VerifiableCredential) => {
     const vcModel = vc?.vcDataModel
 
-    const credentialSubject = vcModel?.credentialSubject as {
-        id: string;
-        name: string;
-        countryOfResidence: string;
-    }
+    const credentialSubject = vcModel?.credentialSubject as CredentialParsedMetadata
 
     const credentialMetadata = {
         subject: {
             didUri: credentialSubject?.id,
             name: credentialSubject?.name,
             countryCode: credentialSubject?.countryOfResidence,
+            firstName: credentialSubject?.firstName,
+            lastName: credentialSubject?.lastName,
+            idNumber: credentialSubject?.idNumber,
+            phoneNumber: credentialSubject?.phoneNumber,
+            dateOfBirth: credentialSubject?.dateOfBirth,
         },
         issuerDidUri: vcModel?.issuer,
         issuanceDate: vcModel?.issuanceDate,

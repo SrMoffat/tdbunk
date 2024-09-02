@@ -58,7 +58,7 @@ const CredentialOption: React.FC<any> = ({
     const [issuance, setIssuance] = useState<string | undefined>()
     const [expiration, setExpiration] = useState<string | undefined>()
     const [issuerServiceUrl, setIssuerServiceUrl] = useState<string | undefined>()
-    const [vcSubject, setVcSubject] = useState<{ didUri: string; name: string; countryCode: string; }>()
+    const [vcSubject, setVcSubject] = useState<{ didUri?: string; name?: string; countryCode?: string; }>()
 
     const { token: { colorPrimary } } = theme.useToken()
 

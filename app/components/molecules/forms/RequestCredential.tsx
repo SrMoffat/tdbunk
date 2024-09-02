@@ -259,15 +259,15 @@ const RequestCredential = (props: any) => {
             {
                 hasCredentials
                     ? showCombinedCredentials
-                        ? <Flex className="border border-red-500 w-full self-center items-center justify-center gap-4">
-                            <Flex className="border border-yellow-500 w-1/2 self-end">
+                        ? <Flex className="w-1/2 *:self-center items-center justify-center gap-4">
+                            <Flex className="w-1/2 items-end">
                                 <FinancialInstitutionCredential
                                     credential={finCred}
                                     stateCredentials={stateCredentials}
                                     localStorageCredentials={localStorageCredentials}
                                 />
                             </Flex>
-                            <Flex className="border border-green-500 w-1/2">
+                            <Flex className="w-1/2">
                                 {credentialCard}
                             </Flex>
                         </Flex>

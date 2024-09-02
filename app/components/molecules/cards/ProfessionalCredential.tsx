@@ -1,24 +1,74 @@
 import { Card3 } from "@/app/components/atoms/Icon";
-import { Flex, Typography } from "antd";
-import Image from "next/image";
-
+import { parseJwtToVc } from "@/app/lib/web5";
 import countries from '@/public/countries.json';
-
-const country = countries.filter((entry) => entry?.countryCode === "KE")[0]
+import { Flex, Typography } from "antd";
+import { formatDistanceToNow } from "date-fns";
+import Image from "next/image";
+import { useEffect, useState } from "react";
+import { CredentialParsedMetadata, extractVcDocumentDetails } from "./FinancialCredential";
 
 const ProfessionalInstitutionCredential = (props: any) => {
-    const { showDrawer } = props
+    const {
+        showDrawer,
+        stateCredentials,
+        localStorageCredentials
+    } = props
+
+    const [issuance, setIssuance] = useState<string | undefined>()
+    const [expiration, setExpiration] = useState<string | undefined>()
+    const [issuerServiceUrl, setIssuerServiceUrl] = useState<string | undefined>()
+    const [vcSubject, setVcSubject] = useState<CredentialParsedMetadata>()
+
+    useEffect(() => {
+        (async () => {
+            const types = Object.keys(stateCredentials)[0]
+            const [_, type] = types?.split(":")
+
+            const vcJwt = stateCredentials[types][0];
+
+            // Parse VC to get metadata
+            const parsedVc = parseJwtToVc(vcJwt);
+
+            const { data } = extractVcDocumentDetails(parsedVc)
+
+            const vcSubject = data?.subject
+            const issuanceDate = data?.issuanceDate
+            const expirationDate = data?.expirationDate
+
+            const issuance = issuanceDate ? formatDistanceToNow(new Date(issuanceDate), { addSuffix: true }) : ''
+            const expiration = expirationDate ? formatDistanceToNow(new Date(expirationDate), { addSuffix: true }) : ''
+
+            // @ts-ignore
+            const issuerDidDocument = await resolveDid(data.issuerDidUri)
+
+            const issuerServiceUrls = issuerDidDocument?.service?.[0]?.serviceEndpoint as any
+            const issuerServiceUrl = issuerServiceUrls[0] as string
+
+            // setCountry(country)
+            setIssuance(issuance)
+            setVcSubject(vcSubject)
+            setExpiration(expiration)
+            setIssuerServiceUrl(issuerServiceUrl)
+        })()
+    }, [stateCredentials, localStorageCredentials])
     return (
         <Flex className="h-[200px]">
             <Flex onClick={() => showDrawer()} className="absolute hover:opacity-70 rounded-md transition-all cursor-pointer">
                 <Image alt="Card3" src={Card3} width={300} height={300} />
-                <Flex className="absolute right-[102px] top-3 flex-col items-center">
-                    <Typography.Text style={{ fontSize: 12, textAlign: "right" }}>Board of Journalists</Typography.Text>
+                <Flex className="w-full absolute right-0 top-3 flex-col items-center">
+                    <Typography.Text style={{ fontSize: 12, textAlign: "right" }}>{`${vcSubject?.nameOfProfessionalBody}`}</Typography.Text>
                 </Flex>
-                <Flex className="absolute right-[108px] top-28 flex-col items-center">
-                    <Typography.Text style={{ fontSize: 12, textAlign: "right" }}>James Does</Typography.Text>
-                    <Typography.Text style={{ fontSize: 12, textAlign: "right" }}>{`${country?.countryName} ${country?.flag}`}</Typography.Text>
-                    <Typography.Text style={{ fontSize: 10, textAlign: "right" }}>Expires in 30 days</Typography.Text>
+                <Flex className="w-full absolute right-0 top-28 flex-col items-center">
+                    <Flex className="w-full ">
+                        <Flex className="w-full flex-col pl-2">
+                            <Typography.Text style={{ fontSize: 12 }}> {`${vcSubject?.nameOfProfession}`}</Typography.Text>
+                            <Typography.Text style={{ fontSize: 12 }}> {`${vcSubject?.startDate} - ${vcSubject?.endDate}`}</Typography.Text>
+                        </Flex>
+                        <Flex className="w-full flex-col pr-2">
+                            <Typography.Text style={{ fontSize: 10, textAlign: "right" }}> {`Issued on: ${issuance}`}</Typography.Text>
+                            <Typography.Text style={{ fontSize: 10, textAlign: "right" }}> {`Expires on: ${expiration}`}</Typography.Text>
+                        </Flex>
+                    </Flex>
                 </Flex>
             </Flex>
         </Flex>

@@ -8,8 +8,8 @@ import { useState } from 'react';
 export interface EducationalCredentialFieldType {
     nameOfInstituion: string;
     nameOfCourse: string;
-    startDate: string;
-    endDate: string;
+    startedDate: string;
+    endedDate: string;
 };
 
 export interface EducationalCredentialProps {
@@ -67,7 +67,7 @@ export default function EducationalCredential({
               <Flex className="w-full">
                   <Form.Item<EducationalCredentialFieldType>
                       label="Start Date"
-                      name="startDate"
+                      name="startedDate"
                       rules={[{ required: true, message: 'Please input the start date!' }]}
                   >
                       <DatePicker onChange={onChange} />
@@ -76,7 +76,7 @@ export default function EducationalCredential({
               <Flex className="w-full">
                   <Form.Item<EducationalCredentialFieldType>
                       label="End Date"
-                      name="endDate"
+                      name="endedDate"
                       rules={[{ required: true, message: 'Please input the end date!' }]}
                   >
                       <DatePicker onChange={onChange} />

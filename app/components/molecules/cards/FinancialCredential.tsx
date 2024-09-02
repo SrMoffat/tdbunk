@@ -95,6 +95,14 @@ export interface CredentialParsedMetadata {
     idNumber?: string;
     phoneNumber?: string;
     dateOfBirth?: string;
+    nameOfProfessionalBody?: string;
+    nameOfProfession?: string;
+    startDate?: string;
+    endDate?: string;
+    nameOfInstituion?: string;
+    nameOfCourse?: string;
+    startedDate?: string;
+    endedDate?: string;
 }
 
 export const extractVcDocumentDetails = (vc: VerifiableCredential) => {

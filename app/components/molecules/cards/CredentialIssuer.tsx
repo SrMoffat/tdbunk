@@ -144,7 +144,79 @@ const CredentialIssuerCard = (props: any) => {
         }
     })
 
-    const isLoading = financialIsPending || governmentIsPending
+    const { isPending: professionalIsPending, mutateAsync: createProfessionalCredentialMutation } = useMutation({
+        mutationFn: createProfessionalCredential,
+        onSuccess: (result: any) => {
+            const {
+                did,
+                web5,
+                storedVc,
+                bearerDid,
+                recoveryPhrase
+            } = result as any
+            console.log("Result:professional", result)
+            // const defaultCurrencyFromCredential = getCurrencyFromCountry(countries, details?.country?.value)
+
+            setUserDid?.(did)
+            setWeb5Instance?.(web5)
+            setUserBearerDid?.(bearerDid)
+            setRecoveryPhrase?.(recoveryPhrase)
+            setCredentials?.(storedVc)
+            setLocalCredentials({
+                did,
+                credentials: storedVc,
+                // defaultCurrency: defaultCurrencyFromCredential,
+            })
+            // setNextButtonDisabled(false)
+            successMessage()
+            onClose()
+        },
+        onError: () => {
+            // setNextButtonDisabled(true)
+            // notify?.('error', {
+            //     message: 'Credential Creation Failed!',
+            //     description: 'Something went wrong. Please try again.'
+            // })
+        }
+    })
+
+    const { isPending: educationalIsPending, mutateAsync: createEducationalCredentialMutation } = useMutation({
+        mutationFn: createEducationalCredential,
+        onSuccess: (result: any) => {
+            const {
+                did,
+                web5,
+                storedVc,
+                bearerDid,
+                recoveryPhrase
+            } = result as any
+            console.log("Result:educational", result)
+            // const defaultCurrencyFromCredential = getCurrencyFromCountry(countries, details?.country?.value)
+
+            setUserDid?.(did)
+            setWeb5Instance?.(web5)
+            setUserBearerDid?.(bearerDid)
+            setRecoveryPhrase?.(recoveryPhrase)
+            setCredentials?.(storedVc)
+            setLocalCredentials({
+                did,
+                credentials: storedVc,
+                // defaultCurrency: defaultCurrencyFromCredential,
+            })
+            // setNextButtonDisabled(false)
+            successMessage()
+            onClose()
+        },
+        onError: () => {
+            // setNextButtonDisabled(true)
+            // notify?.('error', {
+            //     message: 'Credential Creation Failed!',
+            //     description: 'Something went wrong. Please try again.'
+            // })
+        }
+    })
+
+    const isLoading = financialIsPending || governmentIsPending || professionalIsPending || educationalIsPending
 
     const handleOk = async () => {
         const keys = Object.keys(formData)
@@ -163,13 +235,12 @@ const CredentialIssuerCard = (props: any) => {
                 } else if (governmentCredential) {
                     setCreatedCredentialType(CREDENTIAL_TYPES.GOVERNMENT_CREDENTIAL)
                     await createGovernmentCredentialMutation(details)
-                    // setNextButtonDisabled(false)
                 } else if (professionalCredential) {
-                    // await createProfessionalCredential(details)
-
+                    setCreatedCredentialType(CREDENTIAL_TYPES.PROFESSIONAL_CREDENTIAL)
+                    await createProfessionalCredentialMutation(details)
                 } else if (educationalCredential) {
-                    // await createEducationalCredential(details)
-
+                    setCreatedCredentialType(CREDENTIAL_TYPES.EDUCATIONAL_CREDENTIAL)
+                    await createEducationalCredentialMutation(details)
                 }
             }
         }

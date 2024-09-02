@@ -20,12 +20,12 @@ const GovernmentInstitutionCredential = (props: any) => {
     const [issuerServiceUrl, setIssuerServiceUrl] = useState<string | undefined>()
     const [vcSubject, setVcSubject] = useState<CredentialParsedMetadata>()
 
+    const types = Object.keys(stateCredentials)[0]
+    const [_, type] = types.split(":")
+
+    const isGovernmentCred = type === CREDENTIAL_TYPES.GOVERNMENT_CREDENTIAL
     useEffect(() => {
         (async () => {
-            const types = Object.keys(stateCredentials)[0]
-            const [_, type] = types.split(":")
-
-            const isGovernmentCred = type === CREDENTIAL_TYPES.EDUCATIONAL_CREDENTIAL
 
             console.log("EducationCredentials", {
                 stateCredentials,
@@ -33,32 +33,34 @@ const GovernmentInstitutionCredential = (props: any) => {
                 type
             })
 
+            if (isGovernmentCred) {
+                const vcJwt = stateCredentials[types][0];
 
-            // const vcJwt = stateCredentials[types][0];
+                // Parse VC to get metadata
+                const parsedVc = parseJwtToVc(vcJwt);
 
-            // // Parse VC to get metadata
-            // const parsedVc = parseJwtToVc(vcJwt);
+                const { data } = extractVcDocumentDetails(parsedVc)
 
-            // const { data } = extractVcDocumentDetails(parsedVc)
+                const vcSubject = data?.subject
+                const issuanceDate = data?.issuanceDate
+                const expirationDate = data?.expirationDate
 
-            // const vcSubject = data?.subject
-            // const issuanceDate = data?.issuanceDate
-            // const expirationDate = data?.expirationDate
+                const issuance = issuanceDate ? formatDistanceToNow(new Date(issuanceDate), { addSuffix: true }) : ''
+                const expiration = expirationDate ? formatDistanceToNow(new Date(expirationDate), { addSuffix: true }) : ''
 
-            // const issuance = issuanceDate ? formatDistanceToNow(new Date(issuanceDate), { addSuffix: true }) : ''
-            // const expiration = expirationDate ? formatDistanceToNow(new Date(expirationDate), { addSuffix: true }) : ''
+                // @ts-ignore
+                const issuerDidDocument = await resolveDid(data.issuerDidUri)
 
-            // // @ts-ignore
-            // const issuerDidDocument = await resolveDid(data.issuerDidUri)
+                const issuerServiceUrls = issuerDidDocument?.service?.[0]?.serviceEndpoint as any
+                const issuerServiceUrl = issuerServiceUrls[0] as string
 
-            // const issuerServiceUrls = issuerDidDocument?.service?.[0]?.serviceEndpoint as any
-            // const issuerServiceUrl = issuerServiceUrls[0] as string
+                // setCountry(country)
+                setIssuance(issuance)
+                setVcSubject(vcSubject)
+                setExpiration(expiration)
+                setIssuerServiceUrl(issuerServiceUrl)
 
-            // // setCountry(country)
-            // setIssuance(issuance)
-            // setVcSubject(vcSubject)
-            // setExpiration(expiration)
-            // setIssuerServiceUrl(issuerServiceUrl)
+            }
         })()
     }, [stateCredentials, localStorageCredentials])
 

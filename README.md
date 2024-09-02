@@ -52,3 +52,10 @@ logo
 name
 service url
 did
+
+
+"@tbdex/http-client": "1.1.0",
+"@web5/credentials": "1.1.0",
+"@web5/dids": "1.1.1",
+"@web5/common": "1.0.0",
+"@web5/crypto": "1.0.0"

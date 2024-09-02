@@ -4,6 +4,7 @@ import countries from '@/public/countries.json';
 import { Flex, Typography } from "antd";
 import { formatDistanceToNow } from "date-fns";
 import Image from "next/image";
+import { resolveDid } from "@tbdex/http-client";
 import { useEffect, useState } from "react";
 import { CredentialParsedMetadata, extractVcDocumentDetails } from "./FinancialCredential";
 
@@ -53,24 +54,32 @@ const EducationalInstitutionCredential = (props: any) => {
             setIssuerServiceUrl(issuerServiceUrl)
         })()
     }, [stateCredentials, localStorageCredentials])
+
+    const startedDate = new Date(vcSubject?.startedDate as string).toLocaleString('default', {
+        dateStyle: 'short'
+    })
+
+    const endedDate = new Date(vcSubject?.endedDate as string).toLocaleString('default', {
+        dateStyle: 'short'
+    })
     return (
         <Flex className="h-[200px]">
             <Flex onClick={() => showDrawer()} className="absolute hover:opacity-70 rounded-md transition-all cursor-pointer">
                 <Image alt="Card4" src={Card4} width={300} height={300} />
                 <Flex className="top-[70px] absolute w-full right-0">
-                    <Flex className="w-full pl-2 flex-col">
+                    <Flex className="w-full pl-2 flex-col mt-4">
                         <Typography.Text style={{ fontSize: 12 }}>{`${vcSubject?.nameOfInstituion}`}</Typography.Text>
-                        <Typography.Text style={{ fontSize: 12 }}>{`${vcSubject?.nameOfCourse}`}</Typography.Text>
-                        <Typography.Text style={{ fontSize: 10 }}>{`${vcSubject?.startedDate} - ${vcSubject?.endedDate}`}</Typography.Text>
+                        <Typography.Text style={{ fontSize: 10 }}>{`${vcSubject?.nameOfCourse}`}</Typography.Text>
+                        <Typography.Text style={{ fontSize: 10 }}>{`${startedDate} - ${endedDate}`}</Typography.Text>
                     </Flex>
                     <Flex className="w-full flex-col pr-2">
                         <Flex className="flex-col">
                             <Typography.Text style={{ fontSize: 12, textAlign: "right", fontWeight: 'bold' }}>{`Issued:`}</Typography.Text>
-                            <Typography.Text style={{ fontSize: 12, textAlign: "right" }}>{`${issuance}`}</Typography.Text>
+                            <Typography.Text style={{ fontSize: 10, textAlign: "right" }}>{`${issuance}`}</Typography.Text>
                         </Flex>
                         <Flex className="flex-col">
                             <Typography.Text style={{ fontSize: 12, textAlign: "right", fontWeight: 'bold' }}>{`Expires:`}</Typography.Text>
-                            <Typography.Text style={{ fontSize: 12, textAlign: "right" }}>{`${expiration}`}</Typography.Text>
+                            <Typography.Text style={{ fontSize: 10, textAlign: "right" }}>{`${expiration}`}</Typography.Text>
                         </Flex>
                     </Flex>
                 </Flex>

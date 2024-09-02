@@ -187,11 +187,7 @@ export const parseJwtToVc = (signedVcJwt: any): VC => {
     return VerifiableCredential.parseJwt({ vcJwt: signedVcJwt })
 }
 
-export const createWeb5Instance = () => {
-
-}
-
-export async function initWeb5({ password }: { password: string }) {
+export const initWeb5 = async ({ password }: { password: string }) => {
     const { web5, did, recoveryPhrase } = await Web5Api.connect({
         password,
         sync: DWN_SYNC_INTERVAL
@@ -207,14 +203,14 @@ export async function initWeb5({ password }: { password: string }) {
     };
 }
 
-export async function getBearerDid(web5: Web5Api, did: string) {
+export const getBearerDid = async (web5: Web5Api, did: string) => {
     const agent = web5.agent as Web5PlatformAgent
     const bearerDid = await agent.identity.get({ didUri: did });
     // const identites = await agent.identity.list();
     return bearerDid;
 }
 
-export async function storeVcJwtInDwn(web5: Web5Api, vcJwt: string, did: string) {
+export const storeVcJwtInDwn = async (web5: Web5Api, vcJwt: string, did: string) => {
     const { record } = await web5.dwn.records.create({
         data: vcJwt,
         message: {
@@ -226,7 +222,7 @@ export async function storeVcJwtInDwn(web5: Web5Api, vcJwt: string, did: string)
     return await record?.send(did);
 }
 
-export async function fetchVcJwtFromDwn(web5: Web5Api, did: string) {
+export const fetchVcJwtFromDwn = async (web5: Web5Api, did: string) => {
     const response = await web5.dwn.records.query({
         from: did,
         message: {
@@ -240,8 +236,39 @@ export async function fetchVcJwtFromDwn(web5: Web5Api, did: string) {
     return await response?.records?.[0]?.data?.text()
 }
 
-export async function generateTdbunkFinancialVc() {
+export const createRequiredCredential = async (web5: Web5Api, did: string, details: any) => {
+    console.log("createRequiredCredential", {
+        web5,
+        details
+    })
+    // Create new credential
+    const vc = await generateUltimateIdentifierVc({
+        ...details,
+        email: `${details?.firstName}:${details?.lastName}:${details?.email}`,
+        did
+    })
 
+    // Parse VC to get metadata
+    const parsedVc = parseJwtToVc(vc)
+
+    const status = await storeVcJwtInDwn(web5, vc, did)
+
+
+    const vcGranularTypes = parsedVc?.vcDataModel?.type
+    const vcConcatenateTypes = vcGranularTypes.join(":")
+
+    const storedVc = {
+        [vcConcatenateTypes]: [vc]
+    }
+
+    const result = {
+        did,
+        web5,
+        status,
+        storedVc,
+    }
+
+    return result
 }
 
 export const createFinancialCredential = async (details: any) => {
@@ -283,9 +310,10 @@ export const createFinancialCredential = async (details: any) => {
 
         return result
     } catch (error: any) {
-        console.log("Error:createFinancialCredential", details)
+        console.log("Error:createFinancialCredential", error)
     }
 }
+
 export const createGovernmentCredential = async (details: any) => {
     console.log("Details:createGovernmentCredential", details)
     try {
@@ -296,7 +324,7 @@ export const createGovernmentCredential = async (details: any) => {
 
         // Create new credential
         const credential = await VerifiableCredential.create({
-            type: CREDENTIAL_TYPES.FINANCIAL_CREDENTIAL,
+            type: CREDENTIAL_TYPES.GOVERNMENT_CREDENTIAL,
             issuer: bearerDid?.did.uri as string,
             subject: did,
             expirationDate: ONE_YEAR_FROM_NOW.toISOString(),
@@ -333,43 +361,105 @@ export const createGovernmentCredential = async (details: any) => {
     } catch (error: any) {
         console.log("Error:createGovernmentCredential", details)
     }
-    // const vc = await VerifiableCredential.create({
-    //     type: 'EmploymentCredential',
-    //     issuer: employer.uri,
-    //     subject: employee.uri,
-    //     expirationDate: '2023-09-30T12:34:56Z',
-    //     data: {
-    //         "position": "Software Developer",
-    //         "startDate": "2023-04-01T12:34:56Z",
-    //         "employmentStatus": "Contractor"
-    //     }
-    // });
 }
+
 export const createProfessionalCredential = async (details: any) => {
-    console.log("Details:createProfessionalCredential", details)
-    // const vc = await VerifiableCredential.create({
-    //     type: 'EmploymentCredential',
-    //     issuer: employer.uri,
-    //     subject: employee.uri,
-    //     expirationDate: '2023-09-30T12:34:56Z',
-    //     data: {
-    //         "position": "Software Developer",
-    //         "startDate": "2023-04-01T12:34:56Z",
-    //         "employmentStatus": "Contractor"
-    //     }
-    // });
+    try {
+
+        console.log("Details:createProfessionalCredential", details)
+        // Create DWN and Did
+        const { web5, did, bearerDid, recoveryPhrase } = await initWeb5({
+            password: details?.password as string
+        })
+
+        // Create new credential
+        const credential = await VerifiableCredential.create({
+            type: CREDENTIAL_TYPES.PROFESSIONAL_CREDENTIAL,
+            issuer: bearerDid?.did.uri as string,
+            subject: did,
+            expirationDate: ONE_YEAR_FROM_NOW.toISOString(),
+            data: details
+        });
+
+        // Sign VC
+        const vc = await credential.sign({ did: bearerDid?.did as BearerDid });
+
+        // Parse VC to get metadata
+        const parsedVc = parseJwtToVc(vc)
+
+        // Stpre VC in DWN
+        const status = await storeVcJwtInDwn(web5, vc, did)
+
+
+        const vcGranularTypes = parsedVc?.vcDataModel?.type
+        const vcConcatenateTypes = vcGranularTypes.join(":")
+
+        const storedVc = {
+            [vcConcatenateTypes]: [vc]
+        }
+
+        const result = {
+            did,
+            web5,
+            status,
+            storedVc,
+            bearerDid,
+            recoveryPhrase
+        }
+
+        return result
+    } catch (error: any) {
+        console.log("Error:createProfessionalCredential", error)
+    }
 }
+
 export const createEducationalCredential = async (details: any) => {
     console.log("Details:createEducationalCredential", details)
-    // const vc = await VerifiableCredential.create({
-    //     type: 'EmploymentCredential',
-    //     issuer: employer.uri,
-    //     subject: employee.uri,
-    //     expirationDate: '2023-09-30T12:34:56Z',
-    //     data: {
-    //         "position": "Software Developer",
-    //         "startDate": "2023-04-01T12:34:56Z",
-    //         "employmentStatus": "Contractor"
-    //     }
-    // });
+    try {
+        // Create DWN and Did
+        const { web5, did, bearerDid, recoveryPhrase } = await initWeb5({
+            password: details?.password as string
+        })
+
+        // Create new credential
+        const credential = await VerifiableCredential.create({
+            type: CREDENTIAL_TYPES.EDUCATIONAL_CREDENTIAL,
+            issuer: bearerDid?.did.uri as string,
+            subject: did,
+            expirationDate: ONE_YEAR_FROM_NOW.toISOString(),
+            data: details
+        });
+
+        // Sign VC
+        const vc = await credential.sign({ did: bearerDid?.did as BearerDid });
+
+        // Parse VC to get metadata
+        const parsedVc = parseJwtToVc(vc)
+
+        // Stpre VC in DWN
+        const status = await storeVcJwtInDwn(web5, vc, did)
+
+
+        const vcGranularTypes = parsedVc?.vcDataModel?.type
+        const vcConcatenateTypes = vcGranularTypes.join(":")
+
+        const storedVc = {
+            [vcConcatenateTypes]: [vc]
+        }
+
+        const result = {
+            did,
+            web5,
+            status,
+            storedVc,
+            bearerDid,
+            recoveryPhrase
+        }
+
+        return result
+
+    } catch (error: any) {
+        console.log("Error:createEducationalCredential", error)
+
+    }
 }

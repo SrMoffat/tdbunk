@@ -12,7 +12,7 @@ import { Card1, Card3, Card4, Card5, LogoIcon2, TBDVCLogoYellow } from '@/app/co
 import FinancialInstitutionCredential from '../cards/FinancialCredential';
 import { useState } from 'react';
 import FinancialCredentialForm from "../forms/FinancialCredential";
-import { createFinancialCredential } from '@/app/lib/web5';
+import { createFinancialCredential, createRequiredCredential } from '@/app/lib/web5';
 import { getCurrencyFromCountry } from '@/app/lib/utils';
 import useBrowserStorage from '@/app/hooks/useLocalStorage';
 import { CredentialStorage } from './Credentials';
@@ -21,6 +21,9 @@ import countries from '@/public/countries.json';
 
 const RequestCredential = (props: any) => {
     const {
+        web5,
+        userDid,
+
         stateCredentials,
         noCredentialsFound,
         nextButtonDisabled,
@@ -33,6 +36,7 @@ const RequestCredential = (props: any) => {
         setUserBearerDid,
         setRecoveryPhrase,
         setNextButtonDisabled,
+        setHasRequiredCredentials
     } = props
 
     const [showModal, setShowModal] = useState(false)
@@ -51,7 +55,7 @@ const RequestCredential = (props: any) => {
         setUserBearerDid,
         setRecoveryPhrase,
         setNextButtonDisabled,
-        setCreatedCredentialType
+        setCreatedCredentialType,
     }
 
     const credentialsTypes = [
@@ -133,6 +137,7 @@ const RequestCredential = (props: any) => {
     ];
 
     const [formData, setFormData] = useState({})
+    const [showCombinedCredentials, setCombinedCredentials] = useState(false)
 
     const [localStorageData, setLocalCredentials] = useBrowserStorage<CredentialStorage>(
         CREDENTIALS_LOCAL_STORAGE_KEY,
@@ -141,7 +146,6 @@ const RequestCredential = (props: any) => {
 
     // const hasCredentials = true
     const hasCredentials = !noCredentialsFound
-    const hasRequiredCredential = hasRequiredCredentials
 
     const onClose = () => {
         setShowModal(false);
@@ -154,30 +158,39 @@ const RequestCredential = (props: any) => {
     const handleOk = async () => {
         // @ts-ignore
         const details = formData[CREDENTIAL_TYPES.FINANCIAL_CREDENTIAL]
-        console.log("Request credential", details)
 
-        // const result = await createFinancialCredential(details)
-        // const {
-        //     did,
-        //     web5,
-        //     storedVc,
-        //     bearerDid,
-        //     recoveryPhrase
-        // } = result as any
-        // console.log("Result", result)
-        // const defaultCurrencyFromCredential = getCurrencyFromCountry(countries, details?.country?.value)
+        const result = await createRequiredCredential(web5, userDid, details)
+        const {
+            did,
+            storedVc,
+        } = result as any
 
-        // setUserDid?.(did)
-        // setWeb5Instance?.(web5)
-        // setUserBearerDid?.(bearerDid)
-        // setRecoveryPhrase?.(recoveryPhrase)
-        // setCredentials?.(storedVc)
-        // setLocalCredentials({
-        //     did,
-        //     credentials: storedVc,
-        //     defaultCurrency: defaultCurrencyFromCredential,
-        // })
-        // setNextButtonDisabled(false)
+        const defaultCurrencyFromCredential = getCurrencyFromCountry(countries, details?.country?.value)
+
+        const combinedCreds = {
+            ...stateCredentials,
+            ...storedVc
+        }
+
+        console.log("<==== Result ====>", {
+            result,
+            details,
+            combinedCreds,
+            stateCredentials,
+            localStorageCredentials,
+            defaultCurrencyFromCredential
+        })
+
+        setCredentials?.(combinedCreds)
+        setLocalCredentials({
+            did,
+            credentials: combinedCreds,
+            defaultCurrency: defaultCurrencyFromCredential,
+        })
+        setNextButtonDisabled(false)
+        setShowModal(false)
+        setCombinedCredentials(true)
+        // setHasRequiredCredentials?.(true)
     };
 
     const financialCredential = createdCredentialType === CREDENTIAL_TYPES.KNOWN_CUSTOMER_CREDENTIAL
@@ -208,7 +221,9 @@ const RequestCredential = (props: any) => {
                     />
                     : 'Here'
 
-
+    console.log("showCombinedCredentials", {
+        showCombinedCredentials
+    })
     return (
         <Flex className="flex-col">
             <Modal
@@ -230,8 +245,15 @@ const RequestCredential = (props: any) => {
             {!hasCredentials && <Typography.Text className="font-bold mb-4">Verifiable Credential Issuers</Typography.Text>}
             {
                 hasCredentials
-                    ? hasRequiredCredential
-                        ? 'All Good'
+                    ? showCombinedCredentials
+                        ? <Flex className="border border-red-500 w-1/3 self-center">
+                            <Flex className="border border-yellow-500 w-full">
+                                One
+                            </Flex>
+                            <Flex className="border border-green-500 w-full">
+                                Two
+                            </Flex>
+                        </Flex>
                         : <Flex className="flex-col gap-4 items-center">
                             <Flex>
                                 <Alert

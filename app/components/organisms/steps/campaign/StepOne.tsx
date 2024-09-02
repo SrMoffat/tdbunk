@@ -65,7 +65,7 @@ const StepOne: React.FC<StepOneProps> = ({
     const [hasRequiredCredentials, setHasRequiredCredentials] = useState<boolean>(false);
     const [mode, setMode] = useState<CredentialMode>(CredentialMode.CREATE);
 
-    const { credentials: existingStateCreds } = useWeb5Context()
+    const { credentials: existingStateCreds, web5, userDid } = useWeb5Context()
     const [localStorageData] = useBrowserStorage<UserStorage>(
         CREDENTIALS_LOCAL_STORAGE_KEY,
         LOCAL_STORAGE_KEY
@@ -197,7 +197,7 @@ const StepOne: React.FC<StepOneProps> = ({
         setWeb5Instance,
         setUserBearerDid,
         setRecoveryPhrase,
-        setNextButtonDisabled
+        setNextButtonDisabled,
     }
     return (
         <Layout style={{ backgroundColor: colorBgContainer }}>
@@ -227,7 +227,10 @@ const StepOne: React.FC<StepOneProps> = ({
             }
             {isRequest && <RequestCredential
                 {...commonProps}
+                web5={web5}
+                userDid={userDid}
                 showDrawer={showDrawer}
+                setHasRequiredCredentials={setHasRequiredCredentials}
             />}
             {isImport && <ImportCredential />}
         </Layout>

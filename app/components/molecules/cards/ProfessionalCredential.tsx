@@ -3,6 +3,7 @@ import { parseJwtToVc } from "@/app/lib/web5";
 import countries from '@/public/countries.json';
 import { Flex, Typography } from "antd";
 import { formatDistanceToNow } from "date-fns";
+import { resolveDid } from "@tbdex/http-client";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { CredentialParsedMetadata, extractVcDocumentDetails } from "./FinancialCredential";
@@ -51,6 +52,14 @@ const ProfessionalInstitutionCredential = (props: any) => {
             setIssuerServiceUrl(issuerServiceUrl)
         })()
     }, [stateCredentials, localStorageCredentials])
+
+    const startDate = new Date(vcSubject?.startDate as string).toLocaleString('default', {
+        dateStyle: 'short'
+    })
+
+    const endDate = new Date(vcSubject?.endDate as string).toLocaleString('default', {
+        dateStyle: 'short'
+    })
     return (
         <Flex className="h-[200px]">
             <Flex onClick={() => showDrawer()} className="absolute hover:opacity-70 rounded-md transition-all cursor-pointer">
@@ -58,15 +67,21 @@ const ProfessionalInstitutionCredential = (props: any) => {
                 <Flex className="w-full absolute right-0 top-3 flex-col items-center">
                     <Typography.Text style={{ fontSize: 12, textAlign: "right" }}>{`${vcSubject?.nameOfProfessionalBody}`}</Typography.Text>
                 </Flex>
-                <Flex className="w-full absolute right-0 top-28 flex-col items-center">
-                    <Flex className="w-full ">
-                        <Flex className="w-full flex-col pl-2">
+                <Flex className="w-full absolute right-0 top-[90px] flex-col items-center">
+                    <Flex className="w-full">
+                        <Flex className="w-full flex-col pl-2 mt-3">
                             <Typography.Text style={{ fontSize: 12 }}> {`${vcSubject?.nameOfProfession}`}</Typography.Text>
-                            <Typography.Text style={{ fontSize: 12 }}> {`${vcSubject?.startDate} - ${vcSubject?.endDate}`}</Typography.Text>
+                            <Typography.Text style={{ fontSize: 12 }}> {`${startDate} - ${endDate}`}</Typography.Text>
                         </Flex>
                         <Flex className="w-full flex-col pr-2">
-                            <Typography.Text style={{ fontSize: 10, textAlign: "right" }}> {`Issued on: ${issuance}`}</Typography.Text>
-                            <Typography.Text style={{ fontSize: 10, textAlign: "right" }}> {`Expires on: ${expiration}`}</Typography.Text>
+                            <Flex className="flex-col">
+                                <Typography.Text style={{ fontSize: 12, textAlign: "right" }}> {`Issued:`}</Typography.Text>
+                                <Typography.Text style={{ fontSize: 10, textAlign: "right" }}> {`${issuance}`}</Typography.Text>
+                            </Flex>
+                            <Flex className="flex-col">
+                                <Typography.Text style={{ fontSize: 12, textAlign: "right" }}> {`Expires:`}</Typography.Text>
+                                <Typography.Text style={{ fontSize: 10, textAlign: "right" }}> {`${expiration}`}</Typography.Text>
+                            </Flex>
                         </Flex>
                     </Flex>
                 </Flex>

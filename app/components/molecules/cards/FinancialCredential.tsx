@@ -25,6 +25,7 @@ export interface CredentialMetadata {
 }
 
 export interface CredentialCardProps {
+    credential: any;
     vcServiceUrl: string;
     name: string | undefined;
     countryCode: string | undefined;
@@ -34,8 +35,38 @@ export interface CredentialCardProps {
 
 }
 
+export const getVcJwtDetails = (jwt: string) => {
+    const parsedCred = parseJwtToVc(jwt)
+    const { data } = extractVcDocumentDetails(parsedCred)
+
+    const subject = data?.subject
+    const nameParts = subject?.name?.split(":");
+    const hasParts = nameParts?.length
+    const renderName = hasParts
+        ? `${nameParts[0]} ${nameParts[1]}`
+        : subject?.name
+
+    const country = countries.filter(entry => entry?.countryCode === subject?.countryCode)[0]
+    const issuance = formatDistanceToNow(new Date(data?.issuanceDate), { addSuffix: true })
+    const expiration = formatDistanceToNow(new Date(data?.expirationDate as string), { addSuffix: true })
+
+    const details = {
+        name: renderName,
+        country: `${country?.countryName} ${country?.flag}`,
+        issuance,
+        expiration
+    }
+
+    console.log("Execution ==>", {
+        details
+    })
+
+    return details
+}
+
 export const CredentialCard: React.FC<CredentialCardProps> = ({
     name,
+    credential,
     countryCode,
     vcServiceUrl,
     issuanceDate,
@@ -55,6 +86,15 @@ export const CredentialCard: React.FC<CredentialCardProps> = ({
     const renderName = hasParts
         ? `${nameParts[0]} ${nameParts[1]}`
         : name
+
+    const details = credential
+        ? getVcJwtDetails(credential)
+        : {
+            name: renderName,
+            country: `${country?.countryName} ${country?.flag}`,
+            issuance,
+            expiration
+        }
     return (
         <Flex className="h-[200px]">
             <Flex onClick={handleCardClicked} className="absolute hover:opacity-70 rounded-md transition-all cursor-pointer">
@@ -64,10 +104,10 @@ export const CredentialCard: React.FC<CredentialCardProps> = ({
                     <Link target="_blank" href={vcServiceUrl} style={{ fontSize: 10, marginTop: 8 }}>Ultimate Identity</Link>
                 </Flex>
                 <Flex className="absolute left-4 top-20 flex-col">
-                    <Typography.Text style={{ fontSize: 12 }}>{`${renderName}`}</Typography.Text>
-                    <Typography.Text style={{ fontSize: 12 }}>{`${country?.countryName} ${country?.flag}`}</Typography.Text>
-                    <Typography.Text style={{ fontSize: 9, marginTop: 10 }}>{`Issued: ${issuance}`}</Typography.Text>
-                    <Typography.Text style={{ fontSize: 9 }}>{`Expires: ${expiration}`}</Typography.Text>
+                    <Typography.Text style={{ fontSize: 12 }}>{`${details?.name}`}</Typography.Text>
+                    <Typography.Text style={{ fontSize: 12 }}>{`${details?.country}`}</Typography.Text>
+                    <Typography.Text style={{ fontSize: 9, marginTop: 10 }}>{`Issued: ${details?.issuance}`}</Typography.Text>
+                    <Typography.Text style={{ fontSize: 9 }}>{`Expires: ${details?.expiration}`}</Typography.Text>
                 </Flex>
             </Flex>
         </Flex>
@@ -144,7 +184,7 @@ export const extractVcDocumentDetails = (vc: VerifiableCredential) => {
 }
 
 const FinancialInstitutionCredential = (props: any) => {
-    const { stateCredentials, localStorageCredentials } = props;
+    const { stateCredentials, localStorageCredentials, credential } = props;
 
     const [open, setOpen] = useState(false);
     const [copied, setCopied] = useState(false)
@@ -176,6 +216,7 @@ const FinancialInstitutionCredential = (props: any) => {
 
 
     const commonCardProps = {
+        credential,
         vcServiceUrl,
         name: vcMetadata?.subject?.name,
         issuanceDate: vcMetadata?.issuanceDate,
@@ -222,6 +263,7 @@ const FinancialInstitutionCredential = (props: any) => {
         setVcMetadata(cred?.formattedCred)
         getDidDdocument(cred?.issuer)
         setCredentialDidDocument(cred?.rawCred)
+        console.log("Log", cred)
     }, [])
 
     return (

@@ -276,7 +276,7 @@ const CredentialIssuerCard = (props: any) => {
                     {flow}
                 </Flex>
             </Modal>
-            <Card className="w-1/3">
+            <Card className="w-1/2">
                 <Flex className="items-center justify-between">
                     <Flex className="gap-3">
                         <Image className="mr-3" alt={issuerName} width={50} height={50} src={logo} />

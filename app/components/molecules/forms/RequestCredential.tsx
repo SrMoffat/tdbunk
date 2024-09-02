@@ -9,15 +9,15 @@ import {
 import { Collapse, CollapseProps, Flex, Typography, Modal, Alert, Button } from 'antd';
 import { CREDENTIAL_TYPES, CREDENTIALS_LOCAL_STORAGE_KEY, LOCAL_STORAGE_KEY } from '@/app/lib/constants';
 import { Card1, Card3, Card4, Card5, LogoIcon2, TBDVCLogoYellow } from '@/app/components/atoms/Icon';
-import FinancialInstitutionCredential from '../cards/FinancialCredential';
+import FinancialInstitutionCredential, { extractVcDocumentDetails } from '../cards/FinancialCredential';
 import { useState } from 'react';
+import { parseJwtToVc, resolveDid } from "@/app/lib/web5";
 import FinancialCredentialForm from "../forms/FinancialCredential";
 import { createFinancialCredential, createRequiredCredential } from '@/app/lib/web5';
 import { getCurrencyFromCountry } from '@/app/lib/utils';
 import useBrowserStorage from '@/app/hooks/useLocalStorage';
 import { CredentialStorage } from './Credentials';
 import countries from '@/public/countries.json';
-
 
 const RequestCredential = (props: any) => {
     const {
@@ -221,7 +221,20 @@ const RequestCredential = (props: any) => {
                     />
                     : 'Here'
 
+
+    const credentialTypes = Object.keys(stateCredentials)
+    const financialCredType = CREDENTIAL_TYPES.KNOWN_CUSTOMER_CREDENTIAL
+    const financialCred = credentialTypes.filter((entry: any) => entry?.includes(financialCredType))
+    const isFinancialCred = financialCred?.length
+    const finCred = isFinancialCred ? stateCredentials[financialCred[0]][0] : ''
+
     console.log("showCombinedCredentials", {
+        finCred,
+        stateCredentials,
+        financialCred,
+        isFinancialCred,
+        financialCredType,
+        credentialTypes,
         showCombinedCredentials
     })
     return (
@@ -246,12 +259,16 @@ const RequestCredential = (props: any) => {
             {
                 hasCredentials
                     ? showCombinedCredentials
-                        ? <Flex className="border border-red-500 w-1/3 self-center">
-                            <Flex className="border border-yellow-500 w-full">
-                                One
+                        ? <Flex className="border border-red-500 w-full self-center items-center justify-center gap-4">
+                            <Flex className="border border-yellow-500 w-1/2 self-end">
+                                <FinancialInstitutionCredential
+                                    credential={finCred}
+                                    stateCredentials={stateCredentials}
+                                    localStorageCredentials={localStorageCredentials}
+                                />
                             </Flex>
-                            <Flex className="border border-green-500 w-full">
-                                Two
+                            <Flex className="border border-green-500 w-1/2">
+                                {credentialCard}
                             </Flex>
                         </Flex>
                         : <Flex className="flex-col gap-4 items-center">

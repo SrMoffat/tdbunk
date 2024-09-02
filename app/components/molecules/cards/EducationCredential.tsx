@@ -7,6 +7,7 @@ import Image from "next/image";
 import { resolveDid } from "@tbdex/http-client";
 import { useEffect, useState } from "react";
 import { CredentialParsedMetadata, extractVcDocumentDetails } from "./FinancialCredential";
+import { CREDENTIAL_TYPES } from "@/app/lib/constants";
 
 const country = countries.filter((entry) => entry?.countryCode === "KE")[0]
 
@@ -22,36 +23,46 @@ const EducationalInstitutionCredential = (props: any) => {
     const [issuerServiceUrl, setIssuerServiceUrl] = useState<string | undefined>()
     const [vcSubject, setVcSubject] = useState<CredentialParsedMetadata>()
 
+    const types = Object.keys(stateCredentials)[0]
+    const [_, type] = types.split(":")
+
+    const isEducationalCred = type === CREDENTIAL_TYPES.EDUCATIONAL_CREDENTIAL
+
     useEffect(() => {
         (async () => {
-            const types = Object.keys(stateCredentials)[0]
-            const [_, type] = types.split(":")
+            console.log("EducationCredentials", {
+                stateCredentials,
+                isEducationalCred,
+                type
+            })
 
-            const vcJwt = stateCredentials[types][0];
+            if (isEducationalCred) {
+                const vcJwt = stateCredentials[types][0];
 
-            // Parse VC to get metadata
-            const parsedVc = parseJwtToVc(vcJwt);
+                // Parse VC to get metadata
+                const parsedVc = parseJwtToVc(vcJwt);
 
-            const { data } = extractVcDocumentDetails(parsedVc)
+                const { data } = extractVcDocumentDetails(parsedVc)
 
-            const vcSubject = data?.subject
-            const issuanceDate = data?.issuanceDate
-            const expirationDate = data?.expirationDate
+                const vcSubject = data?.subject
+                const issuanceDate = data?.issuanceDate
+                const expirationDate = data?.expirationDate
 
-            const issuance = issuanceDate ? formatDistanceToNow(new Date(issuanceDate), { addSuffix: true }) : ''
-            const expiration = expirationDate ? formatDistanceToNow(new Date(expirationDate), { addSuffix: true }) : ''
+                const issuance = issuanceDate ? formatDistanceToNow(new Date(issuanceDate), { addSuffix: true }) : ''
+                const expiration = expirationDate ? formatDistanceToNow(new Date(expirationDate), { addSuffix: true }) : ''
 
-            // @ts-ignore
-            const issuerDidDocument = await resolveDid(data.issuerDidUri)
+                // @ts-ignore
+                const issuerDidDocument = await resolveDid(data.issuerDidUri)
 
-            const issuerServiceUrls = issuerDidDocument?.service?.[0]?.serviceEndpoint as any
-            const issuerServiceUrl = issuerServiceUrls[0] as string
+                const issuerServiceUrls = issuerDidDocument?.service?.[0]?.serviceEndpoint as any
+                const issuerServiceUrl = issuerServiceUrls[0] as string
 
-            // setCountry(country)
-            setIssuance(issuance)
-            setVcSubject(vcSubject)
-            setExpiration(expiration)
-            setIssuerServiceUrl(issuerServiceUrl)
+                // setCountry(country)
+                setIssuance(issuance)
+                setVcSubject(vcSubject)
+                setExpiration(expiration)
+                setIssuerServiceUrl(issuerServiceUrl)
+            }
         })()
     }, [stateCredentials, localStorageCredentials])
 
@@ -62,7 +73,7 @@ const EducationalInstitutionCredential = (props: any) => {
     const endedDate = new Date(vcSubject?.endedDate as string).toLocaleString('default', {
         dateStyle: 'short'
     })
-    return (
+    return isEducationalCred && (
         <Flex className="h-[200px]">
             <Flex onClick={() => showDrawer()} className="absolute hover:opacity-70 rounded-md transition-all cursor-pointer">
                 <Image alt="Card4" src={Card4} width={300} height={300} />

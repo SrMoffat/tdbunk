@@ -6,6 +6,7 @@ import { formatDistanceToNow } from "date-fns";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { CredentialParsedMetadata, extractVcDocumentDetails } from "./FinancialCredential";
+import { CREDENTIAL_TYPES } from "@/app/lib/constants";
 
 const GovernmentInstitutionCredential = (props: any) => {
     const {
@@ -24,31 +25,40 @@ const GovernmentInstitutionCredential = (props: any) => {
             const types = Object.keys(stateCredentials)[0]
             const [_, type] = types.split(":")
 
-            const vcJwt = stateCredentials[types][0];
+            const isGovernmentCred = type === CREDENTIAL_TYPES.EDUCATIONAL_CREDENTIAL
 
-            // Parse VC to get metadata
-            const parsedVc = parseJwtToVc(vcJwt);
+            console.log("EducationCredentials", {
+                stateCredentials,
+                isGovernmentCred,
+                type
+            })
 
-            const { data } = extractVcDocumentDetails(parsedVc)
 
-            const vcSubject = data?.subject
-            const issuanceDate = data?.issuanceDate
-            const expirationDate = data?.expirationDate
+            // const vcJwt = stateCredentials[types][0];
 
-            const issuance = issuanceDate ? formatDistanceToNow(new Date(issuanceDate), { addSuffix: true }) : ''
-            const expiration = expirationDate ? formatDistanceToNow(new Date(expirationDate), { addSuffix: true }) : ''
+            // // Parse VC to get metadata
+            // const parsedVc = parseJwtToVc(vcJwt);
 
-            // @ts-ignore
-            const issuerDidDocument = await resolveDid(data.issuerDidUri)
+            // const { data } = extractVcDocumentDetails(parsedVc)
 
-            const issuerServiceUrls = issuerDidDocument?.service?.[0]?.serviceEndpoint as any
-            const issuerServiceUrl = issuerServiceUrls[0] as string
+            // const vcSubject = data?.subject
+            // const issuanceDate = data?.issuanceDate
+            // const expirationDate = data?.expirationDate
 
-            // setCountry(country)
-            setIssuance(issuance)
-            setVcSubject(vcSubject)
-            setExpiration(expiration)
-            setIssuerServiceUrl(issuerServiceUrl)
+            // const issuance = issuanceDate ? formatDistanceToNow(new Date(issuanceDate), { addSuffix: true }) : ''
+            // const expiration = expirationDate ? formatDistanceToNow(new Date(expirationDate), { addSuffix: true }) : ''
+
+            // // @ts-ignore
+            // const issuerDidDocument = await resolveDid(data.issuerDidUri)
+
+            // const issuerServiceUrls = issuerDidDocument?.service?.[0]?.serviceEndpoint as any
+            // const issuerServiceUrl = issuerServiceUrls[0] as string
+
+            // // setCountry(country)
+            // setIssuance(issuance)
+            // setVcSubject(vcSubject)
+            // setExpiration(expiration)
+            // setIssuerServiceUrl(issuerServiceUrl)
         })()
     }, [stateCredentials, localStorageCredentials])
 

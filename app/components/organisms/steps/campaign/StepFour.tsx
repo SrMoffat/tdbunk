@@ -10,6 +10,7 @@ import { CREDENTIALS_LOCAL_STORAGE_KEY, LOCAL_STORAGE_KEY, OFFERINGS_LOCAL_STORA
 import { getFormattedOfferings } from "@/app/lib/utils";
 import { useCreateCampaignContext } from "@/app/providers/CreateCampaignProvider";
 import { useTbdexContext } from "@/app/providers/TbdexProvider";
+import { useWeb5Context } from "@/app/providers/Web5Provider";
 import { Card, Flex, Layout, List, theme } from "antd";
 import { useEffect, useState } from "react";
 
@@ -26,12 +27,15 @@ const StepFour = () => {
     // const {getBearerDid} = useWeb5Context()
 
     const {
+        credentials,
         monopolyMoney,
         createExchange,
         selectedCurrency,
         unformattedOfferings,
         selectedDestinationCurrency,
     } = useTbdexContext()
+
+    const {userBearerDid} = useWeb5Context()
 
     const { campaignAmount } = useCreateCampaignContext()
 
@@ -66,6 +70,8 @@ const StepFour = () => {
     const existingCreds = localStorageCredentials?.credentials ?? {}
     const existingCredentials = Object.values(existingCreds).flat()
 
+    console.log("Bearere DID <StepFour />", userBearerDid)
+
     return <Layout style={{ backgroundColor: colorBgContainer }}>
         <Flex className="flex-col">
             <Flex className="justify-between">
@@ -75,6 +81,7 @@ const StepFour = () => {
                     setIsSelected={setIsSelected}
                     setSelectedCard={setSelectedCard}
                     credentials={existingCredentials}
+                    stateCredentials={credentials}
                 />
                 <WalletBalance money={monopolyMoney} />
             </Flex>
@@ -99,6 +106,8 @@ const StepFour = () => {
                             key={index}
                             offering={item}
                             isSelected={isSelected}
+                            stateCredentials={credentials}
+                            userBearerDid={userBearerDid}
                             campaignAmount={campaignAmount}
                             credentials={existingCredentials}
                             unformattedOfferings={unformattedOfferings}

@@ -78,6 +78,21 @@ export const PFIs = [
     }
 ]
 
+export enum TBDEX_MESSAGE_TYPES {
+    REQUESTED_QUOTE = 'rfq',
+    RECEIVED_QUOTE = 'quote',
+    QUOTE_EXPIRED = 'expired',
+
+    TRANSFER_PENDING = 'orderstatus',
+    TRANSFER_PROCESSING = 'order',
+    TRANSFER_COMPLETED = 'completed',
+    TRANSFER_CANCELLED = 'cancelled',
+    TRANSFER_FAILED = 'failed',
+
+}
+
+// const status = generateExchangeStatusValues(exchange)
+
 export const LOCAL_STORAGE_KEY = 'local'
 export const WALLET_LOCAL_STORAGE_KEY = 'TDBunk:Wallet'
 export const OFFERINGS_LOCAL_STORAGE_KEY = 'TDBunk:Offerings'

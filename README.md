@@ -59,3 +59,10 @@ did
 "@web5/dids": "1.1.1",
 "@web5/common": "1.0.0",
 "@web5/crypto": "1.0.0"
+
+https://stackoverflow.com/questions/6843201/how-to-clearinterval-with-unknown-id
+
+function ClearAllIntervals() {
+    for (var i = 1; i < 99999; i++)
+        window.clearInterval(i);
+}

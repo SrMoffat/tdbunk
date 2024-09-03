@@ -1,11 +1,40 @@
 "use client"
 import useBrowserStorage from '@/app/hooks/useLocalStorage';
-import { LOCAL_STORAGE_KEY, OFFERINGS_LOCAL_STORAGE_KEY, PFIs, SPECIAL_PFI } from "@/app/lib/constants";
-import { Offering, TbdexHttpClient } from '@tbdex/http-client';
+import { CREDENTIALS_LOCAL_STORAGE_KEY, LOCAL_STORAGE_KEY, OFFERINGS_LOCAL_STORAGE_KEY, PFIs, SPECIAL_PFI } from "@/app/lib/constants";
+import { Offering, Rfq, TbdexHttpClient } from '@tbdex/http-client';
 import { PresentationDefinitionV2, PresentationExchange } from '@web5/credentials';
 import { createContext, PropsWithChildren, useContext, useEffect, useState } from "react";
 import { getOfferingPairs } from '../lib/utils';
 import { useWeb5Context } from './Web5Provider';
+import { createRfQ, signRfQ, validateOffering } from '../lib/tbdex';
+import { BearerDid } from '@web5/dids';
+import { getBearerDid } from '../lib/web5';
+
+const fetchExchanges = async (details: any) => {
+    try {
+        for (const pfi of PFIs) {
+            console.log("Details: fetchExchanges", {
+                details,
+                pfiDid: pfi.did,
+            })
+            // const exchanges = await TbdexHttpClient.getExchanges({
+            //     pfiDid: pfi.did,
+            //     did: 
+            // });
+            // console.log("Details: fetchExchanges", {
+            //     details,
+            //     exchanges,
+            //     pfiDid: pfi.did,
+            // })
+        }
+    } catch (error: any) {
+        console.log("Error: fetchExchanges", {
+            error
+        })
+
+    }
+}
+
 
 export interface CredentialProp {
     [key: string]: string[]
@@ -55,7 +84,7 @@ const useTbdexContext = (): Partial<TbdexContextProps> => {
 };
 
 const TbdexContextProvider = ({ children }: PropsWithChildren) => {
-    const { userDid } = useWeb5Context()
+    const { userDid, userBearerDid: contextUserBearerDid } = useWeb5Context()
     const [offerings, setOfferings] = useState<any[]>([])
     const [unformattedOfferings, setUnformattedOfferings] = useState<any[]>([])
     const [selectedCurrency, setSelectedCurrency] = useState<string>('USD')
@@ -73,60 +102,61 @@ const TbdexContextProvider = ({ children }: PropsWithChildren) => {
         LOCAL_STORAGE_KEY
     )
 
-    const createExchange = async (details: CreateExchangeArgs) => {
+    const [localStorageCredentials] = useBrowserStorage<OfferingStorage>(
+        CREDENTIALS_LOCAL_STORAGE_KEY,
+        LOCAL_STORAGE_KEY
+    )
+
+    // const createExchange = async (details: CreateExchangeArgs) => {
+    const createExchange = async (details: any) => {
         try {
-            const {
-                offering,
-                vcJwts,
-                rawOffering,
-                campaignAmount,
-                presentationDefinition,
-            } = details
+            const userWeb5BearerDid = contextUserBearerDid
+                ? contextUserBearerDid
+                : details.userBearerDid
+
             const selectedCredentials = PresentationExchange.selectCredentials({
-                vcJwts,
-                presentationDefinition
+                vcJwts: details.credentials,
+                presentationDefinition: details.offering.data.requiredClaims
+            })
+            const rfq = await createRfQ({
+                userBearerDid: userWeb5BearerDid,
+                amount: details.amount,
+                offering: details.offering,
+                credentials: selectedCredentials,
+                requiredPaymentDetails: details.requiredPaymentDetails
+            })
+            console.log("Create Eachage Args", {
+                ...details,
+                rfq,
+                contextUserBearerDid
             })
 
-            const offeringFromCurrency = offering?.pair[0]
-            const offeringFromCurrencyMethods = offeringFromCurrency?.methods
+            TbdexHttpClient.createExchange(rfq as Rfq, {
+                replyTo: 'http://localhost:3000/api/exchanges'
+            })
 
-            const offeringToCurrency = offering?.pair[1]
-            const offeringToCurrencyMethods = offeringToCurrency?.methods
-
-
-            // const rfq = await createRfQ({
-            //     offering,
-            //     amount: campaignAmount,
-            //     payinMethods: offeringFromCurrencyMethods,
-            //     payoutMethods: offeringToCurrencyMethods,
-            //     credentials
+            // const exchanges = await fetchExchanges({
+            //     userBearerDid: userWeb5BearerDid,
             // })
 
-            // await validateOffering({
-            //     rfq,
-            //     offering: rawOffering
-            // })
-
-            // await signRfQ({
-            //     rfq: rfq as Rfq,
-            //     did: getBearerDid?.() as BearerDid
-
-            // })
-
-            // TbdexHttpClient.createExchange(rfq as Rfq, {
-            //     replyTo: 'http://localhost:3000/api/exchanges'
-            // })
-
-            // console.log("Selected Credentials", { selectedCredentials, walletDid, userDid })
-            // console.log("RFQ=======>", rfq)
-            // console.log("getBearerDid?.()", getBearerDid?.())
+            // console.log("Exchanges Here", exchanges)
 
             return ['']
-
         } catch (error: any) {
             console.log("Something went wrong createExchange", error)
         }
     }
+
+    // const fetchPfiExchangesForUser = async ({
+    //     pfiDidUri,
+    //     userBearerDid
+    // }: any) => {
+    //     console.log("Polling exchange", {
+    //         pfiDidUri,
+    //         userBearerDid,
+    //     })
+    // }
+
 
 
     useEffect(() => {
@@ -196,10 +226,10 @@ const TbdexContextProvider = ({ children }: PropsWithChildren) => {
                 } = getOfferingPairs(offeringsData)
 
                 // console.log(unformattedOfferings)
-                console.log("Special Offerings", { 
+                console.log("Special Offerings", {
                     specialOffersSourceCurrencies,
                     specialOffersDestinationCurrencies
-                 })
+                })
 
 
                 setOfferings(offerings)
@@ -213,6 +243,8 @@ const TbdexContextProvider = ({ children }: PropsWithChildren) => {
             }
         })()
     }, [])
+
+
 
     return <TbdexContext.Provider value={{
         offerings,

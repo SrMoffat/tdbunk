@@ -108,6 +108,7 @@ const CredentialsForm: React.FC<CreateCredentialProps> = ({
                         credentials: storedVc,
                         defaultCurrency: defaultCurrencyFromCredential,
                     })
+                    localStorage.setItem('TDBunk:BearerDid', JSON.stringify(bearerDid))
                     setNextButtonDisabled(false)
 
                     const status = await storeVcJwtInDwn(web5, vc, did)

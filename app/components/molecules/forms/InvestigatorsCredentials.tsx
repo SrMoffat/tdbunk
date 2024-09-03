@@ -36,7 +36,7 @@ const InvestigatorsCredentials: React.FC<InvestigatorsCredentialsProps> = () => 
         },
         {
             name: "Government",
-            card: Card2,
+            card: Card5,
             className: ''
         },
         {
@@ -47,10 +47,7 @@ const InvestigatorsCredentials: React.FC<InvestigatorsCredentialsProps> = () => 
             name: "Educational",
             card: Card4,
         },
-        {
-            name: "Medical",
-            card: Card5,
-        }]
+    ]
     return (
         <Flex wrap className="w-full gap-6 mt-6">
             <Tooltip title="Select the credentials required to be a fact checker in this campaign." placement="top" >

@@ -1,4 +1,4 @@
-import { Rfq } from '@tbdex/http-client';
+import { Rfq, TbdexHttpClient } from '@tbdex/http-client';
 import { BearerDid } from '@web5/dids';
 
 export const validateOffering = async ({
@@ -14,48 +14,79 @@ export const validateOffering = async ({
 }
 
 export const createRfQ = async ({
-    offering,
     amount,
-    userDid,
-    payinMethods,
-    payoutMethods,
-    credentials
+    offering,
+    credentials,
+    userBearerDid,
+    requiredPaymentDetails
 }: {
-    offering: any
     amount: any
-    payinMethods: any
-    payoutMethods: any
+    offering: any
     credentials: any
-    userDid: any
+    userBearerDid: any
+    requiredPaymentDetails: any
 }) => {
+    console.log("Create RFQ 🚀", {
+        amount,
+        offering,
+        credentials,
+        userBearerDid,
+        requiredPaymentDetails
+    })
+
+    const userDidUri = userBearerDid.did.uri as string
+    const pfiDidUri = offering.metadata.from as string
+
+    const payinData = offering.data.payin
+    const payinMethods = payinData.methods
+
+    const payoutData = offering.data.payout
+    const payoutMethods = payoutData.methods
+
+    // To do: Implement severel payin methods too after adding UI to select
+    const payinKind = payinMethods[0].kind
+    const payoutKind = payoutMethods[0].kind
+
     try {
         const rfq = Rfq.create({
             metadata: {
-                // from: "did:dht:y5nzf5rh5gh8wc86kcquj1erat1391qwzayx1ki93hq64484x9jy",
-                // to: "did:dht:3fkz5ssfxbriwks3iy5nwys3q5kyx64ettp9wfn1yfekfkiguj1y",
-                from: userDid as string,
-                to: offering?.offeringFrom,
+                from: userDidUri,
+                to: pfiDidUri,
                 protocol: '1.0',
             },
             data: {
-                // offeringId: 'offering_01j5wtrktnftvrwazzvgfk6r3z',
                 offeringId: offering?.id,
                 payin: {
                     amount: amount?.toString(),
                     // TO DO: Add UI for user to select the payin method
-                    // kind: 'GHS_BANK_TRANSFER',
-                    kind: payinMethods[0]?.kind,
-                    paymentDetails: {}
+                    kind: payinKind,
+                    paymentDetails: {
+                        ...requiredPaymentDetails.payin
+                    }
                 },
                 payout: {
-                    // kind: 'USDC_WALLET_ADDRESS',
-                    kind: payoutMethods[0]?.kind,
+                    kind: payoutKind,
                     paymentDetails: {
-                        address: '0xuuiehiuhie'
+                        ...requiredPaymentDetails.payout
                     }
                 },
                 claims: credentials
             }
+        })
+
+        await validateOffering({
+            rfq,
+            offering
+        })
+
+        await signRfQ({
+            rfq: rfq as Rfq,
+            // @ts-ignore
+            did: userBearerDid?.did
+        })
+
+        console.log("RFQ Flow", {
+            rfq,
         })
 
         return rfq
@@ -80,4 +111,13 @@ export const signRfQ = async ({
     }
 }
 
-export const fetchExchanges = async () => { }
+export const fetchExchanges = async ({ pfiDidUri, userBearerDid }: { pfiDidUri: string, userBearerDid: any }) => {
+    const exchanges = await TbdexHttpClient.getExchanges({
+        pfiDid: pfiDidUri,
+        did: userBearerDid,
+    });
+
+    console.log("fetchExchanges", exchanges);
+
+    return exchanges
+};

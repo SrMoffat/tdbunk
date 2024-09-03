@@ -3,12 +3,33 @@ import { getEstimatedSettlementTime, toCapitalizedWords } from "@/app/lib/utils"
 import { RightCircleFilled, ClockCircleFilled } from "@ant-design/icons";
 import { Button, Card, Flex, Form, Input, InputNumber, Space, Steps, Tag, theme, Typography, Statistic } from "antd";
 import Image from "next/image";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { LogoIcon2 } from "../../atoms/Icon";
 import { DestinationCurrency, SourceCurrency } from "../../atoms/MarketRate";
 import PFIDetails from "../../atoms/OfferPFI";
 
 const { Countdown } = Statistic
+
+
+const arraysEqual = (arr1: string | any[], arr2: string | any[]) => {
+    // Check if lengths are the same
+    if (arr1.length !== arr2.length) {
+        return false;
+    }
+
+    // Sort both arrays and compare each element
+    const sortedArr1 = [...arr1].sort();
+    const sortedArr2 = [...arr2].sort();
+
+    for (let i = 0; i < sortedArr1.length; i++) {
+        if (sortedArr1[i] !== sortedArr2[i]) {
+            return false;
+        }
+    }
+
+    // If all elements match, the arrays are equal
+    return true;
+}
 
 const RequestForQuote = (props: any) => {
     const [form] = Form.useForm();
@@ -32,6 +53,7 @@ const RequestForQuote = (props: any) => {
     const toCurrencyFlag = getCurrencyFlag(toCurrency)
 
     const [toValue, setToValue] = useState<number>(0)
+    const [convertedToValue, setConvertedToValue] = useState<number>(campaignAmount * exchangeRate)
 
 
     const {
@@ -163,6 +185,15 @@ const RequestForQuote = (props: any) => {
             </Flex>
         )
     }
+
+    useEffect(() => {
+        console.log("Handle set converted to Value", {
+            amount: campaignAmount,
+            converted: campaignAmount * exchangeRate
+        })
+
+        setConvertedToValue(campaignAmount * exchangeRate)
+    }, [])
     return (
         <Flex className="gap-3">
             <Card className="w-full">
@@ -189,6 +220,7 @@ const RequestForQuote = (props: any) => {
                                 onChange={(value) => {
                                     // @ts-ignore
                                     setToValue(value * exchangeRate)
+                                    setConvertedToValue(value * exchangeRate)
                                 }}
                             />
                         </Flex>
@@ -222,7 +254,8 @@ const RequestForQuote = (props: any) => {
                             <InputNumber
                                 disabled
                                 style={{ width: '100%', color: '#ffffff' }}
-                                value={toValue}
+                                defaultValue={convertedToValue}
+                                value={convertedToValue ? convertedToValue : toValue}
                             />
                         </Flex>
                     </Space.Compact>
@@ -236,7 +269,7 @@ const RequestForQuote = (props: any) => {
 }
 
 const MakeTransfer = (props: any) => {
-    const { offering, campaignAmount, requiredPaymentDetails } = props
+    const { offering, campaignAmount, requiredPaymentDetails, relevantExchange } = props
 
     const offeringData = offering?.data
 
@@ -297,6 +330,8 @@ const MakeTransfer = (props: any) => {
     }
 
     console.log("received values ==>", requiredPaymentDetails)
+
+    const { rfq, quote } = relevantExchange
     return (
         <Flex className="w-full gap-1 flex-col">
             <Button className="mb-3" style={{ width: 140 }} onClick={() => setPasswordVisible((prevState) => !prevState)}>
@@ -325,11 +360,8 @@ const MakeTransfer = (props: any) => {
                                 <InputNumber
                                     disabled
                                     style={{ width: '100%' }}
+                                    value={quote?.fromAmountWithFee}
                                     defaultValue={campaignAmount}
-                                    onChange={(value) => {
-                                        // @ts-ignore
-                                        setToValue(value * exchangeRate)
-                                    }}
                                 />
                             </Flex>
                         </Space.Compact>
@@ -381,9 +413,15 @@ const MakePayment = (props: any) => {
         pfiDid,
         pfiName,
         offering,
+        userBearerDid,
+        createExchange,
+        relevantExchange,
         campaignAmount,
         isRequestQuote,
         offeringCreatedAt,
+        setPaymentDetails,
+        setActivateButton,
+        requiredPaymentDetails: stateDetails,
         offeringToCurrencyMethods
     } = props
 
@@ -404,13 +442,92 @@ const MakePayment = (props: any) => {
 
     const exchangeRate = offeringData?.payoutUnitsPerPayinUnit
 
-    const deadline = Date.now() + 1000 * 60
+    const quoteExpiration = relevantExchange?.quote?.expiresAt
+
+ 
+
+    const deadline = new Date(relevantExchange?.quote?.expiresAt).getMilliseconds()
+
+    console.log('quoteExpiration!', {
+        relevantExchange,
+        quoteExpiration,
+        quoteExpirationMs: deadline
+    });
+
+    // const deadline = Date.now() + 1000 * 60
     // 60 * 60 * 24 * 2 + 1000 * 30;
 
-    const onFinish = () => {
+    const onQuoteExpired = () => {
         setQuoteExpired(true)
+        // To Do: Add notification
         console.log('finished!');
     };
+
+    useEffect(() => {
+        const requiredPayin = payin?.methods[0]?.requiredPaymentDetails?.required
+        const requiredPayout = payout?.methods[0]?.requiredPaymentDetails?.required
+
+
+        const providedPayinDetails = requiredPaymentDetails?.payin
+        const providedPayoutDetails = requiredPaymentDetails?.payout
+
+        const providedPayinFields = Object.keys(providedPayinDetails)
+        const providedPayoutFields = Object.keys(providedPayoutDetails)
+
+
+        let activateBtn = false
+
+        const allPaymentDetailsRequired = requiredPayin && requiredPayout
+        const allPaymentDetailsNotRequired = !requiredPayin && !requiredPayout
+        const payinRequiredButNotPayout = requiredPayin && !requiredPayout
+        const payoutRequiredButNotPayin = !requiredPayin && requiredPayout
+
+        if (allPaymentDetailsRequired) {
+            const hasAllPayinDetails = arraysEqual(providedPayinFields, requiredPayin)
+            const hasAllPayoutDetails = arraysEqual(providedPayoutFields, requiredPayout)
+
+            activateBtn = hasAllPayinDetails && hasAllPayoutDetails
+            console.log('allPaymentDetailsRequired!', {
+                activateBtn,
+                requiredPayin,
+                requiredPayout,
+                hasAllPayinDetails,
+                hasAllPayoutDetails
+            });
+
+        } else if (allPaymentDetailsNotRequired) {
+            activateBtn = true
+            console.log('allPaymentDetailsNotRequired!', {
+                activateBtn,
+                allPaymentDetailsNotRequired,
+                requiredPayin,
+                requiredPayout,
+            });
+
+        } else if (payinRequiredButNotPayout) {
+            activateBtn = arraysEqual(providedPayinFields, requiredPayin)
+            console.log('payinRequiredButNotPayout!', {
+                activateBtn,
+                payinRequiredButNotPayout,
+                requiredPayin,
+                requiredPayout,
+            });
+
+        } else if (payoutRequiredButNotPayin) {
+            activateBtn = arraysEqual(providedPayoutFields, requiredPayout)
+            console.log('payoutRequiredButNotPayin!', {
+                activateBtn,
+                payoutRequiredButNotPayin,
+                requiredPayin,
+                requiredPayout,
+            });
+
+        }
+
+        setActivateButton(activateBtn)
+        setPaymentDetails(requiredPaymentDetails)
+
+    }, [requiredPaymentDetails])
 
     return (
         <Flex className="gap-2 flex-col">
@@ -467,7 +584,7 @@ const MakePayment = (props: any) => {
                                         </Typography.Text>
                                     }
                                     value={deadline}
-                                    onFinish={onFinish}
+                                    onFinish={onQuoteExpired}
                                 />
                             </Flex>
                         </Tag>
@@ -484,7 +601,8 @@ const MakePayment = (props: any) => {
                     : <MakeTransfer
                         offering={offering}
                         campaignAmount={campaignAmount}
-                        requiredPaymentDetails={requiredPaymentDetails}
+                        relevantExchange={relevantExchange}
+                        requiredPaymentDetails={requiredPaymentDetails || stateDetails}
                     />}
         </Flex>
     )

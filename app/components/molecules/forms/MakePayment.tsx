@@ -7,6 +7,8 @@ import { useState, useEffect } from "react";
 import { LogoIcon2 } from "../../atoms/Icon";
 import { DestinationCurrency, SourceCurrency } from "../../atoms/MarketRate";
 import PFIDetails from "../../atoms/OfferPFI";
+import { formatDistanceToNow } from "date-fns";
+
 
 const { Countdown } = Statistic
 
@@ -444,9 +446,9 @@ const MakePayment = (props: any) => {
 
     const quoteExpiration = relevantExchange?.quote?.expiresAt
 
- 
 
-    const deadline = new Date(relevantExchange?.quote?.expiresAt).getMilliseconds()
+
+    const deadline = new Date(relevantExchange?.quote?.expiresAt).valueOf()
 
     console.log('quoteExpiration!', {
         relevantExchange,
@@ -573,7 +575,15 @@ const MakePayment = (props: any) => {
                         <Tag color={quoteExpired ? 'red' : 'default'}>
                             <Flex className="gap-3">
                                 <ClockCircleFilled />
-                                <Countdown
+                                <Flex className="flex-col">
+                                    <Typography.Text style={{ fontSize: 11 }}>
+                                        {quoteExpired ? 'Quote Expired:' : "Quote Expires:"}
+                                    </Typography.Text>
+                                    <Typography.Text style={{ fontSize: 11 }}>
+                                        {formatDistanceToNow(new Date(relevantExchange?.quote?.expiresAt), { addSuffix: true })}
+                                    </Typography.Text>
+                                </Flex>
+                                {/* <Countdown
                                     valueStyle={{
                                         fontSize: 11,
                                         marginTop: -6
@@ -581,11 +591,13 @@ const MakePayment = (props: any) => {
                                     title={
                                         <Typography.Text style={{ fontSize: 11 }}>
                                             {quoteExpired ? 'Quote Expired' : "Quote Expires In"}
+                                            {formatDistanceToNow(new Date(relevantExchange?.quote?.expiresAt), { addSuffix: true })}
                                         </Typography.Text>
                                     }
                                     value={deadline}
+                                    format="YY:MM:DD"
                                     onFinish={onQuoteExpired}
-                                />
+                                /> */}
                             </Flex>
                         </Tag>
                     </Flex>

@@ -1,12 +1,12 @@
 "use client"
 import useBrowserStorage from '@/app/hooks/useLocalStorage';
-import { LOCAL_STORAGE_KEY, OFFERINGS_LOCAL_STORAGE_KEY, PFIs, SPECIAL_PFI } from "@/app/lib/constants";
+import { LOCAL_STORAGE_KEY, OFFERINGS_LOCAL_STORAGE_KEY, PFIs, SPECIAL_OFFERINGS_LOCAL_STORAGE_KEY, SPECIAL_PFI } from "@/app/lib/constants";
+import { createRfQ } from '@/app/lib/tbdex';
+import { getOfferingPairs } from '@/app/lib/utils';
+import { useWeb5Context } from '@/app/providers/Web5Provider';
 import { Offering, Rfq, TbdexHttpClient } from '@tbdex/http-client';
 import { PresentationDefinitionV2, PresentationExchange } from '@web5/credentials';
 import { createContext, PropsWithChildren, useContext, useEffect, useState } from "react";
-import { createRfQ } from '../lib/tbdex';
-import { getOfferingPairs } from '../lib/utils';
-import { useWeb5Context } from './Web5Provider';
 
 export interface CredentialProp {
     [key: string]: string[]
@@ -24,20 +24,28 @@ export interface MonopolyMoney { currency: string, amount: number }
 
 export interface TbdexContextProps {
     offerings: any[];
+    specialOfferings: any[];
     sourceCurrencies: any[];
     selectedCurrency: string;
     unformattedOfferings: any[];
     credentials: CredentialProp;
     destinationCurrencies: any[];
     monopolyMoney: MonopolyMoney;
+    specialSourceCurrencies: any[];
+    unformattedSpecialOfferings: any[];
+    specialDestinationCurrencies: any[];
     selectedDestinationCurrency: string;
     setOfferings: React.Dispatch<React.SetStateAction<any[]>>;
     createExchange: (args: CreateExchangeArgs) => Promise<void>;
     setSourceCurrencies: React.Dispatch<React.SetStateAction<any[]>>;
+    setSpecialOfferings: React.Dispatch<React.SetStateAction<any[]>>;
     setSelectedCurrency: React.Dispatch<React.SetStateAction<string>>;
     setUnformattedOfferings: React.Dispatch<React.SetStateAction<any[]>>;
-    setMonopolyMoney: React.Dispatch<React.SetStateAction<MonopolyMoney>>;
     setDestinationCurrencies: React.Dispatch<React.SetStateAction<any[]>>;
+    setMonopolyMoney: React.Dispatch<React.SetStateAction<MonopolyMoney>>;
+    setSpecialSourceCurrencies: React.Dispatch<React.SetStateAction<any[]>>;
+    setUnformattedSpecialOfferings: React.Dispatch<React.SetStateAction<any[]>>;
+    setSpecialDestinationCurrencies: React.Dispatch<React.SetStateAction<any[]>>;
     setSelectedDestinationCurrency: React.Dispatch<React.SetStateAction<string>>;
     setCredentials: React.Dispatch<React.SetStateAction<CredentialProp | undefined>>;
 };
@@ -58,7 +66,9 @@ const useTbdexContext = (): Partial<TbdexContextProps> => {
 const TbdexContextProvider = ({ children }: PropsWithChildren) => {
     const { userBearerDid: contextUserBearerDid } = useWeb5Context()
     const [offerings, setOfferings] = useState<any[]>([])
+    const [specialOfferings, setSpecialOfferings] = useState<any[]>([])
     const [unformattedOfferings, setUnformattedOfferings] = useState<any[]>([])
+    const [unformattedSpecialOfferings, setUnformattedSpecialOfferings] = useState<any[]>([])
     const [selectedCurrency, setSelectedCurrency] = useState<string>('USD')
     const [monopolyMoney, setMonopolyMoney] = useState<MonopolyMoney>({
         currency: 'USD',
@@ -66,11 +76,17 @@ const TbdexContextProvider = ({ children }: PropsWithChildren) => {
     })
     const [credentials, setCredentials] = useState<CredentialProp>()
     const [sourceCurrencies, setSourceCurrencies] = useState<any[]>([])
+    const [specialSourceCurrencies, setSpecialSourceCurrencies] = useState<any[]>([])
     const [destinationCurrencies, setDestinationCurrencies] = useState<any[]>([])
+    const [specialDestinationCurrencies, setSpecialDestinationCurrencies] = useState<any[]>([])
     const [selectedDestinationCurrency, setSelectedDestinationCurrency] = useState<string>('USD')
 
     const [_, setLocalOfferings] = useBrowserStorage<OfferingStorage>(
         OFFERINGS_LOCAL_STORAGE_KEY,
+        LOCAL_STORAGE_KEY
+    )
+    const [__, setLocalSpecialOfferings] = useBrowserStorage<OfferingStorage>(
+        SPECIAL_OFFERINGS_LOCAL_STORAGE_KEY,
         LOCAL_STORAGE_KEY
     )
 
@@ -141,8 +157,6 @@ const TbdexContextProvider = ({ children }: PropsWithChildren) => {
                 const unformattedOfferings = []
                 for (const PFI of PFIs) {
                     const pfiDidUri = PFI.did
-                    // const details = await resolveDid(pfiDidUri)
-                    // console.log("Details", details)
                     const offers = await TbdexHttpClient.getOfferings({
                         pfiDid: pfiDidUri
                     })
@@ -157,13 +171,15 @@ const TbdexContextProvider = ({ children }: PropsWithChildren) => {
                     pfiDid: SPECIAL_PFI.did
                 })
 
-                console.log("Special Offerings", specialOfferings)
+                const specialResult = {
+                    [SPECIAL_PFI.did]: specialOfferings
+                }
 
                 const {
                     offerings: specialOffers,
                     sourceCurrencies: specialOffersSourceCurrencies,
                     destinationCurrencies: specialOffersDestinationCurrencies
-                } = getOfferingPairs(offeringsData)
+                } = getOfferingPairs([specialResult])
 
                 const {
                     offerings,
@@ -171,18 +187,20 @@ const TbdexContextProvider = ({ children }: PropsWithChildren) => {
                     destinationCurrencies
                 } = getOfferingPairs(offeringsData)
 
-                // console.log(unformattedOfferings)
-                console.log("Special Offerings", {
-                    specialOffersSourceCurrencies,
-                    specialOffersDestinationCurrencies
-                })
-
-
                 setOfferings(offerings)
+                setSpecialOfferings(specialOffers)
+
                 setLocalOfferings(offerings)
+                setLocalSpecialOfferings(specialOffers)
+
                 setSourceCurrencies(sourceCurrencies)
+                setSpecialSourceCurrencies(specialOffersSourceCurrencies)
+
                 setUnformattedOfferings(unformattedOfferings)
+                setUnformattedSpecialOfferings(specialOfferings)
+
                 setDestinationCurrencies(destinationCurrencies)
+                setSpecialDestinationCurrencies(specialOffersDestinationCurrencies)
 
             } catch (error: any) {
                 console.log("Error heere", error)
@@ -196,21 +214,29 @@ const TbdexContextProvider = ({ children }: PropsWithChildren) => {
         offerings,
         credentials,
         monopolyMoney,
+        specialOfferings,
         sourceCurrencies,
         selectedCurrency,
         unformattedOfferings,
         destinationCurrencies,
+        specialSourceCurrencies,
+        unformattedSpecialOfferings,
         selectedDestinationCurrency,
+        specialDestinationCurrencies,
 
         setOfferings,
         setCredentials,
         createExchange,
         setMonopolyMoney,
         setSelectedCurrency,
+        setSpecialOfferings,
         setSourceCurrencies,
         setUnformattedOfferings,
         setDestinationCurrencies,
-        setSelectedDestinationCurrency
+        setSpecialSourceCurrencies,
+        setSelectedDestinationCurrency,
+        setUnformattedSpecialOfferings,
+        setSpecialDestinationCurrencies,
     }}>
         {children}
     </TbdexContext.Provider>

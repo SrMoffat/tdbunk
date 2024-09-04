@@ -1,9 +1,22 @@
-import { Rfq, TbdexHttpClient, Close, Quote } from '@tbdex/http-client';
+import { Rfq, TbdexHttpClient, Close, Quote, Order } from '@tbdex/http-client';
 import { BearerDid } from '@web5/dids';
 import { PFIs } from "@/app/lib/constants";
 
 // Poll every 3 seconds
 const EXCHANGES_POLLING_INTERVAL_MS = 3000;
+
+export interface CloseMessageArgs {
+    pfiDid: string;
+    reason: string;
+    userBearerDid: any;
+    exchangeId: string;
+}
+
+export interface OrderMessageArgs {
+    pfiDid: string;
+    userBearerDid: any;
+    exchangeId: string;
+}
 
 export const validateOffering = async ({
     rfq,
@@ -207,8 +220,6 @@ export const getRfqAndQuoteRenderDetails = (rfq: Rfq, quote: Quote) => {
     }
 }
 
-
-
 export const pollExchanges = (bearer: any, callback: any) => {
     const fetchAllExchanges = async () => {
         try {
@@ -260,3 +271,56 @@ export const pollExchanges = (bearer: any, callback: any) => {
     // Set up the interval to run the function periodically
     setInterval(fetchAllExchanges, EXCHANGES_POLLING_INTERVAL_MS);
 };
+
+export const sendCloseMessage = async ({
+    pfiDid,
+    reason,
+    exchangeId,
+    userBearerDid,
+}: CloseMessageArgs) => {
+    try {
+        const close = Close.create({
+            metadata: {
+                from: userBearerDid?.did?.uri,
+                to: pfiDid,
+                exchangeId
+            },
+            data: {
+                reason
+            }
+        })
+
+        await close.sign(userBearerDid)
+
+        await TbdexHttpClient.submitClose(close)
+
+        return close
+    } catch (error: any) {
+        console.error('Send close messaage errored', error)
+    }
+}
+
+export const sendOderMessage = async ({
+    pfiDid,
+    exchangeId,
+    userBearerDid,
+}: OrderMessageArgs) => {
+    try {
+        const order = Order.create({
+            metadata: {
+                from: userBearerDid?.did?.uri,
+                to: pfiDid,
+                exchangeId,
+                protocol: '1.0'
+            }
+        })
+
+        await order.sign(userBearerDid)
+
+        await TbdexHttpClient.submitOrder(order)
+
+        return order
+    } catch(error: any){
+        console.error('Error sending order message', error)
+    }
+}

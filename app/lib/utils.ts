@@ -108,10 +108,10 @@ export const getPaymentMethodPairs = (methods: any) => {
 
     for (const method of methods) {
         const entry = {
-            kind: method.kind,
-            title: method.requiredPaymentDetails.title,
-            estimatedSettlementTime: method.estimatedSettlementTime,
-            paymentProperties: method.requiredPaymentDetails.properties,
+            kind: method?.kind,
+            title: method?.requiredPaymentDetails?.title,
+            estimatedSettlementTime: method?.estimatedSettlementTime,
+            paymentProperties: method?.requiredPaymentDetails?.properties,
         }
         massagedMethods.push(entry)
     }
@@ -139,7 +139,7 @@ export const getOfferingPairs = (pfis: any) => {
 
             const payinMethods = getPaymentMethodPairs(payin.methods)
             const payoutMethods = getPaymentMethodPairs(payout.methods)
-            const requiredClaims = formatRequiredClaims(claims.input_descriptors)
+            const requiredClaims = claims ? formatRequiredClaims(claims.input_descriptors) : {}
 
             const currencyPair = {
                 [pfiDid]: {

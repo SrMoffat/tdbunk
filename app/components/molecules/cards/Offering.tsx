@@ -4,9 +4,9 @@ import CredentialsForm from '@/app/components/molecules/forms/Credentials';
 import MakePayment from "@/app/components/molecules/forms/MakePayment";
 import { Credentials } from "@/app/components/organisms/Credentials";
 import { PFIs } from "@/app/lib/constants";
-import { pollExchanges } from "@/app/lib/tbdex";
+import { pollExchanges, sendCloseMessage } from "@/app/lib/tbdex";
 import { getCurrencyFlag } from "@/app/lib/utils";
-import { Offering } from "@tbdex/http-client";
+import { Offering, Close, TbdexHttpClient } from "@tbdex/http-client";
 import { Button, List, Modal, Spin } from "antd";
 import { formatDistanceToNow } from 'date-fns';
 import { SetStateAction, useEffect, useState } from "react";
@@ -30,6 +30,10 @@ export enum PaymentStage {
     REQUEST_QUOTE = 'REQUEST_QUOTE',
     MAKE_TRANSFER = 'MAKE_TRANSFER',
 }
+
+
+
+
 
 const OfferingDetails = (props: any) => {
     const {
@@ -123,10 +127,20 @@ const OfferingDetails = (props: any) => {
         }
     };
 
-    const handleCancel = () => {
+    const handleCancel = async () => {
+        const TBDEX_CANCEL_REASON = 'Cancalled transaction'
+
         if (isRequestQuote) {
             setShowModal(false);
         } else {
+            // To Do: Send close message
+            const closeMessage = await sendCloseMessage({
+                pfiDid,
+                userBearerDid,
+                reason: TBDEX_CANCEL_REASON,
+                exchangeId: relevantExchange?.rfq?.rfqId,
+            })
+            console.log("Cancel Message", closeMessage)
             setPaymentState(PaymentStage.REQUEST_QUOTE)
         }
     };

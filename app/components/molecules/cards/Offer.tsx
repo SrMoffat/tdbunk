@@ -67,7 +67,7 @@ const OfferCard = ({
                         </Typography.Text>
                         <Flex>
                             <Tag className="items-center text-xs" color={isSelected ? 'green' : 'default'}>
-                                <Link href={issuerVcSchema} target="_blank" style={{ color: isSelected ? 'green' : 'default' }}>
+                                <Link href={issuerVcSchema ? issuerVcSchema : 'http://localhost:3000'} target="_blank" style={{ color: isSelected ? 'green' : 'default' }}>
                                     View Credential Structure
                                 </Link>
                             </Tag>

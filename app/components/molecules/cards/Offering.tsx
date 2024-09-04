@@ -228,6 +228,8 @@ const OfferingDetails = (props: any) => {
         console.log("relevantExchange:iiisndie", { relevantExchange, isRelevant, requiredPaymentDetails })
     }, [relevantExchange])
 
+    const isButtonDisabled = !activateButton
+
     return (
         <List.Item className="flex flex-row gap-2">
             <Modal
@@ -238,7 +240,7 @@ const OfferingDetails = (props: any) => {
                     <Button danger key="back" onClick={handleCancel}>
                         {cancelText}
                     </Button>,
-                    <Button loading={isLoading} key="submit" type="primary" onClick={handleOk} disabled={!activateButton}>
+                    <Button loading={isLoading} key="submit" type="primary" onClick={handleOk} disabled={isButtonDisabled}>
                         {submitText}
                     </Button>
                 ] : []}
@@ -266,11 +268,11 @@ const OfferingDetails = (props: any) => {
                 toCurrencyFlag={getCurrencyFlag(offeringToCurrency?.currencyCode)}
             />
             <AssetExchangeOffer
-                isRecommended
                 issuerDid={issuerDid}
                 isSelected={isSelected}
                 offeringId={offeringId}
                 issuerVcSchema={issuerVcSchema}
+                isRecommended={Boolean(pfiName)}
                 offeringToCurrencyMethods={offeringToCurrencyMethods}
             />
         </List.Item>

@@ -22,6 +22,9 @@ export const SearchOffers = (props: any) => {
         destinationCurrencies,
         selectedDestinationCurrency,
 
+        specialSourceCurrencies,
+        specialDestinationCurrencies,
+
         setSelectedCurrency,
         setSelectedDestinationCurrency
     } = useTbdexContext()
@@ -35,6 +38,9 @@ export const SearchOffers = (props: any) => {
             setIsLoading(false)
         }, 3000)
     }
+    
+    const mergedSourceCurrencies = [...new Set(sourceCurrencies?.concat(specialSourceCurrencies))]
+    const mergedDestinationCurrencies = [...new Set(destinationCurrencies?.concat(specialDestinationCurrencies))]
 
     // const destinationCountry = countries.filter(entry => entry.currencyCode === selectedDestinationCurrency)[0]?.flag
     return (
@@ -42,7 +48,7 @@ export const SearchOffers = (props: any) => {
             <Select style={{ width: 130 }} defaultValue={selectedCurrency || 'USD'} onChange={(value) => {
                 setSelectedCurrency?.(value)
             }}>
-                {sourceCurrencies?.map(entry => <Option key={entry} value={entry}>{`${entry} ${getCurrencyFlag(entry)}`}</Option>)}
+                {mergedSourceCurrencies?.map(entry => <Option key={entry} value={entry}>{`${entry} ${getCurrencyFlag(entry)}`}</Option>)}
             </Select>
             <InputNumber defaultValue={campaignAmount} />
             <Flex className="px-4 border-[0.2px] border-gray-700">
@@ -51,7 +57,7 @@ export const SearchOffers = (props: any) => {
             <Select style={{ width: 130 }} defaultValue={selectedDestinationCurrency} onChange={(value) => {
                 setSelectedDestinationCurrency?.(value)
             }}>
-                {destinationCurrencies?.map(entry => <Option key={entry} value={entry}>{`${entry} ${getCurrencyFlag(entry)}`}</Option>)}
+                {mergedDestinationCurrencies?.map(entry => <Option key={entry} value={entry}>{`${entry} ${getCurrencyFlag(entry)}`}</Option>)}
             </Select>
             <Button loading={isLoading} onClick={handleRefreshOfferings} type="primary" icon={<RedoOutlined />} iconPosition='end'>
                 <Flex className="flex-col">

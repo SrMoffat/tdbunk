@@ -1,3 +1,4 @@
+import { SPECIAL_PFI } from "@/app/lib/constants";
 import { ClockCircleOutlined } from "@ant-design/icons";
 import { Avatar, Flex, Rate, Tag, Typography } from "antd";
 import { formatDistanceToNow } from "date-fns";
@@ -17,16 +18,24 @@ const PFIDetails = (props: PFIDetailsProps) => {
         estimatedSettlementTime
     } = props
 
+    const pfi = pfiName
+        ? pfiName?.charAt(0)?.toUpperCase()
+        : SPECIAL_PFI.name?.charAt(0)?.toUpperCase()
+
+    const pfiDidUri = pfiDid
+        ? `${pfiDid?.slice(0, 14)}...${pfiDid?.slice(-8)}`
+        : SPECIAL_PFI.did
+
     return (
         <Flex className="items-center justify-between w-full">
             <Flex className="gap-3">
-                <Avatar shape="square" style={{ backgroundColor: '#f56a00', width: 60, height: 60 }}>{pfiName.charAt(0).toUpperCase()}</Avatar>
+                <Avatar shape="square" style={{ backgroundColor: pfiName ? '#f56a00' : '#87d068', width: 60, height: 60 }}>{pfi}</Avatar>
                 <Flex className="flex-col">
                     <Typography.Title level={5} style={{ marginTop: -4 }}>
-                        {pfiName}
+                        {pfiName ? pfiName : SPECIAL_PFI.name}
                     </Typography.Title>
                     <Typography.Text style={{ fontSize: 12, marginTop: -4 }} copyable>
-                        {`${pfiDid.slice(0, 14)}...${pfiDid.slice(-8)}`}
+                        {pfiDidUri}
                     </Typography.Text>
                     <Flex className="gap-1">
                         <Typography.Text className="font-bold text-xs">

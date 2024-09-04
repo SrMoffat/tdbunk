@@ -222,6 +222,8 @@ export const getRfqAndQuoteRenderDetails = (rfq: Rfq, quote: Quote) => {
 
 export const pollExchanges = (bearer: any, callback: any) => {
     const fetchAllExchanges = async () => {
+        if (!bearer) return
+
         try {
             // const exchanges = await fetchExchanges({
             //     userBearerDid: contextUserBearerDid
@@ -320,7 +322,7 @@ export const sendOderMessage = async ({
         await TbdexHttpClient.submitOrder(order)
 
         return order
-    } catch(error: any){
+    } catch (error: any) {
         console.error('Error sending order message', error)
     }
 }

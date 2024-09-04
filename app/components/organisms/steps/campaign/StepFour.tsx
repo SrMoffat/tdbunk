@@ -6,7 +6,7 @@ import DebunkCampaignStats from "@/app/components/molecules/description/DebunkCa
 import { CredentialStorage } from "@/app/components/molecules/forms/Credentials";
 import { Credentials } from "@/app/components/organisms/Credentials";
 import useBrowserStorage from "@/app/hooks/useLocalStorage";
-import { CREDENTIALS_LOCAL_STORAGE_KEY, LOCAL_STORAGE_KEY, OFFERINGS_LOCAL_STORAGE_KEY } from "@/app/lib/constants";
+import { CREDENTIALS_LOCAL_STORAGE_KEY, LOCAL_STORAGE_KEY, OFFERINGS_LOCAL_STORAGE_KEY, SPECIAL_OFFERINGS_LOCAL_STORAGE_KEY } from "@/app/lib/constants";
 import { getFormattedOfferings } from "@/app/lib/utils";
 import { useCreateCampaignContext } from "@/app/providers/CreateCampaignProvider";
 import { useTbdexContext } from "@/app/providers/TbdexProvider";
@@ -33,12 +33,17 @@ const StepFour = () => {
         selectedDestinationCurrency,
     } = useTbdexContext()
 
-    const {userBearerDid} = useWeb5Context()
+    const { userBearerDid } = useWeb5Context()
 
     const { campaignAmount } = useCreateCampaignContext()
 
     const [localStorageData] = useBrowserStorage<CredentialStorage>(
         OFFERINGS_LOCAL_STORAGE_KEY,
+        LOCAL_STORAGE_KEY
+    )
+
+    const [localStorageSpecialData] = useBrowserStorage<CredentialStorage>(
+        SPECIAL_OFFERINGS_LOCAL_STORAGE_KEY,
         LOCAL_STORAGE_KEY
     )
 
@@ -49,13 +54,25 @@ const StepFour = () => {
             ? Object.values(localStorageData!)
             : []
 
+        const storedSpecialOfferings = localStorageSpecialData
+            ? Object.values(localStorageSpecialData!)
+            : []
+
         const { direct } = getFormattedOfferings(
             storedOfferings,
             selectedCurrency as string,
             selectedDestinationCurrency as string
         )
 
-        setOfferings(direct)
+        const { direct: specialDirect } = getFormattedOfferings(
+            storedSpecialOfferings,
+            selectedCurrency as string,
+            selectedDestinationCurrency as string
+        )
+
+        const mergedResults = [...new Set(direct.concat(specialDirect))]
+        setOfferings(mergedResults) // Has v2.0 PFI offerings 
+        // setOfferings(direct)
         setIsLoading(false)
     }, [selectedCurrency, selectedDestinationCurrency, localStorageData])
 

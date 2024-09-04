@@ -49,6 +49,7 @@ const AssetExchangePFIDetails = ({
             <Flex className="mt-3 justify-between">
                 <AssetExachangeAction
                     cta={cta}
+                    pfiName={pfiName}
                     showModal={showPaymentModal}
                 />
                 <AssetExchangeRates

@@ -7,6 +7,7 @@ export interface OfferCardProps {
     offeringId: string
     issuerDid: string
     isSelected: boolean
+    isRecommended: boolean
     issuerVcSchema: string
     offeringToCurrencyMethods: any[]
 }
@@ -45,11 +46,12 @@ const OfferCard = ({
     offeringId,
     issuerDid,
     isSelected,
+    isRecommended,
     issuerVcSchema,
     offeringToCurrencyMethods
 }: OfferCardProps) => {
     return (
-        <Card className="w-[470px] min-h-[200px]">
+        <Card className={`w-[470px] min-h-[200px] ${isRecommended ? 'opacity-100' : 'opacity-40'}`}>
             <Flex className="w-full gap-2">
                 <Typography.Text className="font-bold">
                     Offer ID:

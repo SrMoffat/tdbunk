@@ -1,6 +1,6 @@
 "use client"
 import useBrowserStorage from '@/app/hooks/useLocalStorage';
-import { LOCAL_STORAGE_KEY, OFFERINGS_LOCAL_STORAGE_KEY, PFIs, SPECIAL_OFFERINGS_LOCAL_STORAGE_KEY, SPECIAL_PFI } from "@/app/lib/constants";
+import { LOCAL_STORAGE_KEY, OFFERINGS_LAST_UPDATED, OFFERINGS_LOCAL_STORAGE_KEY, PFIs, SPECIAL_OFFERINGS_LOCAL_STORAGE_KEY, SPECIAL_PFI } from "@/app/lib/constants";
 import { createRfQ } from '@/app/lib/tbdex';
 import { getOfferingPairs } from '@/app/lib/utils';
 import { useWeb5Context } from '@/app/providers/Web5Provider';
@@ -202,6 +202,7 @@ const TbdexContextProvider = ({ children }: PropsWithChildren) => {
                 setDestinationCurrencies(destinationCurrencies)
                 setSpecialDestinationCurrencies(specialOffersDestinationCurrencies)
 
+                localStorage.setItem(OFFERINGS_LAST_UPDATED, new Date().toISOString())
             } catch (error: any) {
                 console.log("Error heere", error)
             }

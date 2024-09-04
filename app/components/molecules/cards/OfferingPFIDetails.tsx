@@ -39,7 +39,7 @@ const AssetExchangePFIDetails = ({
     offeringToCurrencyMethods,
 }: AssetExchangePFIDetailsProps) => {
     return (
-        <Card className="w-full min-h-[200px]">
+        <Card className={`w-full min-h-[200px] ${pfiName ? 'opacity-100' : 'opacity-40'}`}>
             <PFIDetails
                 pfiDid={pfiDid}
                 pfiName={pfiName}

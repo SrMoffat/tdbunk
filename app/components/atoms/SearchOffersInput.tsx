@@ -1,8 +1,11 @@
+import { OFFERINGS_LAST_UPDATED } from "@/app/lib/constants"
 import { getCurrencyFlag } from "@/app/lib/utils"
 import { useCreateCampaignContext } from "@/app/providers/CreateCampaignProvider"
 import { useTbdexContext } from "@/app/providers/TbdexProvider"
 import { RedoOutlined, RightCircleFilled } from "@ant-design/icons"
 import { Button, Flex, InputNumber, Select, Space, theme, Typography } from "antd"
+import { formatDistanceToNow } from "date-fns"
+formatDistanceToNow
 
 const { Option } = Select
 
@@ -36,11 +39,17 @@ export const SearchOffers = (props: any) => {
 
         const timer = setTimeout(() => {
             setIsLoading(false)
+            localStorage.setItem(OFFERINGS_LAST_UPDATED, new Date().toISOString())
+
         }, 3000)
     }
-    
+
     const mergedSourceCurrencies = [...new Set(sourceCurrencies?.concat(specialSourceCurrencies))]
     const mergedDestinationCurrencies = [...new Set(destinationCurrencies?.concat(specialDestinationCurrencies))]
+
+    const lastUpdate = localStorage.getItem(OFFERINGS_LAST_UPDATED)
+
+    console.log("Last Updated", lastUpdate)
 
     // const destinationCountry = countries.filter(entry => entry.currencyCode === selectedDestinationCurrency)[0]?.flag
     return (
@@ -62,7 +71,9 @@ export const SearchOffers = (props: any) => {
             <Button loading={isLoading} onClick={handleRefreshOfferings} type="primary" icon={<RedoOutlined />} iconPosition='end'>
                 <Flex className="flex-col">
                     <Typography.Text style={{ fontSize: 12 }}>Refresh Offerings</Typography.Text>
-                    <Typography.Text className="-mt-1" style={{ fontSize: 8 }}>Updated 4 minutes ago</Typography.Text>
+                    <Typography.Text className="-mt-1" style={{ fontSize: 8 }}>
+                        Updated {formatDistanceToNow(new Date(lastUpdate as string), { addSuffix: true })}
+                    </Typography.Text>
                 </Flex>
             </Button>
         </Space.Compact>

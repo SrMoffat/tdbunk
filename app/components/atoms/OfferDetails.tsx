@@ -24,6 +24,7 @@ const AssetExchangeOffer = ({
             <OfferCard
                 offeringId={offeringId}
                 issuerDid={issuerDid}
+                isRecommended={isRecommended}
                 isSelected={isSelected}
                 issuerVcSchema={issuerVcSchema}
                 offeringToCurrencyMethods={offeringToCurrencyMethods}
@@ -32,6 +33,7 @@ const AssetExchangeOffer = ({
         : <OfferCard
             offeringId={offeringId}
             issuerDid={issuerDid}
+            isRecommended={isRecommended}
             isSelected={isSelected}
             issuerVcSchema={issuerVcSchema}
             offeringToCurrencyMethods={offeringToCurrencyMethods}

@@ -66,3 +66,43 @@ function ClearAllIntervals() {
     for (var i = 1; i < 99999; i++)
         window.clearInterval(i);
 }
+
+Sending money across borders is unnecessarily slow and painful. tbDEX, an open source protocol, enables payment applications, such as digital wallets, to communicate with liquidity providers to move money in a fast and compliant way.
+
+tbDEX utilizes innovative open technologies such as Decentralized Identifiers and Verifiable Credentials to securely validate counterparty identity and trust, ensuring compliance with relevant laws and regulations.
+
+
+Your task is to develop a wallet application that leverages the tbDEX SDK.  
+
+You can design your application for web, iOS, or Android. 
+
+Your application must connect to one or more of the liquidity providers in our sandbox of PFIs (participating financial institutions):
+
+Every PFI in the sandbox will require your customers present a Verifiable Credential from trusted issuer:
+
+🪪 Issuer: Ultimate Identity
+You can obtain a credential token for your customer by making a GET HTTP request to:
+https://mock-idv.tbddev.org/kcc?name=${customerName}&country=${countryCode}&did=${customerDID}
+
+
+
+Consider the following when designing your application:
+
+1. Profitability: how might your wallet application make a profit (charging fees per transaction, platform fees when article is debunked and fact checkers are being paid, we get paid too)
+
+2. Optionality: how will your application handle matching offerings from multiple PFIs (compare settlement time, compare user rating, compare availability status, uder discretion, user transaction history, AI?, compare to market rate?)
+
+3. Customer Management: how will your application manage customers’ decentralized identifiers and verifiable credentials (Bearer Did stored in local storage with key uris and keys in key manager, vcs stored in dwn)
+
+4. Customer Satisfaction: how will your application track customer satisfaction with PFIs (5-star rating on, speed of settlement i.e. actual vs estimated, comparison to market rate, )
+
+
+You must host your project in a public GitHub repository and provide that link as your submission. The project’s README.md file should provide an overview of your application and how you’ve addressed the design considerations above.
+
+
+
+You may work individually or within a team (max of 2 people per team). 
+
+12 teams of semi-finalists will be chosen. Semi-finalists will prepare a video presentation explaining their project.
+
+6 teams of finalists will be chosen. Finalists will be flown to Nairobi, Kenya to attend the Africa Bitcoin Conference and pitch what they’ve built to our panel of judges. Conference tickets and travel accommodations will be provided.

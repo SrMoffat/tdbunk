@@ -1,3 +1,5 @@
+import countries from "@/public/countries.json"
+
 import { LANDING_PAGE_TABS, DEBUNK_SOURCE, DEBUNK_CAMPAIGN_TYPE } from "@/app/lib/constants";
 
 export const isCampaign = (tab: LANDING_PAGE_TABS) => tab === LANDING_PAGE_TABS.CAMPAIGNS;
@@ -177,3 +179,45 @@ export const getOfferingPairs = (pfis: any) => {
 export const getCurrencyFromCountry = (countries: any[], country: string) => {
     return countries.filter(({ countryCode }) => countryCode === country)[0]?.currencyCode
 }
+
+export const arraysEqual = (arr1: string | any[], arr2: string | any[]) => {
+    // Check if lengths are the same
+    if (arr1.length !== arr2.length) {
+        return false;
+    }
+
+    // Sort both arrays and compare each element
+    const sortedArr1 = [...arr1].sort();
+    const sortedArr2 = [...arr2].sort();
+
+    for (let i = 0; i < sortedArr1.length; i++) {
+        if (sortedArr1[i] !== sortedArr2[i]) {
+            return false;
+        }
+    }
+
+    // If all elements match, the arrays are equal
+    return true;
+}
+
+export const getCurrencyFlag = (currency: string) => {
+    let flag = ''
+
+    switch (currency) {
+        case 'USD':
+            flag = '🇺🇸'
+            break
+        case 'EUR':
+            flag = '🇪🇺'
+            break
+        case 'GBP':
+            flag = '🇬🇧'
+            break
+        default:
+            flag = countries.filter(entry => entry.currencyCode === currency)[0]?.flag
+            break
+    }
+
+    return flag ?? '🏳️'
+}
+

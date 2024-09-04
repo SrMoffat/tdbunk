@@ -8,13 +8,12 @@ import useBrowserStorage from '@/app/hooks/useLocalStorage';
 import { CREDENTIAL_TYPES, CREDENTIALS_LOCAL_STORAGE_KEY, LOCAL_STORAGE_KEY } from '@/app/lib/constants';
 import { useWeb5Context } from '@/app/providers/Web5Provider';
 import countries from '@/public/countries.json';
+import { BearerIdentity } from '@web5/agent';
 import { Web5 } from '@web5/api';
 import { BearerDid } from '@web5/dids';
 import { Flex, Layout, Segmented, theme } from 'antd';
 import Image from 'next/image';
-import React, { useState, useEffect } from 'react';
-import { BearerIdentity } from '@web5/agent';
-
+import React, { useEffect, useState } from 'react';
 
 export interface UserStorage { }
 
@@ -77,15 +76,6 @@ const StepOne: React.FC<StepOneProps> = ({
     const isCreate = mode === CredentialMode.CREATE
     const isRequest = mode === CredentialMode.REQUEST
     const isImport = mode === CredentialMode.IMPORT
-
-
-
-    // console.log("Data", {
-    //     noCredentialsFound,
-    //     existingStateCreds,
-    //     existingLocalStorageCreds
-    // })
-
 
     // @ts-ignore
     const existingLocalStorageCreds = localStorageData?.credentials

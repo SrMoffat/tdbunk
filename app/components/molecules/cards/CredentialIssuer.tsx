@@ -1,18 +1,18 @@
+import { CredentialStorage } from "@/app/components/molecules/forms/Credentials";
+import EducationalCredentialForm from "@/app/components/molecules/forms/EducationalCredential";
+import FinancialCredentialForm from "@/app/components/molecules/forms/FinancialCredential";
+import GovernmentCredentialForm from "@/app/components/molecules/forms/GovernmentCredential";
+import ProfessionalCredentialForm from "@/app/components/molecules/forms/ProfessionalCredential";
 import useBrowserStorage from "@/app/hooks/useLocalStorage";
 import { CREDENTIAL_TYPES, CREDENTIALS_LOCAL_STORAGE_KEY, LOCAL_STORAGE_KEY } from "@/app/lib/constants";
 import { getCurrencyFromCountry, toCapitalizedWords } from "@/app/lib/utils";
 import { createEducationalCredential, createFinancialCredential, createGovernmentCredential, createProfessionalCredential } from "@/app/lib/web5";
+import { useNotificationContext } from "@/app/providers/NotificationProvider";
 import countries from '@/public/countries.json';
 import { useMutation } from '@tanstack/react-query';
 import { Button, Card, Flex, Modal, Tag, Typography } from "antd";
 import Image from "next/image";
 import { useState } from "react";
-import { CredentialStorage } from "../forms/Credentials";
-import EducationalCredentialForm from "../forms/EducationalCredential";
-import FinancialCredentialForm from "../forms/FinancialCredential";
-import GovernmentCredentialForm from "../forms/GovernmentCredential";
-import ProfessionalCredentialForm from "../forms/ProfessionalCredential";
-import { useNotificationContext } from "@/app/providers/NotificationProvider";
 
 const CredentialIssuerCard = (props: any) => {
     const {

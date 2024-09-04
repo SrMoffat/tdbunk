@@ -1,5 +1,5 @@
 import { CopyOutlined } from "@ant-design/icons"
-import { Space, Tooltip, Button, Input } from "antd"
+import { Button, Input, Space, Tooltip } from "antd"
 
 export const DidUrlWithCopy = () => {
     return (

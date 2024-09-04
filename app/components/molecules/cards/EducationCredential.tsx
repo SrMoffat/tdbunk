@@ -1,15 +1,12 @@
 import { Card4 } from "@/app/components/atoms/Icon";
+import { CredentialParsedMetadata, extractVcDocumentDetails } from "@/app/components/molecules/cards/FinancialCredential";
+import { CREDENTIAL_TYPES } from "@/app/lib/constants";
 import { parseJwtToVc } from "@/app/lib/web5";
-import countries from '@/public/countries.json';
+import { resolveDid } from "@tbdex/http-client";
 import { Flex, Typography } from "antd";
 import { formatDistanceToNow } from "date-fns";
 import Image from "next/image";
-import { resolveDid } from "@tbdex/http-client";
 import { useEffect, useState } from "react";
-import { CredentialParsedMetadata, extractVcDocumentDetails } from "./FinancialCredential";
-import { CREDENTIAL_TYPES } from "@/app/lib/constants";
-
-const country = countries.filter((entry) => entry?.countryCode === "KE")[0]
 
 const EducationalInstitutionCredential = (props: any) => {
     const {

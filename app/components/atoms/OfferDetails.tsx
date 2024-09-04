@@ -1,5 +1,5 @@
+import OfferCard from "@/app/components/molecules/cards/Offer";
 import { Badge } from "antd";
-import OfferCard from "../molecules/cards/Offer";
 
 export interface AssetExchangeOfferProps {
     offeringId: string;

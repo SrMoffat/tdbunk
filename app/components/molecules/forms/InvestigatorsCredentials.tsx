@@ -1,4 +1,4 @@
-import { Card1, Card2, Card3, Card4, Card5, ValidCredential } from '@/app/components/atoms/Icon';
+import { Card1, Card3, Card4, Card5, ValidCredential } from '@/app/components/atoms/Icon';
 import { useCreateCampaignContext } from '@/app/providers/CreateCampaignProvider';
 import { CheckCircleFilled, CheckCircleOutlined } from "@ant-design/icons";
 import { Avatar, Badge, Card, Flex, theme, Tooltip, Typography } from "antd";

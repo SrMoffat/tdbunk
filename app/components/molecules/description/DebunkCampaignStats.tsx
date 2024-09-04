@@ -1,7 +1,7 @@
 import { Community, Evidence, FactCheckers, Sponsorships, ValidCredential } from '@/app/components/atoms/Icon'
 import { useCreateCampaignContext } from '@/app/providers/CreateCampaignProvider'
 import { useTbdexContext } from '@/app/providers/TbdexProvider'
-import { Badge, Card, Flex, Tag, Typography, Tooltip, Avatar, theme } from 'antd'
+import { Avatar, Badge, Card, Flex, Tag, theme, Tooltip, Typography } from 'antd'
 import Image from 'next/image'
 import React from 'react'
 

@@ -1,40 +1,12 @@
 "use client"
 import useBrowserStorage from '@/app/hooks/useLocalStorage';
-import { CREDENTIALS_LOCAL_STORAGE_KEY, LOCAL_STORAGE_KEY, OFFERINGS_LOCAL_STORAGE_KEY, PFIs, SPECIAL_PFI } from "@/app/lib/constants";
+import { LOCAL_STORAGE_KEY, OFFERINGS_LOCAL_STORAGE_KEY, PFIs, SPECIAL_PFI } from "@/app/lib/constants";
 import { Offering, Rfq, TbdexHttpClient } from '@tbdex/http-client';
 import { PresentationDefinitionV2, PresentationExchange } from '@web5/credentials';
 import { createContext, PropsWithChildren, useContext, useEffect, useState } from "react";
+import { createRfQ } from '../lib/tbdex';
 import { getOfferingPairs } from '../lib/utils';
 import { useWeb5Context } from './Web5Provider';
-import { createRfQ, signRfQ, validateOffering } from '../lib/tbdex';
-import { BearerDid } from '@web5/dids';
-import { getBearerDid } from '../lib/web5';
-
-const fetchExchanges = async (details: any) => {
-    try {
-        for (const pfi of PFIs) {
-            console.log("Details: fetchExchanges", {
-                details,
-                pfiDid: pfi.did,
-            })
-            // const exchanges = await TbdexHttpClient.getExchanges({
-            //     pfiDid: pfi.did,
-            //     did: 
-            // });
-            // console.log("Details: fetchExchanges", {
-            //     details,
-            //     exchanges,
-            //     pfiDid: pfi.did,
-            // })
-        }
-    } catch (error: any) {
-        console.log("Error: fetchExchanges", {
-            error
-        })
-
-    }
-}
-
 
 export interface CredentialProp {
     [key: string]: string[]
@@ -60,12 +32,12 @@ export interface TbdexContextProps {
     monopolyMoney: MonopolyMoney;
     selectedDestinationCurrency: string;
     setOfferings: React.Dispatch<React.SetStateAction<any[]>>;
+    createExchange: (args: CreateExchangeArgs) => Promise<void>;
     setSourceCurrencies: React.Dispatch<React.SetStateAction<any[]>>;
     setSelectedCurrency: React.Dispatch<React.SetStateAction<string>>;
     setUnformattedOfferings: React.Dispatch<React.SetStateAction<any[]>>;
     setMonopolyMoney: React.Dispatch<React.SetStateAction<MonopolyMoney>>;
     setDestinationCurrencies: React.Dispatch<React.SetStateAction<any[]>>;
-    createExchange: (args: CreateExchangeArgs) => Promise<string[] | undefined>;
     setSelectedDestinationCurrency: React.Dispatch<React.SetStateAction<string>>;
     setCredentials: React.Dispatch<React.SetStateAction<CredentialProp | undefined>>;
 };
@@ -84,7 +56,7 @@ const useTbdexContext = (): Partial<TbdexContextProps> => {
 };
 
 const TbdexContextProvider = ({ children }: PropsWithChildren) => {
-    const { userDid, userBearerDid: contextUserBearerDid } = useWeb5Context()
+    const { userBearerDid: contextUserBearerDid } = useWeb5Context()
     const [offerings, setOfferings] = useState<any[]>([])
     const [unformattedOfferings, setUnformattedOfferings] = useState<any[]>([])
     const [selectedCurrency, setSelectedCurrency] = useState<string>('USD')
@@ -102,12 +74,6 @@ const TbdexContextProvider = ({ children }: PropsWithChildren) => {
         LOCAL_STORAGE_KEY
     )
 
-    const [localStorageCredentials] = useBrowserStorage<OfferingStorage>(
-        CREDENTIALS_LOCAL_STORAGE_KEY,
-        LOCAL_STORAGE_KEY
-    )
-
-    // const createExchange = async (details: CreateExchangeArgs) => {
     const createExchange = async (details: any) => {
         try {
             const userWeb5BearerDid = contextUserBearerDid
@@ -134,30 +100,10 @@ const TbdexContextProvider = ({ children }: PropsWithChildren) => {
             TbdexHttpClient.createExchange(rfq as Rfq, {
                 replyTo: 'http://localhost:3000/api/exchanges'
             })
-
-            // const exchanges = await fetchExchanges({
-            //     userBearerDid: userWeb5BearerDid,
-            // })
-
-            // console.log("Exchanges Here", exchanges)
-
-            return ['']
         } catch (error: any) {
             console.log("Something went wrong createExchange", error)
         }
     }
-
-    // const fetchPfiExchangesForUser = async ({
-    //     pfiDidUri,
-    //     userBearerDid
-    // }: any) => {
-    //     console.log("Polling exchange", {
-    //         pfiDidUri,
-    //         userBearerDid,
-    //     })
-    // }
-
-
 
     useEffect(() => {
         (async () => {

@@ -26,7 +26,6 @@ export default function CredentialsFormPage() {
                     </Link>
                 </Flex>
             </Header>
-           
             <div className="border w-full">Footer</div>
         </Layout>
     );

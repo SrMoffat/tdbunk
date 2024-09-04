@@ -1,155 +1,15 @@
-import { getCurrencyFlag } from "@/app/components/atoms/SearchOffersInput";
+import AssetExchangeOffer from "@/app/components/atoms/OfferDetails";
+import AssetExchangePFIDetails from "@/app/components/molecules/cards/OfferingPFIDetails";
 import CredentialsForm from '@/app/components/molecules/forms/Credentials';
+import MakePayment from "@/app/components/molecules/forms/MakePayment";
 import { Credentials } from "@/app/components/organisms/Credentials";
 import { PFIs } from "@/app/lib/constants";
-import { getEstimatedSettlementTime } from "@/app/lib/utils";
-import { Offering, Quote, Rfq } from "@tbdex/http-client";
-import { Button, Card, Flex, List, Modal, Spin } from "antd";
+import { pollExchanges } from "@/app/lib/tbdex";
+import { getCurrencyFlag } from "@/app/lib/utils";
+import { Offering } from "@tbdex/http-client";
+import { Button, List, Modal, Spin } from "antd";
 import { formatDistanceToNow } from 'date-fns';
 import { SetStateAction, useEffect, useState } from "react";
-import AssetExachangeAction from "../../atoms/OfferAction";
-import AssetExchangeOffer from "../../atoms/OfferDetails";
-import AssetExchangeRates from "../../atoms/OfferExchangeRates";
-import PFIDetails from "../../atoms/OfferPFI";
-import MakePayment from "../forms/MakePayment";
-import { TbdexHttpClient, Close } from '@tbdex/http-client';
-
-const generateExchangeStatusValues = (exchangeMessage: any) => {
-    if (exchangeMessage instanceof Close) {
-        if (exchangeMessage.data.reason!.toLowerCase().includes('complete') || exchangeMessage.data.reason!.toLowerCase().includes('success')) {
-            return 'completed'
-        } else if (exchangeMessage.data.reason!.toLowerCase().includes('expired')) {
-            return exchangeMessage.data.reason!.toLowerCase()
-        } else if (exchangeMessage.data.reason!.toLowerCase().includes('cancelled')) {
-            return 'cancelled'
-        } else {
-            return 'failed'
-        }
-    }
-    return exchangeMessage.kind
-}
-
-const getRfqAndQuoteRenderDetails = (rfq: Rfq, quote: Quote) => {
-    const rfqData = rfq.data
-    const rfqPayin = rfqData.payin
-    const rfqPayout = rfqData.payout
-    const rfqMetadata = rfq.metadata
-    const rfqPrivateData = rfq.privateData
-    const rfqPrivateDataPayin = rfqPrivateData!.payin!.paymentDetails
-    const rfqPrivateDataPayout = rfqPrivateData!.payout!.paymentDetails
-
-    const rfqDetails = {
-        from: rfqMetadata.from,
-        to: rfqMetadata.to,
-        offeringId: rfqData.offeringId,
-        rfqId: rfqMetadata.exchangeId,
-        requestedAt: rfqMetadata.createdAt,
-
-        payinKind: rfqPayin.kind,
-        payinAmount: rfqPayin.amount,
-        payinData: rfqPrivateDataPayin,
-
-        payoutKind: rfqPayout.kind,
-        payoutData: rfqPrivateDataPayout,
-    }
-
-    const getQuoteRenderDetails = (quoteArg: any) => {
-        const quote = quoteArg
-
-        const quoteData = quote.data
-        const quotePayin = quoteData.payin
-        const quotePayout = quoteData.payout
-        const quoteMetadata = quote.metadata
-
-        const quotePayinFee = quotePayin.fee
-        const quotePayinAmount = quotePayin.amount
-        const amountWithFee = quotePayinFee
-            ? Number(quotePayinAmount) + Number(quotePayinFee)
-            : Number(quotePayinAmount)
-
-        const fromAmountWithFee = amountWithFee.toString() //|| rfqData!.payinAmount
-
-        return {
-            expiresAt: quoteData.expiresAt,
-
-            from: quoteMetadata.from,
-            to: quoteMetadata.to,
-            rfqId: quoteMetadata.exchangeId,
-            quotedAt: quoteMetadata.createdAt,
-
-            fromCurrency: quotePayin.currencyCode,
-            fromAmount: quotePayin.amount,
-            fromAmountWithFee,
-            fromFee: quotePayinFee,
-
-            toCurrency: quotePayout.currencyCode,
-            toAmount: quotePayout.amount,
-        }
-    }
-
-    const quoteDetails = getQuoteRenderDetails(quote)
-
-    return {
-        rfq: rfqDetails,
-        quote: quoteDetails
-    }
-}
-
-
-// Poll every 3 seconds
-const EXCHANGES_POLLING_INTERVAL_MS = 3000;
-
-const pollExchanges = (bearer: any, callback: any) => {
-    const fetchAllExchanges = async () => {
-        try {
-            // const exchanges = await fetchExchanges({
-            //     userBearerDid: contextUserBearerDid
-            // });
-            const exchangesResults = []
-
-            for (const pfi of PFIs) {
-                const exchanges = await TbdexHttpClient.getExchanges({
-                    pfiDid: pfi.did,
-                    did: bearer.did
-                });
-
-                exchangesResults.push(...exchanges)
-            }
-
-            for (const exchange of exchangesResults) {
-                const latestMessage = exchange[exchange.length - 1]
-
-                const rfq = exchange.find(entry => entry.metadata.kind === 'rfq')
-                const quote = exchange.find(entry => entry.metadata.kind === 'quote')
-
-                const status = generateExchangeStatusValues(exchange)
-
-                const { rfq: rfqRenderDetails, quote: quoteRenderDetails } = getRfqAndQuoteRenderDetails(rfq as Rfq, quote as Quote)
-
-                callback({
-                    rfq: rfqRenderDetails,
-                    quote: quoteRenderDetails
-                })
-
-
-                console.log('👽👽👽👽👽👽👽👽👽', {
-                    status,
-                    latestMessage,
-                    quoteRenderDetails,
-                    rfqRenderDetails,
-                })
-
-            }
-        } catch (error) {
-            console.error("Failed to fetch exchanges:", error);
-        }
-        // if (!userBearerDid) return;
-        // const allExchanges: any[] = [];
-    };
-
-    // Set up the interval to run the function periodically
-    setInterval(fetchAllExchanges, EXCHANGES_POLLING_INTERVAL_MS);
-};
 
 export interface AssetExchangePFIDetailsProps {
     cta: string;
@@ -171,46 +31,6 @@ export enum PaymentStage {
     MAKE_TRANSFER = 'MAKE_TRANSFER',
 }
 
-const AssetExchangePFIDetails = ({
-    cta,
-    toUnit,
-    pfiDid,
-    pfiName,
-    fromUnit,
-    toCurrencyFlag,
-    toCurrencyCode,
-    showPaymentModal,
-    fromCurrencyCode,
-    fromCurrencyFlag,
-    offeringCreatedAt,
-    offeringToCurrencyMethods,
-}: AssetExchangePFIDetailsProps) => {
-    return (
-        <Card className="w-full min-h-[200px]">
-            <PFIDetails
-                pfiDid={pfiDid}
-                pfiName={pfiName}
-                createdAt={offeringCreatedAt}
-                estimatedSettlementTime={getEstimatedSettlementTime(offeringToCurrencyMethods, true)}
-            />
-            <Flex className="mt-3 justify-between">
-                <AssetExachangeAction
-                    cta={cta}
-                    showModal={showPaymentModal}
-                />
-                <AssetExchangeRates
-                    toUnit={toUnit}
-                    fromUnit={fromUnit}
-                    toCurrencyCode={toCurrencyCode}
-                    toCurrencyFlag={toCurrencyFlag}
-                    fromCurrencyFlag={fromCurrencyFlag}
-                    fromCurrencyCode={fromCurrencyCode}
-                />
-            </Flex>
-        </Card>
-    )
-}
-
 const OfferingDetails = (props: any) => {
     const {
         isSelected,
@@ -226,9 +46,6 @@ const OfferingDetails = (props: any) => {
         unformattedOfferings,
     } = props
 
-    // console.log("Bearere DID <OfferingDetails />", userBearerDid)
-
-
     const [isLoading, setIsLoading] = useState(false)
     const [showModal, setShowModal] = useState(false)
     const [activateButton, setActivateButton] = useState(false)
@@ -241,6 +58,9 @@ const OfferingDetails = (props: any) => {
         payout: {}
     })
     const [paymentStage, setPaymentState] = useState<PaymentStage>(PaymentStage.REQUEST_QUOTE)
+
+    console.log("<OfferingDetails />:requiredPaymentDetails", requiredPaymentDetails)
+
 
     const offering = Object.values(values ? values : {})[0] as any
     const pfiDid = Object.keys(values ? values : {})[0] as any
@@ -391,7 +211,7 @@ const OfferingDetails = (props: any) => {
             setPaymentState(PaymentStage.MAKE_TRANSFER)
         }
 
-        console.log("relevantExchange:iiisndie", { relevantExchange, isRelevant })
+        console.log("relevantExchange:iiisndie", { relevantExchange, isRelevant, requiredPaymentDetails })
     }, [relevantExchange])
 
     return (

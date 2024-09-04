@@ -1,6 +1,6 @@
 import { CampaignsContextProvider } from '@/app/providers/CampaignsProvider';
-import TanstackProvider from '@/app/providers/TanstackProvider';
 import NotificationProvider from '@/app/providers/NotificationProvider';
+import TanstackProvider from '@/app/providers/TanstackProvider';
 import { TbdexContextProvider } from '@/app/providers/TbdexProvider';
 import ThemeProvider from '@/app/providers/ThemeProvider';
 import { Web5ContextProvider } from '@/app/providers/Web5Provider';

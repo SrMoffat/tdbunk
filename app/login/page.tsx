@@ -1,10 +1,9 @@
 "use client"
-import React from 'react'
 import { Logo, LogoIcon } from '@/app/components/atoms/Icon';
-import { Flex, Layout, Button, Card, theme } from 'antd';
-import Image from 'next/image';
-import Link from 'next/link'
 import LoginForm from '@/app/components/molecules/forms/Login';
+import { Button, Card, Flex, Layout, theme } from 'antd';
+import Image from 'next/image';
+import Link from 'next/link';
 
 const { Header } = Layout
 

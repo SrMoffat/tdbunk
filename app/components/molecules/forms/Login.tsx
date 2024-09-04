@@ -1,6 +1,6 @@
-import React from 'react';
 import type { FormProps } from 'antd';
 import { Button, Checkbox, Form, Input } from 'antd';
+import React from 'react';
 
 type FieldType = {
     username?: string;

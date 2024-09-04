@@ -1,7 +1,5 @@
 "use client"
 import { StartCampaign } from '@/app/components/atoms/Icon';
-import useBrowserStorage from '@/app/hooks/useLocalStorage';
-import { CREDENTIALS_LOCAL_STORAGE_KEY, LOCAL_STORAGE_KEY } from '@/app/lib/constants';
 import { Button, Card, Flex, message, Steps } from 'antd';
 import Image from 'next/image';
 
@@ -69,11 +67,6 @@ export const StepNavigation: React.FC<StepNavigationProps> = ({
     const hasMoreSteps = current < steps.length - 1
     const isLastStep = current === steps.length - 1
 
-    const [localStorageData, setLocalUser,] = useBrowserStorage<UserStorage>(
-        CREDENTIALS_LOCAL_STORAGE_KEY,
-        LOCAL_STORAGE_KEY
-    )
-
     const handleDone = () => {
         // next()
         message.success('Processing complete!')
@@ -87,12 +80,6 @@ export const StepNavigation: React.FC<StepNavigationProps> = ({
         setCurrent(current - 1);
     };
 
-    // @ts-ignore
-    const existingCreds = localStorageData?.credentials
-
-    const isNextButtonDisabled = () => {
-        return false
-    }
     return (
         <Flex className="w-[calc(100%-8rem)] justify-between">
             {isNotFirstStep ? <Button onClick={() => prev()}>Back</Button> : <Button className="opacity-0 cursor-none pointer-events-none" />}

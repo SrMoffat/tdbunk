@@ -1,13 +1,9 @@
 'use client'
 import { DebunkProps } from '@/app/components/organisms/Debunks';
+import { BearerIdentity } from '@web5/agent';
 import { type Web5 } from "@web5/api";
 import { BearerDid, DidResolutionResult } from '@web5/dids';
-import { BearerIdentity } from '@web5/agent';
-
 import { PropsWithChildren, createContext, useContext, useEffect, useState } from 'react';
-import { CredentialStorage } from '../components/molecules/forms/Credentials';
-import useBrowserStorage from '../hooks/useLocalStorage';
-import { WALLET_LOCAL_STORAGE_KEY, LOCAL_STORAGE_KEY } from '../lib/constants';
 
 export interface Web5ContextType {
     web5: Web5 | null;
@@ -27,8 +23,6 @@ export interface Web5ContextType {
 
 const Web5Context = createContext<Partial<Web5ContextType>>({})
 
-
-
 const useWeb5Context = (): Partial<Web5ContextType> => {
     const context = useContext(Web5Context)
     if (!context) {
@@ -44,8 +38,6 @@ const Web5ContextProvider = ({ children }: PropsWithChildren) => {
     const [web5Instance, setWeb5Instance] = useState<Web5 | null>(null);
     const [recoveryPhrase, setRecoveryPhrase] = useState<string | null | undefined>(null);
     const [userBearerDid, setUserBearerDid] = useState<BearerDid | BearerIdentity | null | undefined>(null);
-
-
 
     useEffect(() => {
         (async () => {
@@ -98,16 +90,6 @@ const Web5ContextProvider = ({ children }: PropsWithChildren) => {
         })()
     }, [])
 
-
-    useEffect(() => {
-        const wallet = {
-            userDid,
-            userBearerDid,
-            // recoveryPhrase
-        }
-
-        
-    }, [userDid, userBearerDid, recoveryPhrase])
 
     return <Web5Context.Provider value={{
         userDid,

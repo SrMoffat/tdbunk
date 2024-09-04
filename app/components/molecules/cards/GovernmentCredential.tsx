@@ -1,12 +1,12 @@
 import { Card5, LogoIcon2 } from "@/app/components/atoms/Icon";
+import { CredentialParsedMetadata, extractVcDocumentDetails } from "@/app/components/molecules/cards/FinancialCredential";
+import { CREDENTIAL_TYPES } from "@/app/lib/constants";
 import { parseJwtToVc } from "@/app/lib/web5";
 import { resolveDid } from "@tbdex/http-client";
 import { Flex, Typography } from "antd";
 import { formatDistanceToNow } from "date-fns";
 import Image from "next/image";
 import { useEffect, useState } from "react";
-import { CredentialParsedMetadata, extractVcDocumentDetails } from "./FinancialCredential";
-import { CREDENTIAL_TYPES } from "@/app/lib/constants";
 
 const GovernmentInstitutionCredential = (props: any) => {
     const {

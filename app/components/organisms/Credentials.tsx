@@ -1,10 +1,6 @@
 import { Card1, TBDVCLogoYellow } from "@/app/components/atoms/Icon";
 import { extractVcDocumentDetails } from "@/app/components/molecules/cards/FinancialCredential";
-import { CredentialStorage } from "@/app/components/molecules/forms/Credentials";
-import useBrowserStorage from "@/app/hooks/useLocalStorage";
-import { CREDENTIALS_LOCAL_STORAGE_KEY, LOCAL_STORAGE_KEY } from "@/app/lib/constants";
 import { parseJwtToVc } from "@/app/lib/web5";
-import { PRIMARY_GOLD_HEX } from "@/app/providers/ThemeProvider";
 import countries from '@/public/countries.json';
 import { CheckCircleFilled, CheckCircleOutlined } from "@ant-design/icons";
 import { resolveDid } from "@tbdex/http-client";

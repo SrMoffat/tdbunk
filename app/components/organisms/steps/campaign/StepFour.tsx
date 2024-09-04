@@ -24,8 +24,6 @@ const StepFour = () => {
     const [selectedCard, setSelectedCard] = useState('')
     const [offerings, setOfferings] = useState<any[]>([])
 
-    // const {getBearerDid} = useWeb5Context()
-
     const {
         credentials,
         monopolyMoney,

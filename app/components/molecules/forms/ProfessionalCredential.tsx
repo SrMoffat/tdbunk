@@ -1,8 +1,7 @@
-import { DebounceSelect } from '@/app/components/atoms';
-import { fetchUserList, FieldType, UserValue } from '@/app/lib/api';
+import { FieldType, UserValue } from '@/app/lib/api';
 import { CREDENTIAL_TYPES } from '@/app/lib/constants';
-import { Button, Form, Input, DatePicker, Flex } from 'antd';
 import type { DatePickerProps, FormProps } from 'antd';
+import { DatePicker, Flex, Form, Input } from 'antd';
 import { useState } from 'react';
 
 export interface ProfessionalCredentialFieldType {
@@ -83,23 +82,6 @@ export default function ProfessionalCredential({
                     </Form.Item>
                 </Flex>
             </Flex>
-
-
-            {/* <Form.Item<FieldType>
-              label="Country"
-              name="country"
-              rules={[{ required: true, message: 'Please input your country of residence!' }]}
-          >
-              <DebounceSelect
-                  value={value}
-                  placeholder="Select your country"
-                  fetchOptions={fetchUserList}
-                  onChange={(newValue) => {
-                      setValue(newValue as UserValue[]);
-                  }}
-                  style={{ width: '100%' }}
-              />
-          </Form.Item> */}
         </Form>
     )
 }

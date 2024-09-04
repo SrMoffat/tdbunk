@@ -1,12 +1,11 @@
-import { Flex, Segmented, Form, InputNumber, Input, Select, Typography } from "antd";
-import { useState } from "react";
 import { Community, Evidence, FactCheckers, Sponsor, Sponsorships } from "@/app/components/atoms/Icon";
-import Image from "next/image"
-import { useCreateCampaignContext } from "@/app/providers/CreateCampaignProvider";
 import { DEBUNK_CAMPAIGN_TYPE } from "@/app/lib/constants";
+import { getCurrencyFlag } from "@/app/lib/utils";
+import { useCreateCampaignContext } from "@/app/providers/CreateCampaignProvider";
 import { useTbdexContext } from "@/app/providers/TbdexProvider";
-import { getCurrencyFlag } from "../../atoms/SearchOffersInput";
-import countries from "@/public/countries.json"
+import { Flex, Form, Input, InputNumber, Segmented, Select, Typography } from "antd";
+import Image from "next/image";
+import { useState } from "react";
 
 const { Option } = Select
 

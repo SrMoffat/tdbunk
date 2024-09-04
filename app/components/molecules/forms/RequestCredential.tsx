@@ -1,4 +1,5 @@
 "use client"
+import { Card1, Card3, Card4, Card5, LogoIcon2, TBDVCLogoYellow } from '@/app/components/atoms/Icon';
 import {
     CredentialIssuerCard,
     EducationCredentialCard,
@@ -6,18 +7,16 @@ import {
     GovernmentCredentialCard,
     ProfessionalCredentialCard
 } from '@/app/components/molecules/cards';
-import { Collapse, CollapseProps, Flex, Typography, Modal, Alert, Button } from 'antd';
-import { CREDENTIAL_TYPES, CREDENTIALS_LOCAL_STORAGE_KEY, LOCAL_STORAGE_KEY } from '@/app/lib/constants';
-import { Card1, Card3, Card4, Card5, LogoIcon2, TBDVCLogoYellow } from '@/app/components/atoms/Icon';
-import FinancialInstitutionCredential, { extractVcDocumentDetails } from '../cards/FinancialCredential';
-import { useState } from 'react';
-import { parseJwtToVc, resolveDid } from "@/app/lib/web5";
-import FinancialCredentialForm from "../forms/FinancialCredential";
-import { createFinancialCredential, createRequiredCredential } from '@/app/lib/web5';
-import { getCurrencyFromCountry } from '@/app/lib/utils';
+import FinancialInstitutionCredential from '@/app/components/molecules/cards/FinancialCredential';
+import { CredentialStorage } from '@/app/components/molecules/forms/Credentials';
+import FinancialCredentialForm from "@/app/components/molecules/forms/FinancialCredential";
 import useBrowserStorage from '@/app/hooks/useLocalStorage';
-import { CredentialStorage } from './Credentials';
+import { CREDENTIAL_TYPES, CREDENTIALS_LOCAL_STORAGE_KEY, LOCAL_STORAGE_KEY } from '@/app/lib/constants';
+import { getCurrencyFromCountry } from '@/app/lib/utils';
+import { createRequiredCredential } from '@/app/lib/web5';
 import countries from '@/public/countries.json';
+import { Alert, Button, Collapse, CollapseProps, Flex, Modal, Typography } from 'antd';
+import { useState } from 'react';
 
 const RequestCredential = (props: any) => {
     const {
@@ -110,28 +109,24 @@ const RequestCredential = (props: any) => {
             key: '1',
             label: 'Financial Insitution',
             children:
-                // <FinancialCredentialCard showDrawer={showDrawer} />
                 <CredentialIssuerCard {...financialProps} />
         },
         {
             key: '2',
             label: 'Government Institution',
             children:
-                // <GovernmentCredentialCard showDrawer={showDrawer} />
                 <CredentialIssuerCard {...governmentProps} />
         },
         {
             key: '3',
             label: 'Professional Institution',
             children:
-                // <ProfessionalCredentialCard showDrawer={showDrawer} />
                 <CredentialIssuerCard {...professionalProps} />
         },
         {
             key: '4',
             label: 'Educational Institution',
             children:
-                // <EducationCredentialCard showDrawer={showDrawer} />
                 <CredentialIssuerCard {...educationalProps} />
         },
     ];
@@ -139,12 +134,11 @@ const RequestCredential = (props: any) => {
     const [formData, setFormData] = useState({})
     const [showCombinedCredentials, setCombinedCredentials] = useState(false)
 
-    const [localStorageData, setLocalCredentials] = useBrowserStorage<CredentialStorage>(
+    const [_, setLocalCredentials] = useBrowserStorage<CredentialStorage>(
         CREDENTIALS_LOCAL_STORAGE_KEY,
         LOCAL_STORAGE_KEY
     )
 
-    // const hasCredentials = true
     const hasCredentials = !noCredentialsFound
 
     const onClose = () => {

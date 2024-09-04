@@ -6,7 +6,7 @@ import { Button, Flex, theme } from 'antd';
 import { Header } from 'antd/es/layout/layout';
 import Image from 'next/image';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation'
+import { usePathname } from 'next/navigation';
 
 const LandingHeader = () => {
     const { userDid, web5, campaigns } = useWeb5Context()
@@ -44,12 +44,6 @@ const LandingHeader = () => {
         </Link>
     ))
 
-    // console.log("Web5Provider Mounted", {
-    //     web5,
-    //     campaigns,
-    //     userDid,
-    //     id: process.env.WEB5_PASSWORD
-    // })
     return (
         <Header style={{ display: 'flex', alignItems: 'center', backgroundColor: colorBgContainer }}>
             <Link href="/">

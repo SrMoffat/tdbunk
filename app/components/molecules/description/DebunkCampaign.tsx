@@ -4,11 +4,7 @@ import { Card, Descriptions, DescriptionsProps } from "antd";
 const DebunkingCampaign = () => {
     const {
         campaignName,
-        campaignAmount,
-        requiredCredentials,
         campaignDescription,
-        campaignMinEvidences,
-        campaignNumOfFactCheckers
     } = useCreateCampaignContext()
 
     const items2: DescriptionsProps['items'] = [

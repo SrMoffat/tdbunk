@@ -15,9 +15,7 @@ export interface NotificationContextProps {
 
 const NotificationContext = createContext<Partial<NotificationContextProps>>({})
 
-
 export default function NotificationProvider({ children }: PropsWithChildren) {
-
     const [api, contextHolder] = notification.useNotification();
 
     const openNotificationWithIcon = (type: NotificationType, { message, description }: NotificationDetails) => {

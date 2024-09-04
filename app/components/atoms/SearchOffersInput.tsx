@@ -1,31 +1,10 @@
-import { useTbdexContext } from "@/app/providers/TbdexProvider"
-import { RedoOutlined, RightCircleFilled, SearchOutlined } from "@ant-design/icons"
-import { Button, Flex, InputNumber, Select, Space, theme, Typography } from "antd"
-import countries from "@/public/countries.json"
+import { getCurrencyFlag } from "@/app/lib/utils"
 import { useCreateCampaignContext } from "@/app/providers/CreateCampaignProvider"
+import { useTbdexContext } from "@/app/providers/TbdexProvider"
+import { RedoOutlined, RightCircleFilled } from "@ant-design/icons"
+import { Button, Flex, InputNumber, Select, Space, theme, Typography } from "antd"
 
 const { Option } = Select
-
-export const getCurrencyFlag = (currency: string) => {
-    let flag = ''
-
-    switch (currency) {
-        case 'USD':
-            flag = '🇺🇸'
-            break
-        case 'EUR':
-            flag = '🇪🇺'
-            break
-        case 'GBP':
-            flag = '🇬🇧'
-            break
-        default:
-            flag = countries.filter(entry => entry.currencyCode === currency)[0]?.flag
-            break
-    }
-
-    return flag ?? '🏳️'
-}
 
 export const SearchOffers = (props: any) => {
     const {

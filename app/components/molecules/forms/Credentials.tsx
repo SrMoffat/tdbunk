@@ -13,7 +13,7 @@ import countries from '@/public/countries.json';
 import { useMutation } from '@tanstack/react-query';
 import type { FormProps } from 'antd';
 import { Button, Flex, Form, Input, Typography } from 'antd';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 
 export type CredentialStorage = {} | null
 

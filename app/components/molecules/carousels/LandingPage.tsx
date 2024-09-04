@@ -1,5 +1,5 @@
-import React from 'react';
 import { Carousel } from 'antd';
+import React from 'react';
 
 const bgImageClassnames = 'h-[560px] bg-contain bg-no-repeat'
 

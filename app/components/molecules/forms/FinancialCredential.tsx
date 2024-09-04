@@ -1,9 +1,8 @@
 import { DebounceSelect } from '@/app/components/atoms';
 import { fetchUserList, FieldType, UserValue } from '@/app/lib/api';
 import { CREDENTIAL_TYPES } from '@/app/lib/constants';
-import type { FormProps } from 'antd';
 import { Flex, Form, Input } from 'antd';
-import React, { useState } from 'react';
+import { useState } from 'react';
 
 export interface FinancialCredentialFieldType {
     firstName?: string;
@@ -21,15 +20,6 @@ export interface FinancialCredentialProps {
 export default function FinancialCredential({
     setFormData
 }: FinancialCredentialProps) {
-    const onFinish: FormProps<FieldType>['onFinish'] = async (values) => {
-        console.log('Values:', values);
-
-    };
-
-    const onFinishFailed: FormProps<FieldType>['onFinishFailed'] = (errorInfo) => {
-        console.log('Failed:', errorInfo);
-    };
-
     const [value, setValue] = useState<UserValue[]>([]);
 
     return (

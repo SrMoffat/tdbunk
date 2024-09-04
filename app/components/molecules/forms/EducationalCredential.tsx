@@ -1,9 +1,6 @@
-import { DebounceSelect } from '@/app/components/atoms';
-import { fetchUserList, FieldType, UserValue } from '@/app/lib/api';
 import { CREDENTIAL_TYPES } from '@/app/lib/constants';
-import { Button, Form, Input, Flex, DatePicker } from 'antd';
-import type { FormProps, DatePickerProps } from 'antd';
-import { useState } from 'react';
+import type { DatePickerProps } from 'antd';
+import { DatePicker, Flex, Form, Input } from 'antd';
 
 export interface EducationalCredentialFieldType {
     nameOfInstituion: string;
@@ -20,20 +17,10 @@ export interface EducationalCredentialProps {
 export default function EducationalCredential({
     setFormData
  }: EducationalCredentialProps) {
-    const onFinish: FormProps<FieldType>['onFinish'] = async (values) => {
-        console.log('Values:', values);
-
-    };
-
-    const onFinishFailed: FormProps<FieldType>['onFinishFailed'] = (errorInfo) => {
-        console.log('Failed:', errorInfo);
-    };
-
     const onChange: DatePickerProps['onChange'] = (date, dateString) => {
         console.log(date, dateString);
     };
 
-    const [value, setValue] = useState<UserValue[]>([]);
   return (
       <Form
           name="educationalCredential"

@@ -1,5 +1,4 @@
 "use client"
-
 import React, { createContext, PropsWithChildren, useContext, useState } from "react";
 
 export interface CampaignsContextProps {
@@ -23,10 +22,10 @@ const CampaignsContextProvider = ({
     children
 }: PropsWithChildren) => {
     const [campaigns, setCampaigns] = useState<any[]>([])
+
     return (
         <CampaignsContext.Provider value={{
             campaigns,
-
             setCampaigns
         }}>
             {children}
@@ -34,4 +33,5 @@ const CampaignsContextProvider = ({
     )
 }
 
-export { CampaignsContext, CampaignsContextProvider, useCampaignContext }
+export { CampaignsContext, CampaignsContextProvider, useCampaignContext };
+

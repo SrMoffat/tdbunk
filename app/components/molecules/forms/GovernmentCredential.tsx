@@ -1,6 +1,5 @@
-import { FieldType } from '@/app/lib/api';
 import { CREDENTIAL_TYPES } from '@/app/lib/constants';
-import type { DatePickerProps, FormProps } from 'antd';
+import type { DatePickerProps } from 'antd';
 import { DatePicker, Flex, Form, Input, Space } from 'antd';
 
 export interface GovernmentCredentialFieldType {
@@ -19,15 +18,6 @@ export interface GovernmentCredentialProps {
 export default function GovernmentCredential({
     setFormData
 }: GovernmentCredentialProps) {
-    const onFinish: FormProps<FieldType>['onFinish'] = async (values) => {
-        console.log('Values:', values);
-
-    };
-
-    const onFinishFailed: FormProps<FieldType>['onFinishFailed'] = (errorInfo) => {
-        console.log('Failed:', errorInfo);
-    };
-
     const onChange: DatePickerProps['onChange'] = (date, dateString) => {
         console.log(date, dateString);
     };

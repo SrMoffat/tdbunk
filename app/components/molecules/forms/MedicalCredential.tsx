@@ -1,7 +1,7 @@
 import { DebounceSelect } from '@/app/components/atoms';
 import { fetchUserList, FieldType, UserValue } from '@/app/lib/api';
-import { Button, Form, Input } from 'antd';
 import type { FormProps } from 'antd';
+import { Button, Form, Input } from 'antd';
 import { useState } from 'react';
 
 export default function MedicalCredential() {

@@ -69,9 +69,6 @@ const OfferingDetails = (props: any) => {
     const { notify } = useNotificationContext()
     const [paymentStage, setPaymentState] = useState<PaymentStage>(PaymentStage.REQUEST_QUOTE)
 
-    console.log("<OfferingDetails />:requiredPaymentDetails", requiredPaymentDetails)
-
-
     const offering = Object.values(values ? values : {})[0] as any
     const pfiDid = Object.keys(values ? values : {})[0] as any
 
@@ -237,7 +234,28 @@ const OfferingDetails = (props: any) => {
 
     useEffect(() => {
         const intervalId = pollExchanges(userBearerDid, setRelevantExchanges)
-        console.log("Returned interval ID", intervalId)
+        const storedIntervals = localStorage.getItem('TDBunk:Intervals')
+        
+        if (storedIntervals){
+            // localStorage.setItem('TDBunk:Intervals', JSON.stringify([...JSON.parse(storedIntervals)].push(intervalId)))
+            // console.log("Add interval ID to storedIntervals", [...JSON.parse(storedIntervals)].push(intervalId))
+            const existingIntervals = JSON.parse(storedIntervals)
+            const newIntervals = [...existingIntervals, intervalId]
+            localStorage.setItem('TDBunk:Intervals', JSON.stringify(newIntervals))
+
+            console.log("Some intervals so add interval ID", {
+                storedIntervals,
+                existingIntervals,
+                intervalId,
+                newIntervals
+            })
+            
+        } else {
+            localStorage.setItem('TDBunk:Intervals', JSON.stringify([intervalId]))
+            console.log("No intervals so create and add interval ID", {
+                setStoredIntervals: [intervalId]
+            })
+        }
     }, [])
 
     useEffect(() => {

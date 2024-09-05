@@ -48,6 +48,8 @@ const OfferCard = ({
     issuerVcSchema,
     offeringToCurrencyMethods
 }: OfferCardProps) => {
+    const noRequiredClaims = !issuerVcSchema && !issuerDid
+
     return (
         <Card className={`w-[470px] min-h-[200px] ${isRecommended ? 'opacity-100' : 'opacity-40'}`}>
             <Flex className="w-full gap-2">
@@ -58,31 +60,45 @@ const OfferCard = ({
                     {offeringId}
                 </Tag>
             </Flex>
-
             <Flex className="gap-1">
                 <Flex className="mt-4 border-[0.3px] border-gray-800 rounded-md p-3 w-[250px] justify-between items-center">
-                    <Flex className="flex-col gap-2">
-                        <Typography.Text className="text-xs" style={{ fontSize: 11 }}>
-                            Required Credential and Issuer:
-                        </Typography.Text>
-                        <Flex>
-                            <Tag className="items-center text-xs" color={isSelected ? 'green' : 'default'}>
-                                <Link href={issuerVcSchema ? issuerVcSchema : 'http://localhost:3000'} target="_blank" style={{ color: isSelected ? 'green' : 'default' }}>
-                                    View Credential Structure
-                                </Link>
-                            </Tag>
-                        </Flex>
-                        <Flex>
-                            <Tag>
-                                <Typography.Text copyable>
-                                    {`${issuerDid?.slice(0, 14)}...${issuerDid?.slice(-6)}`}
-                                </Typography.Text>
-                            </Tag>
-                        </Flex>
-                    </Flex>
-                    <Flex className="items-center">
-                        {isSelected && <CheckCircleFilled style={{ color: "#6abe39" }} />}
-                    </Flex>
+                    {!noRequiredClaims
+                        ? (
+                            <>
+                                <Flex className="flex-col gap-2">
+                                    <Typography.Text className="text-xs" style={{ fontSize: 11, color: isSelected ? '#6abe39': 'inherit' }}>
+                                        Required Credential and Issuer:
+                                    </Typography.Text>
+                                    <Flex>
+                                        <Tag className="items-center text-xs" color={isSelected ? 'green' : 'default'}>
+                                            <Link href={issuerVcSchema ? issuerVcSchema : 'http://localhost:3000'} target="_blank" style={{ color: isSelected ? 'green' : 'default' }}>
+                                                View Credential Structure
+                                            </Link>
+                                        </Tag>
+                                    </Flex>
+                                    <Flex>
+                                        <Tag>
+                                            <Typography.Text copyable>
+                                                {`${issuerDid?.slice(0, 14)}...${issuerDid?.slice(-6)}`}
+                                            </Typography.Text>
+                                        </Tag>
+                                    </Flex>
+                                </Flex>
+                                <Flex className="items-center">
+                                    {isSelected && <CheckCircleFilled style={{ color: "#6abe39" }} />}
+                                </Flex>
+                            </>
+                        )
+                        : (
+                            <Flex>
+                                <Tag color={isSelected ? 'green' : 'default'}>
+                                    <Typography.Text>
+                                        No Required Credentials
+                                    </Typography.Text>
+                                </Tag>
+                            </Flex>
+                        )
+                    }
                 </Flex>
                 <Flex className="mt-4 border-[0.3px] border-gray-800 rounded-md p-3 w-[250px] justify-between flex-col">
                     <Typography.Text className="text-xs" style={{ fontSize: 11 }}>

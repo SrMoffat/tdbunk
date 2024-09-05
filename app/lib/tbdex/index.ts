@@ -247,7 +247,7 @@ export const pollExchanges = (bearer: any, callback: any) => {
                 const rfq = exchange.find(entry => entry.metadata.kind === 'rfq')
                 const quote = exchange.find(entry => entry.metadata.kind === 'quote')
 
-                console.log("Exchange", exchange)
+                console.log("Polling exchanges", exchange)
 
                 const status = generateExchangeStatusValues(exchange)
 

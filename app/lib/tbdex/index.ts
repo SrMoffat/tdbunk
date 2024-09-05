@@ -1,6 +1,6 @@
-import { Rfq, TbdexHttpClient, Close, Quote, Order } from '@tbdex/http-client';
+import { Rfq, TbdexHttpClient, Close, Quote, Order, OrderStatus } from '@tbdex/http-client';
 import { BearerDid } from '@web5/dids';
-import { PFIs } from "@/app/lib/constants";
+import { PFIs, TBDEX_MESSAGE_TYPES, TBDEX_MESSAGE_TYPES_TO_STATUS } from "@/app/lib/constants";
 
 // Poll every 3 seconds
 const EXCHANGES_POLLING_INTERVAL_MS = 3000;
@@ -139,19 +139,129 @@ export const fetchExchanges = async ({ pfiDidUri, userBearerDid }: { pfiDidUri: 
     return exchanges
 };
 
+export const isMessageRfq = (message: any) => {
+    const isRfq = message.metadata.kind === TBDEX_MESSAGE_TYPES.RFQ
+    const isRfqInstance = message instanceof Rfq
+    return isRfq || isRfqInstance
+}
+
+export const isMessageQuote = (message: any) => {
+    const isQuote = message.metadata.kind === TBDEX_MESSAGE_TYPES.QUOTE
+    const isQuoteInstance = message instanceof Quote
+    return isQuote || isQuoteInstance
+}
+
+export const isMessageOrder = (message: any) => {
+    const isOrder = message.metadata.kind === TBDEX_MESSAGE_TYPES.ORDER
+    const isOrderInstance = message instanceof Order
+    return isOrder || isOrderInstance
+}
+
+export const isMessageOrderStatus = (message: any) => {
+    const isOrderStatus = message.metadata.kind === TBDEX_MESSAGE_TYPES.ORDER_STATUS
+    const isOrderStatusInstance = message instanceof OrderStatus
+    return isOrderStatus || isOrderStatusInstance
+}
+
+export const isMessageClose = (message: any) => {
+    const isClose = message.metadata.kind === TBDEX_MESSAGE_TYPES.CLOSE
+    const isCloseInstance = message instanceof Close
+    return isClose || isCloseInstance
+}
+
+export const getRfqMessage = (exchangeMessage: any) => {
+    return exchangeMessage.find((entry: any) => isMessageRfq(entry))
+}
+
+export const getQuoteMessage = (exchangeMessage: any) => {
+    return exchangeMessage.find((entry: any) => isMessageQuote(entry))
+}
+
+export const getOrderMessage = (exchangeMessage: any) => {
+    return exchangeMessage.find((entry: any) => isMessageOrder(entry))
+}
+
+export const getOrderStatusMessage = (exchangeMessage: any) => {
+    return exchangeMessage.find((entry: any) => isMessageOrderStatus(entry))
+}
+
+export const getCloseMessage = (exchangeMessage: any) => {
+    return exchangeMessage.find((entry: any) => isMessageClose(entry))
+}
+
 export const generateExchangeStatusValues = (exchangeMessage: any) => {
-    if (exchangeMessage instanceof Close) {
-        if (exchangeMessage.data.reason!.toLowerCase().includes('complete') || exchangeMessage.data.reason!.toLowerCase().includes('success')) {
-            return 'completed'
-        } else if (exchangeMessage.data.reason!.toLowerCase().includes('expired')) {
-            return exchangeMessage.data.reason!.toLowerCase()
-        } else if (exchangeMessage.data.reason!.toLowerCase().includes('cancelled')) {
-            return 'cancelled'
-        } else {
-            return 'failed'
+    let status = ''
+
+    const rfq = isMessageRfq(exchangeMessage)
+    const quote = isMessageQuote(exchangeMessage)
+    const order = isMessageOrder(exchangeMessage)
+    const orderStatus = isMessageOrderStatus(exchangeMessage)
+    const close = isMessageClose(exchangeMessage)
+
+    const RFQ_STATUS_NAME = TBDEX_MESSAGE_TYPES_TO_STATUS.RFQ
+    const QUOTE_STATUS_NAME = TBDEX_MESSAGE_TYPES_TO_STATUS.QUOTE
+    const ORDER_STATUS_NAME = TBDEX_MESSAGE_TYPES_TO_STATUS.ORDER
+    const ORDER_STATUS_STATUS_NAME = TBDEX_MESSAGE_TYPES_TO_STATUS.ORDER_STATUS
+    const CLOSE_STATUS_NAME = TBDEX_MESSAGE_TYPES_TO_STATUS.CLOSE
+
+    switch (true) {
+        case rfq: {
+            // const rfqData = exchangeMessage?.data
+            // const rfqAmount = rfqData?.payin?.amount
+            status = RFQ_STATUS_NAME
+            console.log("RFQ_STATUS_NAME", {
+                rfq,
+            })
+            break
+        }
+        case quote: {
+            // const quoteData = exchangeMessage?.data
+            // const quoteExpiration = quoteData?.expiresAt
+            status = QUOTE_STATUS_NAME
+            console.log("QUOTE_STATUS_NAME", {
+                quote,
+            })
+
+            break
+        }
+        case order: {
+            status = ORDER_STATUS_NAME
+            console.log("ORDER_STATUS_NAME", {
+                order,
+            })
+
+            // const orderData = exchangeMessage?.data
+            break
+        }
+        case orderStatus: {
+            status = ORDER_STATUS_STATUS_NAME
+            console.log("ORDER_STATUS_STATUS_NAME", {
+                orderStatus,
+            })
+
+            // const orderStatusData = exchangeMessage?.data
+            break
+        }
+        case close: {
+            status = CLOSE_STATUS_NAME
+            console.log("CLOSE_STATUS_NAME", {
+                close,
+            })
+
+            // const closeData = exchangeMessage?.data
+            // const closeReason = closeData?.reason
+            break
+        }
+        default: {
+            break
         }
     }
-    return exchangeMessage.kind
+
+    console.log("Check Message Status", {
+        status
+    })
+
+    return status
 }
 
 export const getRfqAndQuoteRenderDetails = (rfq: Rfq, quote: Quote) => {
@@ -239,28 +349,15 @@ export const pollExchanges = (bearer: any, callback: any) => {
                 exchangesResults.push(...exchanges)
             }
 
-            const exchangesRenderResults = []
-
             for (const exchange of exchangesResults) {
-                const latestMessage = exchange[exchange.length - 1]
-
-                const rfq = exchange.find(entry => entry.metadata.kind === 'rfq')
-                const quote = exchange.find(entry => entry.metadata.kind === 'quote')
-
-                console.log("Polling exchanges", exchange)
-
-                const status = generateExchangeStatusValues(exchange)
-
-                const { rfq: rfqRenderDetails, quote: quoteRenderDetails } = getRfqAndQuoteRenderDetails(rfq as Rfq, quote as Quote)
-
-                exchangesRenderResults.push({
+                const mostRecentMessage = exchange[exchange.length - 1]
+                const status = generateExchangeStatusValues(mostRecentMessage)
+                callback({
                     status,
-                    rfq: rfqRenderDetails,
-                    quote: quoteRenderDetails
+                    mostRecentMessage,
                 })
             }
 
-            callback(exchangesRenderResults)
         } catch (error) {
             console.error("Failed to fetch exchanges:", error);
         }

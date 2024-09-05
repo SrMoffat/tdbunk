@@ -3,7 +3,7 @@ import AssetExchangePFIDetails from "@/app/components/molecules/cards/OfferingPF
 import CredentialsForm from '@/app/components/molecules/forms/Credentials';
 import MakePayment from "@/app/components/molecules/forms/MakePayment";
 import { Credentials } from "@/app/components/organisms/Credentials";
-import { INTERVALS_LOCAL_STORAGE_KEY, PFIs } from "@/app/lib/constants";
+import { INTERVALS_LOCAL_STORAGE_KEY, PFIs, TBDEX_MESSAGE_TYPES_TO_STATUS } from "@/app/lib/constants";
 import { pollExchanges, sendCloseMessage, sendOrderMessage } from "@/app/lib/tbdex";
 import { getCurrencyFlag } from "@/app/lib/utils";
 import { useNotificationContext } from "@/app/providers/NotificationProvider";
@@ -58,14 +58,16 @@ const OfferingDetails = (props: any) => {
 
     const [isLoading, setIsLoading] = useState(false)
     const [showModal, setShowModal] = useState(false)
+    const [isCancelled, setIsCancelled] = useState(false)
+    const [isCancelling, setIsCancelling] = useState(false)
     const [activateButton, setActivateButton] = useState(false)
-    const [relevantExchange, setRelevantExchanges] = useState<{ rfq: any; quote: any }[]>([])
+    const [relevantExchange, setRelevantExchanges] = useState<any>()
     const [requiredPaymentDetails, setRequiredPaymentDetails] = useState<any>({
         payin: {},
         payout: {}
     })
     const { notify } = useNotificationContext()
-    const [paymentStage, setPaymentState] = useState<PaymentStage>(PaymentStage.REQUEST_QUOTE)
+    const [paymentStage, setPaymentStage] = useState<PaymentStage>(PaymentStage.REQUEST_QUOTE)
 
     const offering = Object.values(values ? values : {})[0] as any
     const pfiDid = Object.keys(values ? values : {})[0] as any
@@ -91,6 +93,15 @@ const OfferingDetails = (props: any) => {
 
     const isRequestQuote = paymentStage === PaymentStage.REQUEST_QUOTE
 
+    const clearAllPollingTimers = () => {
+        const storedIntervals = localStorage.getItem(INTERVALS_LOCAL_STORAGE_KEY)
+        if (storedIntervals) {
+            const existingIntervals = JSON.parse(storedIntervals)
+            const newIntervals = [...existingIntervals]
+            clearAllIntervals(newIntervals)
+        }
+    }
+
     const showPaymentModal = () => {
         const isReadyForQuote = hasRequiredCredentials && isSelected
 
@@ -102,6 +113,8 @@ const OfferingDetails = (props: any) => {
     }
 
     const handleOk = async () => {
+        if (isCancelled) return
+
         setIsLoading(true)
         if (isRequestQuote) {
             // Here ==>
@@ -122,47 +135,49 @@ const OfferingDetails = (props: any) => {
             })
         } else {
             // To Do: Check if the offering allows cancellations also aler user after they request quote
+            const orderMessage = await sendOrderMessage({
+                pfiDid,
+                userBearerDid,
+                exchangeId: relevantExchange?.mostRecentMessage?.metadata?.exchangeId,
+            })
 
-            // const orderMessage = await sendOrderMessage({
-            //     pfiDid,
-            //     userBearerDid,
-            //     exchangeId: relevantExchange?.rfq?.rfqId,
-            // })
+            if (orderMessage) {
+                console.log("Close modal and toast success txn complete", orderMessage)
+                // setShowModal(false);
 
-            // console.log("Order Message returned", orderMessage)
-            // setShowModal(false);
+                // To Do: Reset form and all relevant state
+                notify?.('success', {
+                    message: 'Transaction Complete!',
+                    description: 'Your transaction has been completed succesfully!'
+                })
+            }
+
+            // clearAllPollingTimers()
         }
     };
 
     const handleCancel = async () => {
-        const TBDEX_CANCEL_REASON = 'User cancelled transaction.'
-
-        if (isRequestQuote) {
+        if (isRequestQuote || isCancelled) {
             setShowModal(false);
         } else {
+            setIsCancelling(true)
+            const TBDEX_CANCEL_REASON = 'User cancelled transaction.'
+
             // To Do: Check if the offering allows cancellations also aler user after they request quote
-            // const closeMessage = await sendCloseMessage({
-            //     pfiDid,
-            //     userBearerDid,
-            //     reason: TBDEX_CANCEL_REASON,
-            //     exchangeId: relevantExchange?.rfq?.rfqId,
-            // })
+            const closeMessage = await sendCloseMessage({
+                pfiDid,
+                userBearerDid,
+                reason: TBDEX_CANCEL_REASON,
+                exchangeId: relevantExchange?.mostRecentMessage?.metadata?.exchangeId,
+            })
 
-            // console.log("Cancel Message returned", closeMessage)
+            if (closeMessage) {
+                console.log("Cancel Message returned", closeMessage)
+                // To Do: Reset form and all relevant state
 
-            // if (closeMessage) {
-            //     notify?.('error', {
-            //         message: 'Transaction Cancelled!',
-            //         description: 'Your transaction has been cancelled!'
-            //     })
-            // }
+            }
 
-            // const storedIntervals = localStorage.getItem(INTERVALS_LOCAL_STORAGE_KEY)
-            // if (storedIntervals) {
-            //     const existingIntervals = JSON.parse(storedIntervals)
-            //     const newIntervals = [...existingIntervals]
-            //     clearAllIntervals(newIntervals)
-            // }
+            clearAllPollingTimers()
         }
     };
 
@@ -183,13 +198,13 @@ const OfferingDetails = (props: any) => {
             ? <MakePayment
                 pfiDid={pfiDid}
                 pfiName={pfiName}
-                isLoading={isLoading}
                 offering={rawOffering}
                 userBearerDid={userBearerDid}
                 isRequestQuote={isRequestQuote}
                 campaignAmount={campaignAmount}
                 createExchange={createExchange}
                 relevantExchange={relevantExchange}
+                isLoading={isLoading || isCancelling}
                 setActivateButton={setActivateButton}
                 offeringCreatedAt={offeringCreatedAt}
                 requiredPaymentDetails={requiredPaymentDetails}
@@ -210,14 +225,14 @@ const OfferingDetails = (props: any) => {
             stateCredentials={undefined}
             setNextButtonDisabled={function (value: SetStateAction<boolean>): void {
                 throw new Error("Function not implemented.");
-            } }
+            }}
             setUserDid={undefined}
             setWeb5Instance={undefined}
             setCredentials={undefined}
             setRecoveryPhrase={undefined}
             setUserBearerDid={undefined} setIsCreatingCredential={function (value: SetStateAction<boolean>): void {
                 throw new Error("Function not implemented.");
-            } } isCreatingCredential={false} />
+            }} isCreatingCredential={false} />
 
     const issuerDid = offeringRequiredClaims?.['vc.issuer'] || offeringRequiredClaims?.['issuer']
     const issuerVcSchema = offeringRequiredClaims?.['vc.credentialSchema.id'] || offeringRequiredClaims?.['credentialSchem[*].id']
@@ -229,7 +244,7 @@ const OfferingDetails = (props: any) => {
 
     const cancelText = isRequestQuote
         ? 'Cancel'
-        : 'Cancel Transfer'
+        : `${isCancelled ? 'Close' : 'Cancel Transfer'}`
 
     const submitText = isRequestQuote
         ? 'Request for Quote'
@@ -238,8 +253,8 @@ const OfferingDetails = (props: any) => {
     useEffect(() => {
         const intervalId = pollExchanges(userBearerDid, setRelevantExchanges)
         const storedIntervals = localStorage.getItem(INTERVALS_LOCAL_STORAGE_KEY)
-        
-        if (storedIntervals){
+
+        if (storedIntervals) {
             const existingIntervals = JSON.parse(storedIntervals)
             const newIntervals = [...existingIntervals, intervalId]
             localStorage.setItem(INTERVALS_LOCAL_STORAGE_KEY, JSON.stringify(newIntervals))
@@ -249,17 +264,34 @@ const OfferingDetails = (props: any) => {
     }, [])
 
     useEffect(() => {
-        const returnOfferingExchanges = (exchanges: any[], offeringId: string) => {
-            return exchanges.filter(({ rfq, quote }: any) => rfq?.offeringId === offeringId || quote?.rfqId === offeringId)
+        if (relevantExchange) {
+            const paymentState = paymentStage === PaymentStage.MAKE_TRANSFER
+            const receivedQuote = relevantExchange.status === TBDEX_MESSAGE_TYPES_TO_STATUS.QUOTE
+            const cancelledTransfer = relevantExchange.status === TBDEX_MESSAGE_TYPES_TO_STATUS.CLOSE
+
+            if (receivedQuote && !paymentState) {
+                setPaymentStage(PaymentStage.MAKE_TRANSFER)
+                setIsLoading(false)
+            }
+
+            if (cancelledTransfer && paymentState) {
+                setIsCancelling(false)
+                setActivateButton(false)
+                setIsCancelled(true)
+            }
         }
 
-        const results = returnOfferingExchanges(relevantExchange, offeringId)
-
-        if (results?.length) {
-            setIsLoading(false)
-            setPaymentState(PaymentStage.MAKE_TRANSFER)
-        }
+        console.log("received message", relevantExchange)
     }, [relevantExchange])
+
+    useEffect(() => {
+        if (isCancelled) {
+            notify?.('error', {
+                message: 'Transaction Cancelled!',
+                description: 'Your transaction has been cancelled!'
+            })
+        }
+    }, [isCancelled])
 
     const isButtonDisabled = !activateButton
 
@@ -270,10 +302,10 @@ const OfferingDetails = (props: any) => {
                 open={showModal}
                 title={modalTitle}
                 footer={isPaymentStep ? [
-                    <Button danger key="back" onClick={handleCancel}>
+                    <Button danger key="back" onClick={handleCancel} loading={isCancelling}>
                         {cancelText}
                     </Button>,
-                    <Button loading={isLoading} key="submit" type="primary" onClick={handleOk} disabled={isButtonDisabled}>
+                    <Button loading={isLoading} key="submit" type="primary" onClick={handleOk} disabled={isButtonDisabled || isCancelling}>
                         {submitText}
                     </Button>
                 ] : []}

@@ -1,12 +1,15 @@
+import { DestinationCurrency, SourceCurrency } from "@/app/components/atoms/MarketRate";
 import PFIDetails from "@/app/components/atoms/OfferPFI";
 import MakeTransfer from "@/app/components/molecules/forms//MakeTransfer";
 import RequestForQuote from "@/app/components/molecules/forms/RequestForQuote";
-import { arraysEqual, getEstimatedSettlementTime } from "@/app/lib/utils";
-import { ClockCircleFilled } from "@ant-design/icons";
-import { Card, Flex, Steps, Tag, Typography } from "antd";
+import { TBDEX_MESSAGE_TYPES_TO_STATUS } from "@/app/lib/constants";
+import { arraysEqual, getEstimatedSettlementTime, msToDays } from "@/app/lib/utils";
+import { ClockCircleFilled, CloseCircleFilled } from "@ant-design/icons";
+import { Card, Flex, Statistic, Steps, Tag, Typography } from "antd";
 import { formatDistanceToNow } from "date-fns";
-import { useEffect, useState } from "react";
-import { DestinationCurrency, SourceCurrency } from "../../atoms/MarketRate";
+import { useEffect, useState, } from "react";
+
+const { Countdown } = Statistic
 
 const MakePayment = (props: any) => {
     const {
@@ -39,6 +42,9 @@ const MakePayment = (props: any) => {
 
 
     const offeringData = offering?.data
+    const offeringMetadata = offering?.metadata
+
+    const offeringId = offeringMetadata?.id
 
     const payin = offeringData?.payin
     const payout = offeringData?.payout
@@ -48,13 +54,20 @@ const MakePayment = (props: any) => {
 
     const exchangeRate = offeringData?.payoutUnitsPerPayinUnit
 
-    const quoteExpiration = relevantExchange?.quote?.expiresAt
+    const isQuote = relevantExchange?.status === TBDEX_MESSAGE_TYPES_TO_STATUS.QUOTE
+    const isClose = relevantExchange?.status === TBDEX_MESSAGE_TYPES_TO_STATUS.CLOSE
 
+    const quoteExpiration = relevantExchange?.mostRecentMessage?.data?.expiresAt;
+    const transferCancellation = relevantExchange?.mostRecentMessage?.metadata?.createdAt;
 
+    const deadline = new Date(quoteExpiration).valueOf()
 
-    const deadline = new Date(relevantExchange?.quote?.expiresAt).valueOf()
+    const numberOfDays = msToDays(deadline)
 
-    console.log('quoteExpiration!', {
+    const isLessThanOrADay = numberOfDays <= 1
+
+    console.log('Exchange Details Here!', {
+        isLessThanOrADay,
         relevantExchange,
         quoteExpiration,
         quoteExpirationMs: deadline
@@ -174,36 +187,61 @@ const MakePayment = (props: any) => {
                             />
                         </Card>
                     </Flex>
-                    <Flex className="w-1/2 justify-end items-start">
-                        <Tag color={quoteExpired ? 'red' : 'default'}>
-                            <Flex className="gap-3">
-                                <ClockCircleFilled />
-                                <Flex className="flex-col">
-                                    <Typography.Text style={{ fontSize: 11 }}>
-                                        {quoteExpired ? 'Quote Expired:' : "Quote Expires:"}
-                                    </Typography.Text>
-                                    <Typography.Text style={{ fontSize: 11 }}>
-                                        {/* {formatDistanceToNow(new Date(relevantExchange?.quote?.expiresAt), { addSuffix: true })} */}
-                                    </Typography.Text>
-                                </Flex>
-                                {/* <Countdown
-                                    valueStyle={{
-                                        fontSize: 11,
-                                        marginTop: -6
-                                    }}
-                                    title={
+                    {isClose && (
+                        <Flex className="w-1/2 justify-end items-start">
+                            <Tag color="red">
+                                <Flex className="gap-3">
+                                    <CloseCircleFilled />
+                                    <Flex className="flex-col">
                                         <Typography.Text style={{ fontSize: 11 }}>
-                                            {quoteExpired ? 'Quote Expired' : "Quote Expires In"}
-                                            {formatDistanceToNow(new Date(relevantExchange?.quote?.expiresAt), { addSuffix: true })}
+                                            Transfer Cancelled
                                         </Typography.Text>
+                                        <Typography.Text style={{ fontSize: 11 }}>
+                                            {formatDistanceToNow(new Date(transferCancellation), { addSuffix: true })}
+                                        </Typography.Text>
+                                    </Flex>
+                                </Flex>
+                            </Tag>
+                        </Flex>
+                    )}
+                    {isQuote && (
+                        <Flex className="w-1/2 justify-end items-start">
+                            <Tag color={quoteExpired ? 'red' : 'default'}>
+                                <Flex className="gap-3">
+                                    <ClockCircleFilled />
+                                    {
+                                        isLessThanOrADay
+                                            ? (
+                                                <Countdown
+                                                    valueStyle={{
+                                                        fontSize: 11,
+                                                        marginTop: -6
+                                                    }}
+                                                    title={
+                                                        <Typography.Text style={{ fontSize: 11 }}>
+                                                            {quoteExpired ? 'Quote Expired:' : "Quote Expires:"}
+                                                            {formatDistanceToNow(new Date(quoteExpiration), { addSuffix: true })}
+                                                        </Typography.Text>
+                                                    }
+                                                    value={deadline}
+                                                    onFinish={onQuoteExpired}
+                                                />
+                                            )
+                                            : (
+                                                <Flex className="flex-col">
+                                                    <Typography.Text style={{ fontSize: 11 }}>
+                                                        {quoteExpired ? 'Quote Expired:' : "Quote Expires:"}
+                                                    </Typography.Text>
+                                                    <Typography.Text style={{ fontSize: 11 }}>
+                                                        {formatDistanceToNow(new Date(quoteExpiration), { addSuffix: true })}
+                                                    </Typography.Text>
+                                                </Flex>
+                                            )
                                     }
-                                    value={deadline}
-                                    format="YY:MM:DD"
-                                    onFinish={onQuoteExpired}
-                                /> */}
-                            </Flex>
-                        </Tag>
-                    </Flex>
+                                </Flex>
+                            </Tag>
+                        </Flex>
+                    )}
                 </Flex>
             )}
             {

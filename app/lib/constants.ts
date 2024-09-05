@@ -78,20 +78,21 @@ export const PFIs = [
     }
 ]
 
-export enum TBDEX_MESSAGE_TYPES {
-    REQUESTED_QUOTE = 'rfq',
-    RECEIVED_QUOTE = 'quote',
-    QUOTE_EXPIRED = 'expired',
-
-    TRANSFER_PENDING = 'orderstatus',
-    TRANSFER_PROCESSING = 'order',
-    TRANSFER_COMPLETED = 'completed',
-    TRANSFER_CANCELLED = 'cancelled',
-    TRANSFER_FAILED = 'failed',
-
+export enum TBDEX_MESSAGE_TYPES_TO_STATUS {
+    RFQ = 'Quote Requested',
+    QUOTE = 'Quote Received',
+    ORDER = 'Transfer Started',
+    ORDER_STATUS = 'Transfer Processing',
+    CLOSE = 'Transfer Cancelled',
 }
 
-// const status = generateExchangeStatusValues(exchange)
+export enum TBDEX_MESSAGE_TYPES {
+    RFQ = 'rfq',
+    QUOTE = 'quote',
+    ORDER = 'order',
+    ORDER_STATUS = 'orderstatus',
+    CLOSE = 'close',
+}
 
 export const LOCAL_STORAGE_KEY = 'local'
 export const SESSION_STORAGE_KEY = 'session'

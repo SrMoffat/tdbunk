@@ -221,3 +221,7 @@ export const getCurrencyFlag = (currency: string) => {
     return flag ?? '🏳️'
 }
 
+export function msToDays(ms: number) {
+    return ms / (1000 * 60 * 60 * 24);
+}
+

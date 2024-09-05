@@ -3,7 +3,7 @@ import AssetExchangePFIDetails from "@/app/components/molecules/cards/OfferingPF
 import CredentialsForm from '@/app/components/molecules/forms/Credentials';
 import MakePayment from "@/app/components/molecules/forms/MakePayment";
 import { Credentials } from "@/app/components/organisms/Credentials";
-import { PFIs } from "@/app/lib/constants";
+import { INTERVALS_LOCAL_STORAGE_KEY, PFIs } from "@/app/lib/constants";
 import { pollExchanges, sendCloseMessage, sendOrderMessage } from "@/app/lib/tbdex";
 import { getCurrencyFlag } from "@/app/lib/utils";
 import { useNotificationContext } from "@/app/providers/NotificationProvider";
@@ -32,11 +32,12 @@ export enum PaymentStage {
     MAKE_TRANSFER = 'MAKE_TRANSFER',
 }
 
-
-
-function clearAllIntervals() {
-    for (var i = 1; i < 99999; i++)
-        window && window.clearInterval(i);
+function clearAllIntervals(intervalIds: string[]) {
+    for (const interval of intervalIds) {
+        console.log("Clearing interval with ID:", interval)
+        window && window.clearInterval(interval);
+    }
+    localStorage && localStorage.removeItem(INTERVALS_LOCAL_STORAGE_KEY)
 }
 
 
@@ -158,8 +159,13 @@ const OfferingDetails = (props: any) => {
                     description: 'Your transaction has been cancelled!'
                 })
             }
-            // setPaymentState(PaymentStage.REQUEST_QUOTE)
-            clearAllIntervals()
+
+            const storedIntervals = localStorage.getItem(INTERVALS_LOCAL_STORAGE_KEY)
+            if (storedIntervals) {
+                const existingIntervals = JSON.parse(storedIntervals)
+                const newIntervals = [...existingIntervals]
+                clearAllIntervals(newIntervals)
+            }
         }
     };
 
@@ -234,27 +240,14 @@ const OfferingDetails = (props: any) => {
 
     useEffect(() => {
         const intervalId = pollExchanges(userBearerDid, setRelevantExchanges)
-        const storedIntervals = localStorage.getItem('TDBunk:Intervals')
+        const storedIntervals = localStorage.getItem(INTERVALS_LOCAL_STORAGE_KEY)
         
         if (storedIntervals){
-            // localStorage.setItem('TDBunk:Intervals', JSON.stringify([...JSON.parse(storedIntervals)].push(intervalId)))
-            // console.log("Add interval ID to storedIntervals", [...JSON.parse(storedIntervals)].push(intervalId))
             const existingIntervals = JSON.parse(storedIntervals)
             const newIntervals = [...existingIntervals, intervalId]
-            localStorage.setItem('TDBunk:Intervals', JSON.stringify(newIntervals))
-
-            console.log("Some intervals so add interval ID", {
-                storedIntervals,
-                existingIntervals,
-                intervalId,
-                newIntervals
-            })
-            
+            localStorage.setItem(INTERVALS_LOCAL_STORAGE_KEY, JSON.stringify(newIntervals))
         } else {
-            localStorage.setItem('TDBunk:Intervals', JSON.stringify([intervalId]))
-            console.log("No intervals so create and add interval ID", {
-                setStoredIntervals: [intervalId]
-            })
+            localStorage.setItem(INTERVALS_LOCAL_STORAGE_KEY, JSON.stringify([intervalId]))
         }
     }, [])
 

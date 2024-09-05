@@ -94,7 +94,9 @@ export enum TBDEX_MESSAGE_TYPES {
 // const status = generateExchangeStatusValues(exchange)
 
 export const LOCAL_STORAGE_KEY = 'local'
+export const SESSION_STORAGE_KEY = 'session'
 export const WALLET_LOCAL_STORAGE_KEY = 'TDBunk:Wallet'
+export const INTERVALS_LOCAL_STORAGE_KEY = 'TDBunk:Intervals'
 export const OFFERINGS_LOCAL_STORAGE_KEY = 'TDBunk:Offerings'
 export const CREDENTIALS_LOCAL_STORAGE_KEY = 'TDBunk:Credentials'
 export const OFFERINGS_LAST_UPDATED = 'TDBunk:OfferingsLastUpdatedAt'

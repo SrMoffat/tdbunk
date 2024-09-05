@@ -77,7 +77,7 @@ const OfferCard = ({
                                         </Tag>
                                     </Flex>
                                     <Flex>
-                                        <Tag>
+                                        <Tag color={isSelected ? 'green' : 'default'}>
                                             <Typography.Text copyable>
                                                 {`${issuerDid?.slice(0, 14)}...${issuerDid?.slice(-6)}`}
                                             </Typography.Text>

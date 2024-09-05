@@ -7,8 +7,8 @@ import { INTERVALS_LOCAL_STORAGE_KEY, PFIs } from "@/app/lib/constants";
 import { pollExchanges, sendCloseMessage, sendOrderMessage } from "@/app/lib/tbdex";
 import { getCurrencyFlag } from "@/app/lib/utils";
 import { useNotificationContext } from "@/app/providers/NotificationProvider";
-import { Offering, Close, TbdexHttpClient } from "@tbdex/http-client";
-import { Button, List, Modal, Spin } from "antd";
+import { Offering } from "@tbdex/http-client";
+import { Button, List, Modal } from "antd";
 import { formatDistanceToNow } from 'date-fns';
 import { SetStateAction, useEffect, useState } from "react";
 
@@ -59,10 +59,7 @@ const OfferingDetails = (props: any) => {
     const [isLoading, setIsLoading] = useState(false)
     const [showModal, setShowModal] = useState(false)
     const [activateButton, setActivateButton] = useState(false)
-    const [relevantExchange, setRelevantExchanges] = useState<{ rfq: any; quote: any }>({
-        rfq: {},
-        quote: {}
-    })
+    const [relevantExchange, setRelevantExchanges] = useState<{ rfq: any; quote: any }[]>([])
     const [requiredPaymentDetails, setRequiredPaymentDetails] = useState<any>({
         payin: {},
         payout: {}
@@ -126,13 +123,13 @@ const OfferingDetails = (props: any) => {
         } else {
             // To Do: Check if the offering allows cancellations also aler user after they request quote
 
-            const orderMessage = await sendOrderMessage({
-                pfiDid,
-                userBearerDid,
-                exchangeId: relevantExchange?.rfq?.rfqId,
-            })
+            // const orderMessage = await sendOrderMessage({
+            //     pfiDid,
+            //     userBearerDid,
+            //     exchangeId: relevantExchange?.rfq?.rfqId,
+            // })
 
-            console.log("Order Message returned", orderMessage)
+            // console.log("Order Message returned", orderMessage)
             // setShowModal(false);
         }
     };
@@ -144,28 +141,28 @@ const OfferingDetails = (props: any) => {
             setShowModal(false);
         } else {
             // To Do: Check if the offering allows cancellations also aler user after they request quote
-            const closeMessage = await sendCloseMessage({
-                pfiDid,
-                userBearerDid,
-                reason: TBDEX_CANCEL_REASON,
-                exchangeId: relevantExchange?.rfq?.rfqId,
-            })
+            // const closeMessage = await sendCloseMessage({
+            //     pfiDid,
+            //     userBearerDid,
+            //     reason: TBDEX_CANCEL_REASON,
+            //     exchangeId: relevantExchange?.rfq?.rfqId,
+            // })
 
-            console.log("Cancel Message returned", closeMessage)
+            // console.log("Cancel Message returned", closeMessage)
 
-            if (closeMessage) {
-                notify?.('error', {
-                    message: 'Transaction Cancelled!',
-                    description: 'Your transaction has been cancelled!'
-                })
-            }
+            // if (closeMessage) {
+            //     notify?.('error', {
+            //         message: 'Transaction Cancelled!',
+            //         description: 'Your transaction has been cancelled!'
+            //     })
+            // }
 
-            const storedIntervals = localStorage.getItem(INTERVALS_LOCAL_STORAGE_KEY)
-            if (storedIntervals) {
-                const existingIntervals = JSON.parse(storedIntervals)
-                const newIntervals = [...existingIntervals]
-                clearAllIntervals(newIntervals)
-            }
+            // const storedIntervals = localStorage.getItem(INTERVALS_LOCAL_STORAGE_KEY)
+            // if (storedIntervals) {
+            //     const existingIntervals = JSON.parse(storedIntervals)
+            //     const newIntervals = [...existingIntervals]
+            //     clearAllIntervals(newIntervals)
+            // }
         }
     };
 
@@ -213,14 +210,14 @@ const OfferingDetails = (props: any) => {
             stateCredentials={undefined}
             setNextButtonDisabled={function (value: SetStateAction<boolean>): void {
                 throw new Error("Function not implemented.");
-            }}
+            } }
             setUserDid={undefined}
             setWeb5Instance={undefined}
             setCredentials={undefined}
             setRecoveryPhrase={undefined}
             setUserBearerDid={undefined} setIsCreatingCredential={function (value: SetStateAction<boolean>): void {
                 throw new Error("Function not implemented.");
-            }} />
+            } } isCreatingCredential={false} />
 
     const issuerDid = offeringRequiredClaims?.['vc.issuer'] || offeringRequiredClaims?.['issuer']
     const issuerVcSchema = offeringRequiredClaims?.['vc.credentialSchema.id'] || offeringRequiredClaims?.['credentialSchem[*].id']
@@ -252,17 +249,16 @@ const OfferingDetails = (props: any) => {
     }, [])
 
     useEffect(() => {
+        const returnOfferingExchanges = (exchanges: any[], offeringId: string) => {
+            return exchanges.filter(({ rfq, quote }: any) => rfq?.offeringId === offeringId || quote?.rfqId === offeringId)
+        }
 
-        // const exchangeOfferingId = relevantExchange?.rfq?.offeringId
-        // const isRelevant = exchangeOfferingId === offeringId
+        const results = returnOfferingExchanges(relevantExchange, offeringId)
 
-        // if (isRelevant) {
-        //     setIsLoading(false)
-        //     setPaymentState(PaymentStage.MAKE_TRANSFER)
-        // }
-
-        console.log("relevantExchange:iiisndie", { relevantExchange })
-        // console.log("relevantExchange:iiisndie", { relevantExchange, isRelevant, requiredPaymentDetails })
+        if (results?.length) {
+            setIsLoading(false)
+            setPaymentState(PaymentStage.MAKE_TRANSFER)
+        }
     }, [relevantExchange])
 
     const isButtonDisabled = !activateButton

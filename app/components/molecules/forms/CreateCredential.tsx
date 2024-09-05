@@ -8,6 +8,7 @@ import React from 'react';
 export interface CreateCredentialProps {
     nextButtonDisabled: boolean;
     noCredentialsFound: boolean;
+    isCreatingCredential: boolean;
     localStorageCredentials: any[];
     stateCredentials: { [x: string]: any[]; } | undefined;
     setNextButtonDisabled: React.Dispatch<React.SetStateAction<boolean>>;
@@ -23,6 +24,7 @@ const CreateCredential: React.FC<CreateCredentialProps> = ({
     stateCredentials,
     noCredentialsFound,
     nextButtonDisabled,
+    isCreatingCredential,
     localStorageCredentials,
 
     setUserDid,
@@ -39,6 +41,7 @@ const CreateCredential: React.FC<CreateCredentialProps> = ({
                 stateCredentials={stateCredentials}
                 noCredentialsFound={noCredentialsFound}
                 nextButtonDisabled={nextButtonDisabled}
+                isCreatingCredential={isCreatingCredential}
                 localStorageCredentials={localStorageCredentials}
 
                 setUserDid={setUserDid}

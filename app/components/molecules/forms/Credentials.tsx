@@ -29,6 +29,7 @@ const CredentialsForm: React.FC<CreateCredentialProps> = ({
     stateCredentials,
     noCredentialsFound,
     nextButtonDisabled,
+    isCreatingCredential,
     localStorageCredentials,
 
     setUserDid,
@@ -54,7 +55,7 @@ const CredentialsForm: React.FC<CreateCredentialProps> = ({
 
     const [value, setValue] = useState<UserValue[]>([]);
     // const [credentials, setCredentials] = useState<{ [x: string]: any[]; }>({});
-    
+
 
     const createOrUpdateCredentials = async (details: CreateCredentialFormDetails) => {
         try {
@@ -118,7 +119,7 @@ const CredentialsForm: React.FC<CreateCredentialProps> = ({
                     console.log("Data does not existss created VC", {
                         vc, parsedVc, vcConcatenateTypes, storedVc,
                         setSelectedCurrency,
-                        userDid, 
+                        userDid,
                         did,
                         storedVcResponse: status
                     })
@@ -198,12 +199,12 @@ const CredentialsForm: React.FC<CreateCredentialProps> = ({
                 )
                 : (
                     <Form
-                        name="basic"
+                        name="createCredential"
                         layout="vertical"
                         className='w-full'
                         autoComplete="off"
                         onFinish={onFinish}
-                        initialValues={{ remember: true }}
+                        disabled={isCreatingCredential}
                         onFinishFailed={onFinishFailed}
                     >
                         <Form.Item<FieldType>

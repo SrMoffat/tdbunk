@@ -183,6 +183,7 @@ const StepOne: React.FC<CampaignStepProps> = ({
         stateCredentials: existingStateCreds,
         nextButtonDisabled,
         hasRequiredCredentials,
+        isCreatingCredential,
         localStorageCredentials: existingLocalStorageCreds,
 
         setUserDid,

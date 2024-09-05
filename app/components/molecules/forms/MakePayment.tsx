@@ -183,7 +183,7 @@ const MakePayment = (props: any) => {
                                         {quoteExpired ? 'Quote Expired:' : "Quote Expires:"}
                                     </Typography.Text>
                                     <Typography.Text style={{ fontSize: 11 }}>
-                                        {formatDistanceToNow(new Date(relevantExchange?.quote?.expiresAt), { addSuffix: true })}
+                                        {/* {formatDistanceToNow(new Date(relevantExchange?.quote?.expiresAt), { addSuffix: true })} */}
                                     </Typography.Text>
                                 </Flex>
                                 {/* <Countdown

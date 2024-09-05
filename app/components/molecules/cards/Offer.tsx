@@ -66,7 +66,7 @@ const OfferCard = ({
                         ? (
                             <>
                                 <Flex className="flex-col gap-2">
-                                    <Typography.Text className="text-xs" style={{ fontSize: 11, color: isSelected ? '#6abe39': 'inherit' }}>
+                                    <Typography.Text className="text-xs" style={{ fontSize: 11 }}>
                                         Required Credential and Issuer:
                                     </Typography.Text>
                                     <Flex>
@@ -78,14 +78,14 @@ const OfferCard = ({
                                     </Flex>
                                     <Flex>
                                         <Tag color={isSelected ? 'green' : 'default'}>
-                                            <Typography.Text copyable>
+                                            <Typography.Text style={{ color: isSelected ? '#16a34a' : 'inherit' }} copyable>
                                                 {`${issuerDid?.slice(0, 14)}...${issuerDid?.slice(-6)}`}
                                             </Typography.Text>
                                         </Tag>
                                     </Flex>
                                 </Flex>
                                 <Flex className="items-center">
-                                    {isSelected && <CheckCircleFilled style={{ color: "#6abe39" }} />}
+                                    {isSelected && <CheckCircleFilled style={{ color: "#16a34a" }} />}
                                 </Flex>
                             </>
                         )

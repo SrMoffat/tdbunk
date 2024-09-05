@@ -3,7 +3,7 @@ import AssetExchangePFIDetails from "@/app/components/molecules/cards/OfferingPF
 import CredentialsForm from '@/app/components/molecules/forms/Credentials';
 import MakePayment from "@/app/components/molecules/forms/MakePayment";
 import { Credentials } from "@/app/components/organisms/Credentials";
-import { INTERVALS_LOCAL_STORAGE_KEY, PFIs, TBDEX_MESSAGE_TYPES_TO_STATUS } from "@/app/lib/constants";
+import { INTERVALS_LOCAL_STORAGE_KEY, PFIs, TBDEX_MESSAGE_TYPES_TO_STATUS, TDBUNK_CANCEL_REASON } from "@/app/lib/constants";
 import { pollExchanges, sendCloseMessage, sendOrderMessage } from "@/app/lib/tbdex";
 import { getCurrencyFlag } from "@/app/lib/utils";
 import { useNotificationContext } from "@/app/providers/NotificationProvider";
@@ -59,6 +59,7 @@ const OfferingDetails = (props: any) => {
     const [isLoading, setIsLoading] = useState(false)
     const [showModal, setShowModal] = useState(false)
     const [isCancelled, setIsCancelled] = useState(false)
+    const [isCompleted, setIsCompleted] = useState(false)
     const [isCancelling, setIsCancelling] = useState(false)
     const [activateButton, setActivateButton] = useState(false)
     const [relevantExchange, setRelevantExchanges] = useState<any>()
@@ -144,15 +145,10 @@ const OfferingDetails = (props: any) => {
             if (orderMessage) {
                 console.log("Close modal and toast success txn complete", orderMessage)
                 // setShowModal(false);
-
-                // To Do: Reset form and all relevant state
-                notify?.('success', {
-                    message: 'Transaction Complete!',
-                    description: 'Your transaction has been completed succesfully!'
-                })
+                // setIsCompleted(true)
             }
 
-            // clearAllPollingTimers()
+            clearAllPollingTimers()
         }
     };
 
@@ -161,13 +157,12 @@ const OfferingDetails = (props: any) => {
             setShowModal(false);
         } else {
             setIsCancelling(true)
-            const TBDEX_CANCEL_REASON = 'User cancelled transaction.'
 
             // To Do: Check if the offering allows cancellations also aler user after they request quote
             const closeMessage = await sendCloseMessage({
                 pfiDid,
                 userBearerDid,
-                reason: TBDEX_CANCEL_REASON,
+                reason: TDBUNK_CANCEL_REASON,
                 exchangeId: relevantExchange?.mostRecentMessage?.metadata?.exchangeId,
             })
 
@@ -268,6 +263,7 @@ const OfferingDetails = (props: any) => {
             const paymentState = paymentStage === PaymentStage.MAKE_TRANSFER
             const receivedQuote = relevantExchange.status === TBDEX_MESSAGE_TYPES_TO_STATUS.QUOTE
             const cancelledTransfer = relevantExchange.status === TBDEX_MESSAGE_TYPES_TO_STATUS.CLOSE
+            const completedTransfer = relevantExchange.status === TBDEX_MESSAGE_TYPES_TO_STATUS.CLOSE_SUCCESS
 
             if (receivedQuote && !paymentState) {
                 setPaymentStage(PaymentStage.MAKE_TRANSFER)
@@ -278,6 +274,13 @@ const OfferingDetails = (props: any) => {
                 setIsCancelling(false)
                 setActivateButton(false)
                 setIsCancelled(true)
+            }
+
+            if (completedTransfer) {
+                setIsCompleted(true)
+                setIsLoading(false)
+                setShowModal(false)
+                console.log("Transfer complete")
             }
         }
 
@@ -290,8 +293,20 @@ const OfferingDetails = (props: any) => {
                 message: 'Transaction Cancelled!',
                 description: 'Your transaction has been cancelled!'
             })
+            // setIsCancelled(false)
         }
     }, [isCancelled])
+
+    useEffect(() => {
+        if (isCompleted) {
+            // To Do: Reset form and all relevant state
+            notify?.('success', {
+                message: 'Transaction Complete!',
+                description: 'Your transaction has been completed succesfully!'
+            })
+            // setIsCompleted(false)
+        }
+    }, [isCompleted])
 
     const isButtonDisabled = !activateButton
 

@@ -84,6 +84,7 @@ export enum TBDEX_MESSAGE_TYPES_TO_STATUS {
     ORDER = 'Transfer Started',
     ORDER_STATUS = 'Transfer Processing',
     CLOSE = 'Transfer Cancelled',
+    CLOSE_SUCCESS = 'Transfer Complete',
 }
 
 export enum TBDEX_MESSAGE_TYPES {
@@ -93,6 +94,8 @@ export enum TBDEX_MESSAGE_TYPES {
     ORDER_STATUS = 'orderstatus',
     CLOSE = 'close',
 }
+
+export const TDBUNK_CANCEL_REASON = 'User cancelled transaction.'
 
 export const LOCAL_STORAGE_KEY = 'local'
 export const SESSION_STORAGE_KEY = 'session'

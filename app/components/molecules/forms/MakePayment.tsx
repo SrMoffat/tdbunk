@@ -4,10 +4,12 @@ import MakeTransfer from "@/app/components/molecules/forms//MakeTransfer";
 import RequestForQuote from "@/app/components/molecules/forms/RequestForQuote";
 import { TBDEX_MESSAGE_TYPES_TO_STATUS } from "@/app/lib/constants";
 import { arraysEqual, getEstimatedSettlementTime, msToDays } from "@/app/lib/utils";
+import { PRIMARY_GOLD_HEX } from "@/app/providers/ThemeProvider";
 import { ClockCircleFilled, CloseCircleFilled } from "@ant-design/icons";
-import { Card, Flex, Statistic, Steps, Tag, Typography } from "antd";
+import { Card, Flex, Statistic, Steps, Tag, Typography, Progress, ProgressProps, theme } from "antd";
 import { formatDistanceToNow } from "date-fns";
 import { useEffect, useState, } from "react";
+import { clearInterval } from "timers";
 
 const { Countdown } = Statistic
 
@@ -29,11 +31,23 @@ const MakePayment = (props: any) => {
         offeringToCurrencyMethods
     } = props
 
+    const [intervalId, setIntervalId] = useState<any>();
+    const [percent, setPercent] = useState<number>(0);
     const [quoteExpired, setQuoteExpired] = useState(false)
     const [requiredPaymentDetails, setRequiredPaymentDetails] = useState<any>({
         payin: {},
         payout: {}
     })
+
+    const {
+        token: {
+            colorBgContainer,
+            colorPrimary
+        }
+    } = theme.useToken()
+
+
+
 
     console.log("🚀 <MakeTransfer /> 🚀", {
         requiredPaymentDetails,
@@ -147,6 +161,42 @@ const MakePayment = (props: any) => {
 
     }, [requiredPaymentDetails])
 
+    useEffect(() => {
+        const dummyLoaderTimer = setTimeout(() => {
+            setPercent((prevPercent) => {
+                const newPercent = prevPercent + 5;
+                if (newPercent > 100) {
+                    return 100;
+                }
+                return newPercent;
+            });
+        }, 1000)
+        setIntervalId(dummyLoaderTimer)
+        // return () => {
+        //     if (percent >= 100) {
+        //         clearInterval(dummyLoaderTimer)
+        //     }
+        // }
+        console.log("Is Loading for Loader", {
+            isLoading
+        })
+    }, [isLoading])
+
+    useEffect(() => {
+        // if (percent >= 100) {
+        //     clearInterval(dummyLoaderTimer)
+        // }
+        console.log("Percentage changed or intervalID changed", {
+            intervalId,
+            percent
+        })
+    }, [intervalId, percent])
+
+    const twoColors: ProgressProps['strokeColor'] = {
+        '0%': colorBgContainer,
+        '100%': colorPrimary,
+    };
+
     return (
         <Flex className={`gap-2 flex-col ${isLoading ? 'opacity-30' : 'opacity-100'}`}>
             {isRequestQuote ? (
@@ -176,72 +226,87 @@ const MakePayment = (props: any) => {
                     />
                 </Flex>
             ) : (
-                <Flex className="w-full justify-between mb-4 gap-4 mt-4">
-                    <Flex className="w-full">
-                        <Card className="w-full">
-                            <PFIDetails
-                                pfiDid={pfiDid}
-                                pfiName={pfiName}
-                                createdAt={offeringCreatedAt}
-                                estimatedSettlementTime={getEstimatedSettlementTime(offeringToCurrencyMethods, true)}
+                <Flex className={isLoading ? 'flex-col opacity-100' : ''}>
+                    {isLoading && (
+                        <Flex className="w-full opacity-100" style={{ opacity: 1 }}>
+                            <Progress
+                                steps={7}
+                                size={[100, 5]}
+                                percent={percent}
+                                style={{ opacity: 1 }}
+                                strokeColor={PRIMARY_GOLD_HEX}
                             />
-                        </Card>
-                    </Flex>
-                    {isClose && (
-                        <Flex className="w-1/2 justify-end items-start">
-                            <Tag color="red">
-                                <Flex className="gap-3">
-                                    <CloseCircleFilled />
-                                    <Flex className="flex-col">
-                                        <Typography.Text style={{ fontSize: 11 }}>
-                                            Transfer Cancelled
-                                        </Typography.Text>
-                                        <Typography.Text style={{ fontSize: 11 }}>
-                                            {formatDistanceToNow(new Date(transferCancellation), { addSuffix: true })}
-                                        </Typography.Text>
-                                    </Flex>
-                                </Flex>
-                            </Tag>
                         </Flex>
                     )}
-                    {isQuote && (
-                        <Flex className="w-1/2 justify-end items-start">
-                            <Tag color={quoteExpired ? 'red' : 'default'}>
-                                <Flex className="gap-3">
-                                    <ClockCircleFilled />
-                                    {
-                                        isLessThanOrADay
-                                            ? (
-                                                <Countdown
-                                                    valueStyle={{
-                                                        fontSize: 11,
-                                                        marginTop: -6
-                                                    }}
-                                                    title={
+                    <Flex className="w-full justify-between mb-4 gap-4 mt-4">
+                        <Flex className="w-full">
+                            <Card className="w-full">
+                                <PFIDetails
+                                    pfiDid={pfiDid}
+                                    pfiName={pfiName}
+                                    createdAt={offeringCreatedAt}
+                                    estimatedSettlementTime={getEstimatedSettlementTime(offeringToCurrencyMethods, true)}
+                                />
+                            </Card>
+                        </Flex>
+
+                        {isClose && (
+                            <Flex className="w-1/2 justify-end items-start">
+                                <Tag color="red">
+                                    <Flex className="gap-3">
+                                        <CloseCircleFilled />
+                                        <Flex className="flex-col">
+                                            <Typography.Text style={{ fontSize: 11 }}>
+                                                Transfer Cancelled
+                                            </Typography.Text>
+                                            <Typography.Text style={{ fontSize: 11 }}>
+                                                {formatDistanceToNow(new Date(transferCancellation), { addSuffix: true })}
+                                            </Typography.Text>
+                                        </Flex>
+                                    </Flex>
+                                </Tag>
+                            </Flex>
+                        )}
+
+                        {isQuote && (
+                            <Flex className="w-1/2 justify-end items-start">
+                                <Tag color={quoteExpired ? 'red' : 'default'}>
+                                    <Flex className="gap-3">
+                                        <ClockCircleFilled />
+                                        {
+                                            isLessThanOrADay
+                                                ? (
+                                                    <Countdown
+                                                        valueStyle={{
+                                                            fontSize: 11,
+                                                            marginTop: -6
+                                                        }}
+                                                        title={
+                                                            <Typography.Text style={{ fontSize: 11 }}>
+                                                                {quoteExpired ? 'Quote Expired:' : "Quote Expires:"}
+                                                                {formatDistanceToNow(new Date(quoteExpiration), { addSuffix: true })}
+                                                            </Typography.Text>
+                                                        }
+                                                        value={deadline}
+                                                        onFinish={onQuoteExpired}
+                                                    />
+                                                )
+                                                : (
+                                                    <Flex className="flex-col">
                                                         <Typography.Text style={{ fontSize: 11 }}>
                                                             {quoteExpired ? 'Quote Expired:' : "Quote Expires:"}
+                                                        </Typography.Text>
+                                                        <Typography.Text style={{ fontSize: 11 }}>
                                                             {formatDistanceToNow(new Date(quoteExpiration), { addSuffix: true })}
                                                         </Typography.Text>
-                                                    }
-                                                    value={deadline}
-                                                    onFinish={onQuoteExpired}
-                                                />
-                                            )
-                                            : (
-                                                <Flex className="flex-col">
-                                                    <Typography.Text style={{ fontSize: 11 }}>
-                                                        {quoteExpired ? 'Quote Expired:' : "Quote Expires:"}
-                                                    </Typography.Text>
-                                                    <Typography.Text style={{ fontSize: 11 }}>
-                                                        {formatDistanceToNow(new Date(quoteExpiration), { addSuffix: true })}
-                                                    </Typography.Text>
-                                                </Flex>
-                                            )
-                                    }
-                                </Flex>
-                            </Tag>
-                        </Flex>
-                    )}
+                                                    </Flex>
+                                                )
+                                        }
+                                    </Flex>
+                                </Tag>
+                            </Flex>
+                        )}
+                    </Flex>
                 </Flex>
             )}
             {

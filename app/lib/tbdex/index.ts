@@ -1,6 +1,6 @@
 import { Rfq, TbdexHttpClient, Close, Quote, Order, OrderStatus } from '@tbdex/http-client';
 import { BearerDid } from '@web5/dids';
-import { PFIs, TBDEX_MESSAGE_TYPES, TBDEX_MESSAGE_TYPES_TO_STATUS } from "@/app/lib/constants";
+import { PFIs, TBDEX_MESSAGE_TYPES, TBDEX_MESSAGE_TYPES_TO_STATUS, TDBUNK_CANCEL_REASON } from "@/app/lib/constants";
 
 // Poll every 3 seconds
 const EXCHANGES_POLLING_INTERVAL_MS = 3000;
@@ -203,6 +203,7 @@ export const generateExchangeStatusValues = (exchangeMessage: any) => {
     const ORDER_STATUS_NAME = TBDEX_MESSAGE_TYPES_TO_STATUS.ORDER
     const ORDER_STATUS_STATUS_NAME = TBDEX_MESSAGE_TYPES_TO_STATUS.ORDER_STATUS
     const CLOSE_STATUS_NAME = TBDEX_MESSAGE_TYPES_TO_STATUS.CLOSE
+    const CLOSE_SUCCESS_STATUS_NAME = TBDEX_MESSAGE_TYPES_TO_STATUS.CLOSE_SUCCESS
 
     switch (true) {
         case rfq: {
@@ -210,7 +211,7 @@ export const generateExchangeStatusValues = (exchangeMessage: any) => {
             // const rfqAmount = rfqData?.payin?.amount
             status = RFQ_STATUS_NAME
             console.log("RFQ_STATUS_NAME", {
-                rfq,
+                exchangeMessage,
             })
             break
         }
@@ -219,7 +220,7 @@ export const generateExchangeStatusValues = (exchangeMessage: any) => {
             // const quoteExpiration = quoteData?.expiresAt
             status = QUOTE_STATUS_NAME
             console.log("QUOTE_STATUS_NAME", {
-                quote,
+                exchangeMessage,
             })
 
             break
@@ -227,7 +228,7 @@ export const generateExchangeStatusValues = (exchangeMessage: any) => {
         case order: {
             status = ORDER_STATUS_NAME
             console.log("ORDER_STATUS_NAME", {
-                order,
+                exchangeMessage,
             })
 
             // const orderData = exchangeMessage?.data
@@ -236,20 +237,31 @@ export const generateExchangeStatusValues = (exchangeMessage: any) => {
         case orderStatus: {
             status = ORDER_STATUS_STATUS_NAME
             console.log("ORDER_STATUS_STATUS_NAME", {
-                orderStatus,
+                exchangeMessage,
             })
 
             // const orderStatusData = exchangeMessage?.data
             break
         }
         case close: {
-            status = CLOSE_STATUS_NAME
-            console.log("CLOSE_STATUS_NAME", {
-                close,
-            })
+            const closeData = exchangeMessage?.data
+            const closeReason = closeData?.reason
+            const closeSuccess = closeData?.success
 
-            // const closeData = exchangeMessage?.data
-            // const closeReason = closeData?.reason
+            const isCancellation = closeReason.includes(TDBUNK_CANCEL_REASON)
+            const isCompletion = closeReason.includes('SUCCESS')
+
+            if (isCancellation) {
+                status = CLOSE_STATUS_NAME
+            } else if (isCompletion && closeSuccess) {
+                status = CLOSE_SUCCESS_STATUS_NAME
+            }
+
+            console.log("CLOSE_STATUS_NAME", {
+                exchangeMessage,
+                closeReason,
+                closeSuccess
+            })
             break
         }
         default: {

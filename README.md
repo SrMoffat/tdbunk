@@ -95,6 +95,7 @@ Consider the following when designing your application:
 3. Customer Management: how will your application manage customers’ decentralized identifiers and verifiable credentials (Bearer Did stored in local storage with key uris and keys in key manager, vcs stored in dwn)
 
 4. Customer Satisfaction: how will your application track customer satisfaction with PFIs (5-star rating on, speed of settlement i.e. actual vs estimated, comparison to market rate, )
+A set of Verifiable Credentials issued to the PFI that can be consumed by any interested party in order to assess the reputability of the respective PFI.
 
 
 You must host your project in a public GitHub repository and provide that link as your submission. The project’s README.md file should provide an overview of your application and how you’ve addressed the design considerations above.
@@ -106,3 +107,6 @@ You may work individually or within a team (max of 2 people per team).
 12 teams of semi-finalists will be chosen. Semi-finalists will prepare a video presentation explaining their project.
 
 6 teams of finalists will be chosen. Finalists will be flown to Nairobi, Kenya to attend the Africa Bitcoin Conference and pitch what they’ve built to our panel of judges. Conference tickets and travel accommodations will be provided.
+
+
+https://github.com/TBD54566975/tbdex/tree/main/specs/protocol#reserved-paymentmethod-kinds

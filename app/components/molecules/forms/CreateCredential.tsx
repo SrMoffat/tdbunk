@@ -11,6 +11,7 @@ export interface CreateCredentialProps {
     localStorageCredentials: any[];
     stateCredentials: { [x: string]: any[]; } | undefined;
     setNextButtonDisabled: React.Dispatch<React.SetStateAction<boolean>>;
+    setIsCreatingCredential: React.Dispatch<React.SetStateAction<boolean>>;
     setUserDid: React.Dispatch<React.SetStateAction<string | null>> | undefined;
     setWeb5Instance: React.Dispatch<React.SetStateAction<Web5 | null>> | undefined;
     setCredentials: React.Dispatch<React.SetStateAction<{ [x: string]: any[]; }>> | undefined;
@@ -29,7 +30,8 @@ const CreateCredential: React.FC<CreateCredentialProps> = ({
     setWeb5Instance,
     setUserBearerDid,
     setRecoveryPhrase,
-    setNextButtonDisabled
+    setNextButtonDisabled,
+    setIsCreatingCredential,
 }) => {
     return (
         <Flex className="h-full flex-col">
@@ -45,6 +47,7 @@ const CreateCredential: React.FC<CreateCredentialProps> = ({
                 setUserBearerDid={setUserBearerDid}
                 setRecoveryPhrase={setRecoveryPhrase}
                 setNextButtonDisabled={setNextButtonDisabled}
+                setIsCreatingCredential={setIsCreatingCredential}
             />
         </Flex>
     );

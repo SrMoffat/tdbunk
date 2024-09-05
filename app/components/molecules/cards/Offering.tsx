@@ -128,11 +128,14 @@ const OfferingDetails = (props: any) => {
     };
 
     const handleCancel = async () => {
-        const TBDEX_CANCEL_REASON = 'Cancalled transaction'
+        const TBDEX_CANCEL_REASON = 'User cancelled transaction.'
 
         if (isRequestQuote) {
             setShowModal(false);
         } else {
+            // To Do: Check if the offering allows cancellations also aler user after they request quote
+
+
             // To Do: Send close message
             const closeMessage = await sendCloseMessage({
                 pfiDid,
@@ -140,7 +143,7 @@ const OfferingDetails = (props: any) => {
                 reason: TBDEX_CANCEL_REASON,
                 exchangeId: relevantExchange?.rfq?.rfqId,
             })
-            console.log("Cancel Message", closeMessage)
+            console.log("Cancel Message returned", closeMessage)
             setPaymentState(PaymentStage.REQUEST_QUOTE)
         }
     };
@@ -196,8 +199,8 @@ const OfferingDetails = (props: any) => {
             setUserBearerDid={undefined}
         />
 
-    const issuerDid = offeringRequiredClaims?.['vc.issuer']
-    const issuerVcSchema = offeringRequiredClaims?.['vc.credentialSchema.id']
+    const issuerDid = offeringRequiredClaims?.['vc.issuer'] || offeringRequiredClaims?.['issuer']
+    const issuerVcSchema = offeringRequiredClaims?.['vc.credentialSchema.id'] || offeringRequiredClaims?.['credentialSchem[*].id']
 
     const isPaymentStep = hasRequiredCredentials && isSelected
 
@@ -231,7 +234,7 @@ const OfferingDetails = (props: any) => {
     const isButtonDisabled = !activateButton
 
     return (
-        <List.Item className="flex flex-row gap-2">
+        <List.Item className={`flex flex-row gap-2 ${isLoading ? 'opacity-30' : 'opacity-100'}`}>
             <Modal
                 width={800}
                 open={showModal}
@@ -245,13 +248,7 @@ const OfferingDetails = (props: any) => {
                     </Button>
                 ] : []}
             >
-                {
-                    isLoading
-                        ? <Spin>
-                            {flow}
-                        </Spin>
-                        : flow
-                }
+                {flow}
             </Modal>
             <AssetExchangePFIDetails
                 cta={cta}

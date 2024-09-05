@@ -13,7 +13,7 @@ import countries from '@/public/countries.json';
 import { useMutation } from '@tanstack/react-query';
 import type { FormProps } from 'antd';
 import { Button, Flex, Form, Input, Typography } from 'antd';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 export type CredentialStorage = {} | null
 
@@ -37,6 +37,7 @@ const CredentialsForm: React.FC<CreateCredentialProps> = ({
     setUserBearerDid,
     setRecoveryPhrase,
     setNextButtonDisabled,
+    setIsCreatingCredential
 }) => {
     const { userDid } = useWeb5Context()
     const { setSelectedCurrency } = useTbdexContext()
@@ -175,6 +176,10 @@ const CredentialsForm: React.FC<CreateCredentialProps> = ({
     // useEffect(() => {
     //     console.log("Create credential form mounted", { stateCredentials, localStorageCredentials })
     // }, [])
+
+    useEffect(() => {
+        setIsCreatingCredential(isPending)
+    }, [isPending])
 
     return (
         <Flex className="flex-col">

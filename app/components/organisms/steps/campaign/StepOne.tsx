@@ -61,6 +61,7 @@ const StepOne: React.FC<StepOneProps> = ({
     const [open, setOpen] = useState<boolean>(false);
     const [copied, setCopied] = useState<boolean>(false)
     const [noCredentials, setNoCredentials] = useState<boolean>(true);
+    const [isCreatingCredential, setIsCreatingCredential] = useState<boolean>(false);
     const [hasRequiredCredentials, setHasRequiredCredentials] = useState<boolean>(false);
     const [mode, setMode] = useState<CredentialMode>(CredentialMode.CREATE);
 
@@ -188,6 +189,7 @@ const StepOne: React.FC<StepOneProps> = ({
         setUserBearerDid,
         setRecoveryPhrase,
         setNextButtonDisabled,
+        setIsCreatingCredential
     }
     return (
         <Layout style={{ backgroundColor: colorBgContainer }}>
@@ -206,7 +208,7 @@ const StepOne: React.FC<StepOneProps> = ({
                         // showModal()
                     }}
                     options={options}
-                    disabled={!nextButtonDisabled || !noCredentials}
+                    disabled={!nextButtonDisabled || !noCredentials || isCreatingCredential}
                     style={{ backgroundColor: "#334155", height: 118 }}
                 />
             </Flex>

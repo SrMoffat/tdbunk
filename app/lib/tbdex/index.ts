@@ -292,6 +292,15 @@ export const sendCloseMessage = async ({
             }
         })
 
+        console.log('=> sendCloseMessage', {
+            userBearerDid,
+            pfiDid,
+            exchangeId,
+            reason,
+            close,
+        })
+
+
         await close.sign(userBearerDid)
 
         await TbdexHttpClient.submitClose(close)

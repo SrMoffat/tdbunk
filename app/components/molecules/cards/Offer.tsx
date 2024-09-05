@@ -22,18 +22,16 @@ const renderPaymentMethods = (methods: any[]) => {
     }
 
     return (
-        <Flex>
+        <Flex className="flex-col gap-2">
             {methods.map(entry => {
                 const kind = entry.kind
                 const paymentProperties = entry.paymentProperties
 
                 const paymentPropertyNames = paymentProperties ? Object.keys(paymentProperties) : []
                 return (
-                    <Flex key={entry.kind} className="gap-2 w-full flex-col">
-                        <Flex>
-                            <Tag>{toCapitalizedWords(kind)}</Tag>
-                        </Flex>
-                        {renderPropertyNames(paymentPropertyNames)}
+                    <Flex key={entry.kind} className="w-full">
+                        <Tag>{toCapitalizedWords(kind)}</Tag>
+                        {/* {renderPropertyNames(paymentPropertyNames)} */}
                     </Flex>
                 )
             })}
@@ -88,7 +86,7 @@ const OfferCard = ({
                 </Flex>
                 <Flex className="mt-4 border-[0.3px] border-gray-800 rounded-md p-3 w-[250px] justify-between flex-col">
                     <Typography.Text className="text-xs" style={{ fontSize: 11 }}>
-                        Required Recipient Payment Details:
+                        Payout Payment Methods:
                     </Typography.Text>
                     {/* <Flex className="flex-col w-full">
                             {renderPaymentMethods(offeringFromCurrencyMethods)}

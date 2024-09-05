@@ -239,39 +239,37 @@ export const pollExchanges = (bearer: any, callback: any) => {
                 exchangesResults.push(...exchanges)
             }
 
+            const exchangesRenderResults = []
+
             for (const exchange of exchangesResults) {
                 const latestMessage = exchange[exchange.length - 1]
 
                 const rfq = exchange.find(entry => entry.metadata.kind === 'rfq')
                 const quote = exchange.find(entry => entry.metadata.kind === 'quote')
 
+                console.log("Exchange", exchange)
+
                 const status = generateExchangeStatusValues(exchange)
 
                 const { rfq: rfqRenderDetails, quote: quoteRenderDetails } = getRfqAndQuoteRenderDetails(rfq as Rfq, quote as Quote)
 
-                callback({
+                exchangesRenderResults.push({
+                    status,
                     rfq: rfqRenderDetails,
                     quote: quoteRenderDetails
                 })
-
-
-                console.log('👽👽👽👽👽👽👽👽👽', {
-                    status,
-                    latestMessage,
-                    quoteRenderDetails,
-                    rfqRenderDetails,
-                })
-
             }
+
+            callback(exchangesRenderResults)
         } catch (error) {
             console.error("Failed to fetch exchanges:", error);
         }
-        // if (!userBearerDid) return;
-        // const allExchanges: any[] = [];
     };
 
     // Set up the interval to run the function periodically
-    setInterval(fetchAllExchanges, EXCHANGES_POLLING_INTERVAL_MS);
+    const pollingIntervalId = setInterval(fetchAllExchanges, EXCHANGES_POLLING_INTERVAL_MS);
+    console.log("Setting interval ID", pollingIntervalId)
+    return pollingIntervalId
 };
 
 export const sendCloseMessage = async ({
@@ -301,7 +299,7 @@ export const sendCloseMessage = async ({
         })
 
 
-        await close.sign(userBearerDid)
+        await close.sign(userBearerDid?.did)
 
         await TbdexHttpClient.submitClose(close)
 
@@ -311,7 +309,7 @@ export const sendCloseMessage = async ({
     }
 }
 
-export const sendOderMessage = async ({
+export const sendOrderMessage = async ({
     pfiDid,
     exchangeId,
     userBearerDid,
@@ -326,7 +324,14 @@ export const sendOderMessage = async ({
             }
         })
 
-        await order.sign(userBearerDid)
+        console.log('=> sendOrderMessage', {
+            userBearerDid,
+            pfiDid,
+            exchangeId,
+            order,
+        })
+
+        await order.sign(userBearerDid?.did)
 
         await TbdexHttpClient.submitOrder(order)
 

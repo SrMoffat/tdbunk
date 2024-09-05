@@ -62,10 +62,6 @@ did
 
 https://stackoverflow.com/questions/6843201/how-to-clearinterval-with-unknown-id
 
-function ClearAllIntervals() {
-    for (var i = 1; i < 99999; i++)
-        window.clearInterval(i);
-}
 
 Sending money across borders is unnecessarily slow and painful. tbDEX, an open source protocol, enables payment applications, such as digital wallets, to communicate with liquidity providers to move money in a fast and compliant way.
 

@@ -4,8 +4,9 @@ import CredentialsForm from '@/app/components/molecules/forms/Credentials';
 import MakePayment from "@/app/components/molecules/forms/MakePayment";
 import { Credentials } from "@/app/components/organisms/Credentials";
 import { PFIs } from "@/app/lib/constants";
-import { pollExchanges, sendCloseMessage } from "@/app/lib/tbdex";
+import { pollExchanges, sendCloseMessage, sendOrderMessage } from "@/app/lib/tbdex";
 import { getCurrencyFlag } from "@/app/lib/utils";
+import { useNotificationContext } from "@/app/providers/NotificationProvider";
 import { Offering, Close, TbdexHttpClient } from "@tbdex/http-client";
 import { Button, List, Modal, Spin } from "antd";
 import { formatDistanceToNow } from 'date-fns';
@@ -33,6 +34,10 @@ export enum PaymentStage {
 
 
 
+function clearAllIntervals() {
+    for (var i = 1; i < 99999; i++)
+        window && window.clearInterval(i);
+}
 
 
 const OfferingDetails = (props: any) => {
@@ -61,6 +66,7 @@ const OfferingDetails = (props: any) => {
         payin: {},
         payout: {}
     })
+    const { notify } = useNotificationContext()
     const [paymentStage, setPaymentState] = useState<PaymentStage>(PaymentStage.REQUEST_QUOTE)
 
     console.log("<OfferingDetails />:requiredPaymentDetails", requiredPaymentDetails)
@@ -100,7 +106,7 @@ const OfferingDetails = (props: any) => {
         setShowModal(true)
     }
 
-    const handleOk = () => {
+    const handleOk = async () => {
         setIsLoading(true)
         if (isRequestQuote) {
             // Here ==>
@@ -120,10 +126,16 @@ const OfferingDetails = (props: any) => {
                 stateCredentials
             })
         } else {
-            console.log("requiredPaymentDetails Make Transfer", {
-                requiredPaymentDetails
+            // To Do: Check if the offering allows cancellations also aler user after they request quote
+
+            const orderMessage = await sendOrderMessage({
+                pfiDid,
+                userBearerDid,
+                exchangeId: relevantExchange?.rfq?.rfqId,
             })
-            setShowModal(false);
+
+            console.log("Order Message returned", orderMessage)
+            // setShowModal(false);
         }
     };
 
@@ -134,17 +146,23 @@ const OfferingDetails = (props: any) => {
             setShowModal(false);
         } else {
             // To Do: Check if the offering allows cancellations also aler user after they request quote
-
-
-            // To Do: Send close message
             const closeMessage = await sendCloseMessage({
                 pfiDid,
                 userBearerDid,
                 reason: TBDEX_CANCEL_REASON,
                 exchangeId: relevantExchange?.rfq?.rfqId,
             })
+
             console.log("Cancel Message returned", closeMessage)
-            setPaymentState(PaymentStage.REQUEST_QUOTE)
+
+            if (closeMessage) {
+                notify?.('error', {
+                    message: 'Transaction Cancelled!',
+                    description: 'Your transaction has been cancelled!'
+                })
+            }
+            // setPaymentState(PaymentStage.REQUEST_QUOTE)
+            clearAllIntervals()
         }
     };
 
@@ -165,6 +183,7 @@ const OfferingDetails = (props: any) => {
             ? <MakePayment
                 pfiDid={pfiDid}
                 pfiName={pfiName}
+                isLoading={isLoading}
                 offering={rawOffering}
                 userBearerDid={userBearerDid}
                 isRequestQuote={isRequestQuote}
@@ -196,8 +215,9 @@ const OfferingDetails = (props: any) => {
             setWeb5Instance={undefined}
             setCredentials={undefined}
             setRecoveryPhrase={undefined}
-            setUserBearerDid={undefined}
-        />
+            setUserBearerDid={undefined} setIsCreatingCredential={function (value: SetStateAction<boolean>): void {
+                throw new Error("Function not implemented.");
+            }} />
 
     const issuerDid = offeringRequiredClaims?.['vc.issuer'] || offeringRequiredClaims?.['issuer']
     const issuerVcSchema = offeringRequiredClaims?.['vc.credentialSchema.id'] || offeringRequiredClaims?.['credentialSchem[*].id']
@@ -216,25 +236,28 @@ const OfferingDetails = (props: any) => {
         : `Transfer ${destinationCurrencyCode} ${campaignAmount}`
 
     useEffect(() => {
-        pollExchanges(userBearerDid, setRelevantExchanges)
+        const intervalId = pollExchanges(userBearerDid, setRelevantExchanges)
+        console.log("Returned interval ID", intervalId)
     }, [])
+
     useEffect(() => {
 
-        const exchangeOfferingId = relevantExchange?.rfq?.offeringId
-        const isRelevant = exchangeOfferingId === offeringId
+        // const exchangeOfferingId = relevantExchange?.rfq?.offeringId
+        // const isRelevant = exchangeOfferingId === offeringId
 
-        if (isRelevant) {
-            setIsLoading(false)
-            setPaymentState(PaymentStage.MAKE_TRANSFER)
-        }
+        // if (isRelevant) {
+        //     setIsLoading(false)
+        //     setPaymentState(PaymentStage.MAKE_TRANSFER)
+        // }
 
-        console.log("relevantExchange:iiisndie", { relevantExchange, isRelevant, requiredPaymentDetails })
+        console.log("relevantExchange:iiisndie", { relevantExchange })
+        // console.log("relevantExchange:iiisndie", { relevantExchange, isRelevant, requiredPaymentDetails })
     }, [relevantExchange])
 
     const isButtonDisabled = !activateButton
 
     return (
-        <List.Item className={`flex flex-row gap-2 ${isLoading ? 'opacity-30' : 'opacity-100'}`}>
+        <List.Item className="flex flex-row gap-2">
             <Modal
                 width={800}
                 open={showModal}

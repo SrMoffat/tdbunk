@@ -13,6 +13,7 @@ const MakePayment = (props: any) => {
         pfiDid,
         pfiName,
         offering,
+        isLoading,
         userBearerDid,
         createExchange,
         relevantExchange,
@@ -134,7 +135,7 @@ const MakePayment = (props: any) => {
     }, [requiredPaymentDetails])
 
     return (
-        <Flex className="gap-2 flex-col">
+        <Flex className={`gap-2 flex-col ${isLoading ? 'opacity-30' : 'opacity-100'}`}>
             {isRequestQuote ? (
                 <Flex className="w-full items-center flex-col">
                     <Typography.Text style={{ fontSize: 12 }}>Exchange Rate in Offering</Typography.Text>

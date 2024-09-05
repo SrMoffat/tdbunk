@@ -57,8 +57,10 @@ export const getVcJwtDetails = (jwt: string) => {
         expiration
     }
 
-    console.log("Execution ==>", {
-        details
+    console.log("getVcJwtDetails ==>", {
+        details,
+        hasParts,
+        nameParts
     })
 
     return details
@@ -79,18 +81,10 @@ export const CredentialCard: React.FC<CredentialCardProps> = ({
 
     const country = countries.filter(entry => entry?.countryCode === countryCode)[0]
 
-    const nameParts = name?.split(":")
-
-    const hasParts = nameParts?.length
-
-    const renderName = hasParts
-        ? `${nameParts[0]} ${nameParts[1]}`
-        : name
-
     const details = credential
         ? getVcJwtDetails(credential)
         : {
-            name: renderName,
+            name,
             country: `${country?.countryName} ${country?.flag}`,
             issuance,
             expiration

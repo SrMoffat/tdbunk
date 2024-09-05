@@ -37,20 +37,25 @@ const isNextButtonDisabledForStepOne = (localStorageData: any, credentials: any[
     const contextCredentials = stateCredentials.flat()
     const hasStateCreds = contextCredentials.length > 0
 
-    console.log("Activate", {
+    console.log("Activate for Step One", {
         hasLocalCreds,
-        localCredentials,
-
         hasStateCreds,
+
+        localCredentials,
         contextCredentials,
 
         isDisabled: !(hasStateCreds || hasLocalCreds)
     })
 
-    // return hasStateCreds || hasLocalCreds
-    //     ? false
-    //     : true
     return !(hasStateCreds || hasLocalCreds)
+}
+
+const isNextButtonDisabledForStepThree = () => {
+    return true
+}
+
+const isNextButtonDisabledForStepFour = () => {
+    return true
 }
 
 export default function StartCampaignPage() {
@@ -90,7 +95,7 @@ export default function StartCampaignPage() {
         },
         {
             title: StartCampaignSteps.CAMPAIGN_DETAILS,
-            content: <StepTwo />,
+            content: <StepTwo {...commonProps} />,
         },
         {
             title: StartCampaignSteps.VERIFY_DETAILS,
@@ -105,14 +110,19 @@ export default function StartCampaignPage() {
     const items = steps.map(({ title }) => ({ key: title, title }));
 
     useEffect(() => {
-        const isDisabled = isNextButtonDisabledForStepOne(
-            localStorageData,
-            credentials as unknown as any[]
-        )
+        // TODO: Clean this up
+        const isStepOne = current === 0
+
+        const isDisabled = isStepOne
+            ? isNextButtonDisabledForStepOne(
+                localStorageData,
+                credentials as unknown as any[]
+            )
+            : nextButtonDisabled
 
         setNextButtonDisabled(isDisabled)
         console.log("isDisabled", isDisabled)
-    }, [])
+    }, [current])
 
     return (
         <Layout className="h-screen">

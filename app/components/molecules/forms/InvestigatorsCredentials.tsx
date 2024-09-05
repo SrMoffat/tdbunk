@@ -3,14 +3,16 @@ import { useCreateCampaignContext } from '@/app/providers/CreateCampaignProvider
 import { CheckCircleFilled, CheckCircleOutlined } from "@ant-design/icons";
 import { Avatar, Badge, Card, Flex, theme, Tooltip, Typography } from "antd";
 import Image from "next/image";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 interface InvestigatorsCredentialsProps { }
 
-const InvestigatorsCredentials: React.FC<InvestigatorsCredentialsProps> = () => {
-    const {requiredCredentials, setRequiredCredentials} = useCreateCampaignContext()
+const InvestigatorsCredentials: React.FC<any> = ({
+    setNextButtonDisabled
+}) => {
+    const { requiredCredentials, setRequiredCredentials } = useCreateCampaignContext()
 
-    const [count, setCount] = useState(requiredCredentials!.length-1);
+    const [count, setCount] = useState(requiredCredentials!.length - 1);
     const {
         token: { colorPrimary },
     } = theme.useToken()
@@ -21,8 +23,8 @@ const InvestigatorsCredentials: React.FC<InvestigatorsCredentialsProps> = () => 
         if (exists) {
             const removed = requiredCredentials!.filter(entry => entry !== credential)
             setRequiredCredentials?.(removed)
-            setCount(removed.length-1)
-            } else {
+            setCount(removed.length - 1)
+        } else {
             setRequiredCredentials?.((existingCredentials) => ([...existingCredentials, credential]))
             setCount(requiredCredentials!.length)
         }
@@ -48,6 +50,16 @@ const InvestigatorsCredentials: React.FC<InvestigatorsCredentialsProps> = () => 
             card: Card4,
         },
     ]
+
+    useEffect(() => {
+        // To do: Clean this up, lazy validation, check the actual cred types
+        const hasAllValues = count > 0
+
+        setNextButtonDisabled((prev: any) => ({
+            ...prev,
+            stepThree: !hasAllValues
+        }))
+    }, [count])
     return (
         <Flex wrap className="w-full gap-6 mt-6">
             <Tooltip title="Select the credentials required to be a fact checker in this campaign." placement="top" >

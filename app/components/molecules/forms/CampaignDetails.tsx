@@ -26,12 +26,11 @@ export interface FieldType {
     description: string;
 };
 
-const CampaignDetails: React.FC<CampaignDetailsProps> = () => {
+const CampaignDetails: React.FC<any> = ({
+    setNextButtonDisabled
+}) => {
     const {
-        sourceCurrencies,
-        selectedCurrency,
         destinationCurrencies,
-        setSelectedCurrency,
         setSelectedDestinationCurrency
     } = useTbdexContext()
     const {
@@ -68,34 +67,6 @@ const CampaignDetails: React.FC<CampaignDetailsProps> = () => {
         ),
         value: name as DEBUNK_CAMPAIGN_TYPE
     }))
-
-    const SelectBefore = (props: SelectBeforeProps) => {
-        let icon = undefined
-
-        switch (props.type) {
-            case 'amount': {
-                icon = Sponsorships
-                break
-            }
-            case 'factCheckers': {
-                icon = FactCheckers
-                break
-            }
-            case 'minEvidences': {
-                icon = Evidence
-                break
-            }
-
-        }
-
-        const isAmount = props.type === 'amount'
-        return (
-            <Flex className={`items-center justify-center w-[${isAmount ? '100px' : '30px'}] h-[30px]`}>
-                <Image className="mr-2" alt={props.type} src={icon} width={50} height={50} />
-                {isAmount && props.currency}
-            </Flex>
-        )
-    }
 
     return (
         <Flex className="w-full flex-col">
@@ -137,7 +108,16 @@ const CampaignDetails: React.FC<CampaignDetailsProps> = () => {
                             minEvidences: all?.minEvidences,
                             type: all?.amount > 0 ? DEBUNK_CAMPAIGN_TYPE.SPONSORED : DEBUNK_CAMPAIGN_TYPE.COMMUNITY,
                         }
+                        // To do: Clean this up, lazy validation
+                        const hasAllValues = Boolean(details.name)
+                            && Boolean(details.description)
+                            && Boolean(details.factCheckers)
+                            && Boolean(details.minEvidences)
 
+                        setNextButtonDisabled((prev: any) => ({
+                            ...prev,
+                            stepTwo: !hasAllValues
+                        }))
                         setCampaignAmount?.(all?.amount)
                         setStepTwoValues?.(details)
                     }}

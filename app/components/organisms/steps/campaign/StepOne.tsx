@@ -17,7 +17,7 @@ import React, { useEffect, useState } from 'react';
 
 export interface UserStorage { }
 
-export interface StepOneProps {
+export interface CampaignStepProps {
     nextButtonDisabled: boolean;
     setNextButtonDisabled: React.Dispatch<React.SetStateAction<boolean>>;
     setUserDid: React.Dispatch<React.SetStateAction<string | null>> | undefined;
@@ -48,7 +48,7 @@ export const STEP_ONE_TAB_OPTIONS = [
     }
 ]
 
-const StepOne: React.FC<StepOneProps> = ({
+const StepOne: React.FC<CampaignStepProps> = ({
     nextButtonDisabled,
 
     setUserDid,
@@ -108,31 +108,33 @@ const StepOne: React.FC<StepOneProps> = ({
             })
 
         } else if (existingStateCreds) {
-            const allCredentials = Object.values(existingStateCreds)
-            const stateCredentials = allCredentials.flat()
+            // Check that state object is not empty
+            if (Object.keys(existingStateCreds).length) {
+                const allCredentials = Object.values(existingStateCreds)
+                const stateCredentials = allCredentials.flat()
 
-            const stateCreds = stateCredentials.length > 0
+                const stateCreds = stateCredentials.length > 0
 
-            if (stateCreds) {
-                setNoCredentials(false)
+                if (stateCreds) {
+                    setNoCredentials(false)
+                }
+
+                const allCredentialTypes = Object.keys(existingStateCreds)[0]
+                const stateCredentialType = allCredentialTypes?.split(":")[1]
+                const isKcc = stateCredentialType === CREDENTIAL_TYPES.KNOWN_CUSTOMER_CREDENTIAL
+
+                setHasRequiredCredentials(isKcc)
+
+                console.log("Something needs to be updated and state has?/", {
+                    isKcc,
+                    noCredentials,
+                    allCredentials,
+                    stateCredentials,
+                    existingStateCreds,
+                    existingLocalStorageCreds
+                })
             }
-
-            const allCredentialTypes = Object.keys(existingStateCreds)[0]
-            const stateCredentialType = allCredentialTypes?.split(":")[1]
-            const isKcc = stateCredentialType === CREDENTIAL_TYPES.KNOWN_CUSTOMER_CREDENTIAL
-
-            setHasRequiredCredentials(isKcc)
-
-            console.log("Something needs to be updated and state has?/", {
-                isKcc,
-                noCredentials,
-                allCredentials,
-                stateCredentials,
-                existingStateCreds,
-                existingLocalStorageCreds
-            })
         }
-
 
     }, [existingStateCreds, existingLocalStorageCreds])
 

@@ -1,6 +1,7 @@
 import { DebounceSelect } from "@/app/components/atoms";
 import { Facebook, Instagram, TikTok, X, Youtube } from '@/app/components/atoms/Icon';
 import { DEBUNK_SOURCE } from '@/app/lib/constants';
+import { arraysEqual } from "@/app/lib/utils";
 import { useCreateCampaignContext } from '@/app/providers/CreateCampaignProvider';
 import { Flex, Form, Input, Typography } from "antd";
 import Image from "next/image";
@@ -48,7 +49,9 @@ export async function fetchSourcesList() {
     }))
 }
 
-const DebunkSubjectForm: React.FC<DebunkSubjectProps> = () => {
+const DebunkSubjectForm: React.FC<any> = ({
+    setNextButtonDisabled
+}) => {
     const { setStepOneValues, debunkTitle, debunkLink, debunkSource } = useCreateCampaignContext()
 
     const selected = sourcesList.filter(({ name }) => name === debunkSource)[0]
@@ -75,6 +78,16 @@ const DebunkSubjectForm: React.FC<DebunkSubjectProps> = () => {
                         link: all?.link,
                         source: all?.source?.value,
                     }
+
+                    // To do: Clean this up, lazy validation
+                    const hasAllValues = Boolean(details.title)
+                        && Boolean(details.link)
+                        && Boolean(details.source)
+
+                    setNextButtonDisabled((prev: any) => ({
+                        ...prev,
+                        stepOne: !hasAllValues
+                    }))
                     setStepOneValues?.(details)
                 }}
             >

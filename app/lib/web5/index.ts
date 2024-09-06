@@ -463,3 +463,27 @@ export const createEducationalCredential = async (details: any) => {
 
     }
 }
+
+export const checkIfUserHasRequiredClaims = (credentials: any[], requiredClaims: any) => {
+    let hasRequiredCreds = false
+
+    credentials!.forEach(jwt => {
+        const data = parseJwtToVc(jwt)
+        const vcData = data?.vcDataModel
+        const issuerDidUri = vcData?.issuer
+
+        let requiredIssuerDidUri = ''
+
+        if (requiredClaims["vc.issuer"]) {
+            requiredIssuerDidUri = requiredClaims["vc.issuer"]
+        } else if (requiredClaims["issuer"]) {
+            requiredIssuerDidUri = requiredClaims["issuer"]
+        }
+
+        hasRequiredCreds = requiredIssuerDidUri === issuerDidUri
+    })
+
+    const doesNotNeedClaims = !Boolean(Object.keys(requiredClaims).length)
+
+    return doesNotNeedClaims || hasRequiredCreds
+}

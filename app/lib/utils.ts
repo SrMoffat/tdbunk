@@ -37,6 +37,7 @@ export const getFormattedOfferings = (offerings: any[], source: string, destinat
     let hops = []
 
     for (const offer of offerings) {
+        
         const offering = Object.values(offer!)[0] as any
 
         const [sourceCurrency, destinationCurrency] = offering?.pair
@@ -224,4 +225,5 @@ export const getCurrencyFlag = (currency: string) => {
 export function msToDays(ms: number) {
     return ms / (1000 * 60 * 60 * 24);
 }
+
 

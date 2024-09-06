@@ -3,13 +3,16 @@ import AssetExchangeRates from "@/app/components/atoms/OfferExchangeRates";
 import PFIDetails from "@/app/components/atoms/OfferPFI";
 import { getEstimatedSettlementTime } from "@/app/lib/utils";
 import { Card, Flex } from "antd";
+import React from "react"
 
 export interface AssetExchangePFIDetailsProps {
     cta: string;
+    offering: any;
     toUnit: string;
     pfiDid: string;
     pfiName: string;
     fromUnit: string;
+    selectedOffering: any;
     toCurrencyCode: string;
     toCurrencyFlag: string;
     fromCurrencyFlag: string;
@@ -17,6 +20,7 @@ export interface AssetExchangePFIDetailsProps {
     offeringCreatedAt: string;
     showPaymentModal: () => void;
     offeringToCurrencyMethods: any[];
+    setSelectedOffering: React.Dispatch<React.SetStateAction<any>>
 }
 
 export enum PaymentStage {
@@ -30,12 +34,15 @@ const AssetExchangePFIDetails = ({
     pfiDid,
     pfiName,
     fromUnit,
+    offering,
     toCurrencyFlag,
     toCurrencyCode,
     showPaymentModal,
     fromCurrencyCode,
     fromCurrencyFlag,
     offeringCreatedAt,
+    selectedOffering,
+    setSelectedOffering,
     offeringToCurrencyMethods,
 }: AssetExchangePFIDetailsProps) => {
     return (
@@ -50,7 +57,10 @@ const AssetExchangePFIDetails = ({
                 <AssetExachangeAction
                     cta={cta}
                     pfiName={pfiName}
+                    offering={offering}
                     showModal={showPaymentModal}
+                    selectedOffering={selectedOffering}
+                    setSelectedOffering={setSelectedOffering}
                 />
                 <AssetExchangeRates
                     toUnit={toUnit}

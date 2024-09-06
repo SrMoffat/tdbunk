@@ -8,11 +8,13 @@ import { Credentials } from "@/app/components/organisms/Credentials";
 import useBrowserStorage from "@/app/hooks/useLocalStorage";
 import { CREDENTIALS_LOCAL_STORAGE_KEY, LOCAL_STORAGE_KEY, OFFERINGS_LOCAL_STORAGE_KEY, SPECIAL_OFFERINGS_LOCAL_STORAGE_KEY } from "@/app/lib/constants";
 import { getFormattedOfferings } from "@/app/lib/utils";
+import { checkIfUserHasRequiredClaims, parseJwtToVc } from "@/app/lib/web5";
 import { useCreateCampaignContext } from "@/app/providers/CreateCampaignProvider";
 import { useTbdexContext } from "@/app/providers/TbdexProvider";
 import { useWeb5Context } from "@/app/providers/Web5Provider";
 import { Card, Flex, Layout, List, theme } from "antd";
 import { useEffect, useState } from "react";
+
 
 const StepFour = () => {
     const {
@@ -22,6 +24,7 @@ const StepFour = () => {
     const [isLoading, setIsLoading] = useState(false)
     const [isSelected, setIsSelected] = useState(false)
     const [selectedCard, setSelectedCard] = useState('')
+    const [selectedOffering, setSelectedOffering] = useState<any>()
     const [offerings, setOfferings] = useState<any[]>([])
 
     const {
@@ -71,7 +74,29 @@ const StepFour = () => {
         )
 
         const mergedResults = [...new Set(direct.concat(specialDirect))]
-        setOfferings(mergedResults) // Has v2.0 PFI offerings 
+
+        const offeringsWithCredentialChecks: any[] = [];
+
+        for (const offer of mergedResults) {
+            const pfiDid = Object.keys(offer)[0];
+            const offeringData = offer[pfiDid];
+
+            const requiredClaims = offeringData?.requiredClaims;
+            const requiredClaimsExist = checkIfUserHasRequiredClaims(
+                existingCredentials,
+                requiredClaims
+            );
+
+            offeringsWithCredentialChecks.push({
+                [pfiDid]: {
+                    ...offeringData,
+                    requiredClaimsExist,
+                },
+            });
+        }
+
+
+        setOfferings(offeringsWithCredentialChecks) // Has v2.0 PFI offerings 
         // setOfferings(direct)
         setIsLoading(false)
     }, [selectedCurrency, selectedDestinationCurrency, localStorageData])
@@ -85,7 +110,13 @@ const StepFour = () => {
     const existingCreds = localStorageCredentials?.credentials ?? {}
     const existingCredentials = Object.values(existingCreds).flat()
 
-    console.log("Bearere DID <StepFour />", userBearerDid)
+    // console.log("Bearere DID <StepFour />", {
+    //     userBearerDid,
+    //     isSelected,
+    //     selectedCard,
+    //     existingCredentials,
+    //     credentials
+    // })
 
     return <Layout style={{ backgroundColor: colorBgContainer }}>
         <Flex className="flex-col">
@@ -123,6 +154,7 @@ const StepFour = () => {
                             isSelected={isSelected}
                             stateCredentials={credentials}
                             userBearerDid={userBearerDid}
+                            selectedOffering={selectedOffering}
                             campaignAmount={campaignAmount}
                             credentials={existingCredentials}
                             unformattedOfferings={unformattedOfferings}
@@ -131,6 +163,7 @@ const StepFour = () => {
                             setIsSelected={setIsSelected}
                             createExchange={createExchange}
                             setSelectedCard={setSelectedCard}
+                            setSelectedOffering={setSelectedOffering}
                         />}
                     />
                 </Card>

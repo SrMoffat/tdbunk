@@ -42,6 +42,7 @@ export interface CredentialOptionProps {
 
 const CredentialOption: React.FC<any> = ({
     vcJwt,
+    offering,
     isSelected,
     selectedCard,
     setIsSelected,
@@ -87,6 +88,7 @@ const CredentialOption: React.FC<any> = ({
     }, [])
 
     const handleCardClicked = () => {
+        console.log("Selected Offering")
         if (selectedCard) {
             setSelectedCard('')
         } else {
@@ -122,6 +124,7 @@ const CredentialOption: React.FC<any> = ({
 
 export const Credentials = (props: any) => {
     const {
+        offering,
         credentials,
         isSelected,
         selectedCard,
@@ -134,6 +137,7 @@ export const Credentials = (props: any) => {
                 <CredentialOption
                     key={entry}
                     vcJwt={entry}
+                    offering={offering}
                     isSelected={isSelected}
                     selectedCard={selectedCard}
                     setIsSelected={setIsSelected}

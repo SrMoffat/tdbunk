@@ -7,6 +7,7 @@ export interface OfferCardProps {
     offeringId: string
     issuerDid: string
     isSelected: boolean
+    hasRequiredClaims: boolean
     isRecommended: boolean
     issuerVcSchema: string
     offeringToCurrencyMethods: any[]
@@ -44,11 +45,14 @@ const OfferCard = ({
     offeringId,
     issuerDid,
     isSelected,
+    hasRequiredClaims,
     isRecommended,
     issuerVcSchema,
     offeringToCurrencyMethods
 }: OfferCardProps) => {
     const noRequiredClaims = !issuerVcSchema && !issuerDid
+
+    const hasClaims = isSelected && hasRequiredClaims
 
     return (
         <Card className={`w-[470px] min-h-[200px] ${isRecommended ? 'opacity-100' : 'opacity-40'}`}>
@@ -70,28 +74,28 @@ const OfferCard = ({
                                         Required Credential and Issuer:
                                     </Typography.Text>
                                     <Flex>
-                                        <Tag className="items-center text-xs" color={isSelected ? 'green' : 'default'}>
-                                            <Link href={issuerVcSchema ? issuerVcSchema : 'http://localhost:3000'} target="_blank" style={{ color: isSelected ? 'green' : 'default' }}>
+                                        <Tag className="items-center text-xs" color={hasClaims ? 'green' : 'default'}>
+                                            <Link href={issuerVcSchema ? issuerVcSchema : 'http://localhost:3000'} target="_blank" style={{ color: hasClaims ? 'green' : 'default' }}>
                                                 View Credential Structure
                                             </Link>
                                         </Tag>
                                     </Flex>
                                     <Flex>
-                                        <Tag color={isSelected ? 'green' : 'default'}>
-                                            <Typography.Text style={{ color: isSelected ? '#16a34a' : 'inherit' }} copyable>
+                                        <Tag color={hasClaims ? 'green' : 'default'}>
+                                            <Typography.Text style={{ color: hasClaims ? '#16a34a' : 'inherit' }} copyable>
                                                 {`${issuerDid?.slice(0, 14)}...${issuerDid?.slice(-6)}`}
                                             </Typography.Text>
                                         </Tag>
                                     </Flex>
                                 </Flex>
                                 <Flex className="items-center">
-                                    {isSelected && <CheckCircleFilled style={{ color: "#16a34a" }} />}
+                                    {hasClaims && <CheckCircleFilled style={{ color: "#16a34a" }} />}
                                 </Flex>
                             </>
                         )
                         : (
                             <Flex>
-                                <Tag color={isSelected ? 'green' : 'default'}>
+                                <Tag color={hasClaims ? 'green' : 'default'}>
                                     <Typography.Text>
                                         No Required Credentials
                                     </Typography.Text>

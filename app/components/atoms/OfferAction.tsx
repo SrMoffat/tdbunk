@@ -1,25 +1,38 @@
 import { Button, Flex } from "antd";
+import React from "react";
 
 export interface AssetExachangeActionProps {
-    showModal: () => void;
     cta: string;
+    offering: any;
     pfiName: string;
+    selectedOffering: any
+    showModal: () => void;
+    setSelectedOffering: React.Dispatch<React.SetStateAction<any>>
 }
 
 const AssetExachangeAction = ({
-    showModal,
+    cta,
     pfiName,
-    cta
+    offering,
+    showModal,
+    selectedOffering,
+    setSelectedOffering,
 }: AssetExachangeActionProps) => {
     const text = pfiName
         ? cta
         : 'Coming Soon'
+
+    const handleButtonClicked = () => {
+        showModal()
+        setSelectedOffering(offering)
+        console.log("Offering selected", offering)
+    }
     return (
         <Flex className="flex-col w-full items-start justify-end">
             <Flex>
                 <Button
                     disabled={!pfiName}
-                    onClick={() => showModal()}
+                    onClick={handleButtonClicked}
                     type="primary"
                 >
                     {text}

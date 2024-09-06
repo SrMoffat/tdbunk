@@ -53,8 +53,14 @@ const OfferingDetails = (props: any) => {
         campaignAmount,
         setSelectedCard,
         offering: values,
+        selectedOffering,
+        setSelectedOffering,
         unformattedOfferings,
     } = props
+
+    console.log("<OfferingDetails />", {
+        selectedOffering
+    })
 
     const [isLoading, setIsLoading] = useState(false)
     const [showModal, setShowModal] = useState(false)
@@ -207,8 +213,9 @@ const OfferingDetails = (props: any) => {
                 offeringToCurrencyMethods={offeringToCurrencyMethods}
             />
             : <Credentials
-                credentials={credentials}
+                offering={values}
                 isSelected={isSelected}
+                credentials={credentials}
                 selectedCard={selectedCard}
                 setIsSelected={setIsSelected}
                 setSelectedCard={setSelectedCard}
@@ -310,6 +317,8 @@ const OfferingDetails = (props: any) => {
 
     const isButtonDisabled = !activateButton
 
+    console.log("Required Claims Exists", offering?.requiredClaimsExist)
+
     return (
         <List.Item className="flex flex-row gap-2">
             <Modal
@@ -332,9 +341,12 @@ const OfferingDetails = (props: any) => {
                 fromUnit="1.0"
                 pfiDid={pfiDid}
                 pfiName={pfiName}
+                offering={rawOffering}
                 toUnit={offeringToCurrency?.unit}
+                selectedOffering={selectedOffering}
                 showPaymentModal={showPaymentModal}
                 offeringCreatedAt={offeringCreatedAt}
+                setSelectedOffering={setSelectedOffering}
                 toCurrencyCode={offeringToCurrency?.currencyCode}
                 offeringToCurrencyMethods={offeringToCurrencyMethods}
                 fromCurrencyCode={offeringFromCurrency?.currencyCode}
@@ -347,6 +359,7 @@ const OfferingDetails = (props: any) => {
                 offeringId={offeringId}
                 issuerVcSchema={issuerVcSchema}
                 isRecommended={Boolean(pfiName)}
+                hasRequiredClaims={offering?.requiredClaimsExist}
                 offeringToCurrencyMethods={offeringToCurrencyMethods}
             />
         </List.Item>

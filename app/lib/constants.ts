@@ -25,6 +25,7 @@ export enum CREDENTIAL_TYPES {
     KNOWN_CUSTOMER_CREDENTIAL = 'KnownCustomerCredential',
     EDUCATIONAL_CREDENTIAL = 'TDBunkEducationalCredential',
     PROFESSIONAL_CREDENTIAL = 'TDBunkProfessionalCredential',
+    OFFERING_REVIEW_CREDENTIAL = 'TDBunkOfferingReviewCredential',
 }
 
 export const VC_JWT_MIME_TYPE = 'application/vc+jwt'
@@ -105,3 +106,6 @@ export const OFFERINGS_LOCAL_STORAGE_KEY = 'TDBunk:Offerings'
 export const CREDENTIALS_LOCAL_STORAGE_KEY = 'TDBunk:Credentials'
 export const OFFERINGS_LAST_UPDATED = 'TDBunk:OfferingsLastUpdatedAt'
 export const SPECIAL_OFFERINGS_LOCAL_STORAGE_KEY = 'TDBunk:SpecialOfferings'
+export const STARTED_TRANSFER_AT_LOCAL_STORAGE_KEY = 'TDBunk:StartedTransferAt'
+export const SETTLED_TRANSFER_AT_LOCAL_STORAGE_KEY = 'TDBunk:SettledTransferAt'
+export const MARKET_CONVERSION_RATE_LOCAL_STORAGE_KEY = 'TDBunk:MarketConversionRate'

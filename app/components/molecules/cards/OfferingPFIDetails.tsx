@@ -45,13 +45,15 @@ const AssetExchangePFIDetails = ({
     setSelectedOffering,
     offeringToCurrencyMethods,
 }: AssetExchangePFIDetailsProps) => {
+
+    const { timeWithLabel } = getEstimatedSettlementTime(offeringToCurrencyMethods, true)
     return (
         <Card className={`w-full min-h-[200px] ${pfiName ? 'opacity-100' : 'opacity-40'}`}>
             <PFIDetails
                 pfiDid={pfiDid}
                 pfiName={pfiName}
                 createdAt={offeringCreatedAt}
-                estimatedSettlementTime={getEstimatedSettlementTime(offeringToCurrencyMethods, true)}
+                estimatedSettlementTime={timeWithLabel}
             />
             <Flex className="mt-3 justify-between">
                 <AssetExachangeAction

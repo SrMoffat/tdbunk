@@ -197,6 +197,9 @@ const MakePayment = (props: any) => {
         '100%': colorPrimary,
     };
 
+    const { timeWithLabel } = getEstimatedSettlementTime(offeringToCurrencyMethods, true)
+
+
     return (
         <Flex className={`gap-2 flex-col ${isLoading ? 'opacity-30' : 'opacity-100'}`}>
             {isRequestQuote ? (
@@ -245,7 +248,7 @@ const MakePayment = (props: any) => {
                                     pfiDid={pfiDid}
                                     pfiName={pfiName}
                                     createdAt={offeringCreatedAt}
-                                    estimatedSettlementTime={getEstimatedSettlementTime(offeringToCurrencyMethods, true)}
+                                    estimatedSettlementTime={timeWithLabel}
                                 />
                             </Card>
                         </Flex>

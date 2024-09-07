@@ -464,6 +464,63 @@ export const createEducationalCredential = async (details: any) => {
     }
 }
 
+export const createOfferingReviewCredential = async (web5: Web5Api, userBearerDid: any, details: any) => {
+    console.log("Details:createOfferingReviewCredential", {
+        details,
+        web5,
+        userBearerDid
+    })
+    try {
+        // // Create new credential
+        // const credential = await VerifiableCredential.create({
+        //     type: CREDENTIAL_TYPES.OFFERING_REVIEW_CREDENTIAL,
+        //     issuer: userBearerDid?.did.uri as string,
+        //     subject: details?.pfiDid,
+        //     expirationDate: ONE_YEAR_FROM_NOW.toISOString(),
+        //     data: details
+        // });
+
+        // console.log("Created Credential", {
+        //     credential,
+        //     userBearerDid,
+        //     details
+
+        // })
+
+        // // Sign VC
+        // const vc = await credential.sign({ did: bearerDid?.did as BearerDid });
+
+        // // Parse VC to get metadata
+        // const parsedVc = parseJwtToVc(vc)
+
+        // // Stpre VC in DWN
+        // const status = await storeVcJwtInDwn(web5, vc, did)
+
+
+        // const vcGranularTypes = parsedVc?.vcDataModel?.type
+        // const vcConcatenateTypes = vcGranularTypes.join(":")
+
+        // const storedVc = {
+        //     [vcConcatenateTypes]: [vc]
+        // }
+
+        // const result = {
+        //     did,
+        //     web5,
+        //     status,
+        //     storedVc,
+        //     bearerDid,
+        //     recoveryPhrase
+        // }
+
+        // return result
+
+    } catch (error: any) {
+        console.log("Error:createOfferingReviewCredential", error)
+
+    }
+}
+
 export const checkIfUserHasRequiredClaims = (credentials: any[], requiredClaims: any) => {
     let hasRequiredCreds = false
 

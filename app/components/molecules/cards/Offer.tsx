@@ -76,7 +76,9 @@ const OfferCard = ({
                                     <Flex>
                                         <Tag className="items-center text-xs" color={hasClaims ? 'green' : 'default'}>
                                             <Link href={issuerVcSchema ? issuerVcSchema : 'http://localhost:3000'} target="_blank" style={{ color: hasClaims ? 'green' : 'default' }}>
-                                                View Credential Structure
+                                                <Typography.Text style={{ color: hasClaims ? '#16a34a' : 'inherit' }} copyable>
+                                                    View Credential Structure
+                                                </Typography.Text>
                                             </Link>
                                         </Tag>
                                     </Flex>

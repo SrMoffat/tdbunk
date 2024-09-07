@@ -1,6 +1,6 @@
 import countries from "@/public/countries.json"
-
 import { LANDING_PAGE_TABS, DEBUNK_SOURCE, DEBUNK_CAMPAIGN_TYPE } from "@/app/lib/constants";
+import { formatDistanceToNow, differenceInSeconds, addSeconds } from "date-fns";
 
 export const isCampaign = (tab: LANDING_PAGE_TABS) => tab === LANDING_PAGE_TABS.CAMPAIGNS;
 
@@ -37,7 +37,7 @@ export const getFormattedOfferings = (offerings: any[], source: string, destinat
     let hops = []
 
     for (const offer of offerings) {
-        
+
         const offering = Object.values(offer!)[0] as any
 
         const [sourceCurrency, destinationCurrency] = offering?.pair
@@ -62,9 +62,27 @@ export const getFormattedOfferings = (offerings: any[], source: string, destinat
     }
 }
 
-export const getEstimatedSettlementTime = (methods: any[], fastest: boolean) => {
-    // Assumes time is in ms
+export const displayTimeWithLabel = (seconds: any) => {
+    const timeUnits = [
+        { unit: 'year', value: 60 * 60 * 24 * 365 },  // 1 year
+        { unit: 'month', value: 60 * 60 * 24 * 30 },  // 1 month (approx)
+        { unit: 'week', value: 60 * 60 * 24 * 7 },    // 1 week
+        { unit: 'day', value: 60 * 60 * 24 },         // 1 day
+        { unit: 'hour', value: 60 * 60 },             // 1 hour
+        { unit: 'minute', value: 60 }                 // 1 minute
+    ];
 
+    for (let i = 0; i < timeUnits.length; i++) {
+        const result = Math.floor(seconds / timeUnits[i].value);
+        if (result > 0) {
+            return `${result} ${timeUnits[i].unit}${result > 1 ? 's' : ''}`;
+        }
+    }
+    return `${seconds} second${seconds > 1 ? 's' : ''}`;
+}
+
+
+export const getEstimatedSettlementTime = (methods: any[], fastest: boolean) => {
     const estimates = new Set<number>()
 
     for (const method of methods) {
@@ -75,9 +93,14 @@ export const getEstimatedSettlementTime = (methods: any[], fastest: boolean) => 
     const slow = Math.max(...estimates)
     const fast = Math.min(...estimates)
 
-    return fastest
-        ? fast / 1000
-        : Math.round((slow + fast) / 2) / 1000
+    const timeInSeconds = fastest ? fast : slow
+
+    const timeWithLabel = displayTimeWithLabel(timeInSeconds)
+
+    return {
+        timeWithLabel,
+        timeInSeconds
+    }
 }
 
 export const formatRequiredClaims = (requiredClaims: any[]) => {

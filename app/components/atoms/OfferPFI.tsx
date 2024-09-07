@@ -7,7 +7,7 @@ export interface PFIDetailsProps {
     pfiDid: string;
     pfiName: string;
     createdAt: string;
-    estimatedSettlementTime: number;
+    estimatedSettlementTime: number | string;
 }
 
 const PFIDetails = (props: PFIDetailsProps) => {
@@ -49,13 +49,13 @@ const PFIDetails = (props: PFIDetailsProps) => {
             </Flex>
             <Flex className="flex-col gap-2">
                 <Tag className="items-center">
-                    <Rate style={{ fontSize: 11 }} disabled allowHalf defaultValue={2.5} />
+                    <Rate style={{ fontSize: 11, color: '#CC9933' }} disabled allowHalf defaultValue={2.5} />
                 </Tag>
                 <Flex className="justify-end">
                     <Tag className="items-center" color="gold">
                         <Typography.Text>
                             <ClockCircleOutlined className="mr-1" />
-                            {`${estimatedSettlementTime}s`}
+                            {`${estimatedSettlementTime}`}
                         </Typography.Text>
                     </Tag>
                 </Flex>

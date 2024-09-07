@@ -1,3 +1,4 @@
+import { MARKET_CONVERSION_RATE_LOCAL_STORAGE_KEY } from '@/app/lib/constants';
 import { Flex, Steps, Typography } from 'antd';
 import { useEffect, useState } from "react";
 
@@ -52,9 +53,11 @@ const MarketRate = (props: any) => {
                     // const dataPaid = await responsePaid.json()
                     // console.log("Use PAID API", dataPaid?.conversion_rate)
                     // setConvertedAmount(dataPaid?.conversion_rate)
+                    // localStorage.setItem(MARKET_CONVERSION_RATE_LOCAL_STORAGE_KEY, dataPaid?.conversion_rate)
                 } else {
                     // console.log("Use Free API", data)
                     setConvertedAmount(data?.rate)
+                    localStorage.setItem(MARKET_CONVERSION_RATE_LOCAL_STORAGE_KEY, data?.rate)
                 }
                 setIsLoading(false)
             } catch (error: any) {

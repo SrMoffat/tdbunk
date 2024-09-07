@@ -3,14 +3,105 @@ import AssetExchangePFIDetails from "@/app/components/molecules/cards/OfferingPF
 import CredentialsForm from '@/app/components/molecules/forms/Credentials';
 import MakePayment from "@/app/components/molecules/forms/MakePayment";
 import { Credentials } from "@/app/components/organisms/Credentials";
-import { INTERVALS_LOCAL_STORAGE_KEY, PFIs, TBDEX_MESSAGE_TYPES_TO_STATUS, TDBUNK_CANCEL_REASON } from "@/app/lib/constants";
+import { INTERVALS_LOCAL_STORAGE_KEY, MARKET_CONVERSION_RATE_LOCAL_STORAGE_KEY, PFIs, SETTLED_TRANSFER_AT_LOCAL_STORAGE_KEY, STARTED_TRANSFER_AT_LOCAL_STORAGE_KEY, TBDEX_MESSAGE_TYPES_TO_STATUS, TDBUNK_CANCEL_REASON } from "@/app/lib/constants";
 import { pollExchanges, sendCloseMessage, sendOrderMessage } from "@/app/lib/tbdex";
-import { getCurrencyFlag } from "@/app/lib/utils";
+import { displayTimeWithLabel, getCurrencyFlag, getEstimatedSettlementTime } from "@/app/lib/utils";
+import { createOfferingReviewCredential } from "@/app/lib/web5";
 import { useNotificationContext } from "@/app/providers/NotificationProvider";
 import { Offering } from "@tbdex/http-client";
-import { Button, List, Modal } from "antd";
-import { formatDistanceToNow } from 'date-fns';
+import { Button, List, Modal, Rate, Flex, Typography, Input, Tag, Card } from "antd";
+import { formatDistanceToNow, differenceInSeconds } from 'date-fns';
 import { SetStateAction, useEffect, useState } from "react";
+
+const ReviewOffering = (props: any) => {
+    const { offering, setOfferingReview } = props
+
+    const { 1: toMethods } = offering.pair
+
+    console.log("Offering ", offering)
+
+    const { timeWithLabel: estimatedTime, timeInSeconds } = getEstimatedSettlementTime(toMethods.methods, true);
+
+    const [value, setValue] = useState(0);
+    const [comment, setComment] = useState('');
+    const desc = ['terrible', 'bad', 'normal', 'good', 'wonderful'];
+
+    const startTime = new Date() // localStorage?.getItem(STARTED_TRANSFER_AT_LOCAL_STORAGE_KEY)
+    const end = new Date()
+    const endTime = end.setHours(end.getHours() + 1) // localStorage?.getItem(SETTLED_TRANSFER_AT_LOCAL_STORAGE_KEY)
+
+    const txnTime = differenceInSeconds(endTime, startTime)
+    const txnTimeWithLabel = displayTimeWithLabel(txnTime)
+
+    const marketRate = localStorage.getItem(MARKET_CONVERSION_RATE_LOCAL_STORAGE_KEY)
+
+    useEffect(() => {
+        const reviewSubmission = {
+            offeringId: offering?.id,
+            estimatedSettlement: timeInSeconds,
+            actualSettlement: txnTime,
+            marketRate,
+            offeringRate: toMethods.unit,
+            stars: value,
+            comment
+        };
+        console.log("Review Subnission", reviewSubmission)
+        setOfferingReview(reviewSubmission)
+
+    }, [value, comment])
+
+    return (
+        <Flex gap="middle" vertical>
+            <Flex className="gap-4">
+                <Card>
+                    <Flex className="flex-col gap-1 flex">
+                        <Typography.Text className="font-extrabold">Settlement Time</Typography.Text>
+                        <Flex className="gap-1">
+                            <Typography.Text>Estimated:</Typography.Text>
+                            <Tag>{estimatedTime}</Tag>
+                        </Flex>
+                        <Flex className="gap-1">
+                            <Typography.Text>Actual:</Typography.Text>
+                            <Tag>{txnTimeWithLabel}</Tag>
+                        </Flex>
+                    </Flex>
+                </Card>
+                <Card>
+                    <Flex className="flex-col gap-1 flex">
+                        <Typography.Text className="font-extrabold">Exchange Rate</Typography.Text>
+                        <Flex className="gap-1">
+                            <Typography.Text>Market Rate:</Typography.Text>
+                            <Tag>{marketRate}</Tag>
+                        </Flex>
+                        <Flex className="gap-1">
+                            <Typography.Text>Offering Rate:</Typography.Text>
+                            <Tag>{toMethods.unit}</Tag>
+                        </Flex>
+                    </Flex>
+                </Card>
+            </Flex>
+            <Typography.Text>How would you rate the experience with the transfer?</Typography.Text>
+            <Flex>
+                <Tag className="items-center p-2">
+                    <Rate tooltips={desc} onChange={setValue} value={value} style={{ color: '#CC9933' }} />
+                </Tag>
+            </Flex>
+            {
+                value
+                    ? (
+                        <Input.TextArea
+                            value={comment}
+                            onChange={(e) => setComment(e?.target?.value)}
+                            placeholder="Comment on the experience with the transfer."
+                            autoSize={{ minRows: 3, maxRows: 5 }}
+                        />
+                    )
+                    : null
+            }
+
+        </Flex>
+    )
+}
 
 export interface AssetExchangePFIDetailsProps {
     cta: string;
@@ -43,6 +134,7 @@ function clearAllIntervals(intervalIds: string[]) {
 
 const OfferingDetails = (props: any) => {
     const {
+        web5,
         isSelected,
         credentials,
         stateCredentials,
@@ -68,6 +160,7 @@ const OfferingDetails = (props: any) => {
     const [isCompleted, setIsCompleted] = useState(false)
     const [isCancelling, setIsCancelling] = useState(false)
     const [activateButton, setActivateButton] = useState(false)
+    const [offeringReview, setOfferingReview] = useState({})
     const [relevantExchange, setRelevantExchanges] = useState<any>()
     const [requiredPaymentDetails, setRequiredPaymentDetails] = useState<any>({
         payin: {},
@@ -119,11 +212,24 @@ const OfferingDetails = (props: any) => {
         setShowModal(true)
     }
 
+    const dummyIsCompleted = true
+
+
     const handleOk = async () => {
+        setIsLoading(true)
+
         if (isCancelled) return
 
-        setIsLoading(true)
-        if (isRequestQuote) {
+        if (dummyIsCompleted) {
+            // Create review VC
+            const credential = await createOfferingReviewCredential(web5, userBearerDid, offeringReview)
+
+            console.log("Create Review VC", {
+                offeringReview,
+                credential
+            })
+
+        } else if (isRequestQuote) {
             // Here ==>
             console.log("requiredPaymentDetails Make Transfer", {
                 requiredPaymentDetails,
@@ -141,6 +247,9 @@ const OfferingDetails = (props: any) => {
                 stateCredentials
             })
         } else {
+            // Start timer for the transfer
+            localStorage?.setItem(STARTED_TRANSFER_AT_LOCAL_STORAGE_KEY, JSON.stringify(new Date()))
+
             // To Do: Check if the offering allows cancellations also aler user after they request quote
             const orderMessage = await sendOrderMessage({
                 pfiDid,
@@ -159,10 +268,14 @@ const OfferingDetails = (props: any) => {
     };
 
     const handleCancel = async () => {
-        if (isRequestQuote || isCancelled) {
+        if (dummyIsCompleted) {
+            // Create a VC without user review?
+            console.log("Canelled out of a review of PFI", offeringReview)
+        } else if (isRequestQuote || isCancelled) {
             setShowModal(false);
         } else {
             setIsCancelling(true)
+            // Start Timer for Cancelling
 
             // To Do: Check if the offering allows cancellations also aler user after they request quote
             const closeMessage = await sendCloseMessage({
@@ -174,6 +287,8 @@ const OfferingDetails = (props: any) => {
 
             if (closeMessage) {
                 console.log("Cancel Message returned", closeMessage)
+                // End Timer for Cancelling
+
                 // To Do: Reset form and all relevant state
 
             }
@@ -248,9 +363,11 @@ const OfferingDetails = (props: any) => {
         ? 'Cancel'
         : `${isCancelled ? 'Close' : 'Cancel Transfer'}`
 
-    const submitText = isRequestQuote
+    const submitText = false
         ? 'Request for Quote'
-        : `Transfer ${destinationCurrencyCode} ${campaignAmount}`
+        : dummyIsCompleted
+            ? 'Review Transfer'
+            : `Transfer ${destinationCurrencyCode} ${campaignAmount}`
 
     useEffect(() => {
         const intervalId = pollExchanges(userBearerDid, setRelevantExchanges)
@@ -306,6 +423,9 @@ const OfferingDetails = (props: any) => {
 
     useEffect(() => {
         if (isCompleted) {
+            // End timer for the transfer
+            localStorage?.setItem(SETTLED_TRANSFER_AT_LOCAL_STORAGE_KEY, JSON.stringify(new Date()))
+
             // To Do: Reset form and all relevant state
             notify?.('success', {
                 message: 'Transaction Complete!',
@@ -319,22 +439,28 @@ const OfferingDetails = (props: any) => {
 
     console.log("Required Claims Exists", offering?.requiredClaimsExist)
 
+
     return (
         <List.Item className="flex flex-row gap-2">
             <Modal
                 width={800}
                 open={showModal}
-                title={modalTitle}
-                footer={isPaymentStep ? [
+                title={dummyIsCompleted ? 'Review Offering' : modalTitle}
+                footer={isPaymentStep || dummyIsCompleted ? [
                     <Button danger key="back" onClick={handleCancel} loading={isCancelling}>
                         {cancelText}
                     </Button>,
-                    <Button loading={isLoading} key="submit" type="primary" onClick={handleOk} disabled={isButtonDisabled || isCancelling}>
+                    <Button loading={isLoading} key="submit" type="primary" onClick={handleOk} disabled={!dummyIsCompleted}>
+                    {/* <Button loading={isLoading} key="submit" type="primary" onClick={handleOk} disabled={isButtonDisabled || isCancelling || !dummyIsCompleted}> */}
                         {submitText}
                     </Button>
                 ] : []}
             >
-                {flow}
+                {
+                    dummyIsCompleted
+                        ? <ReviewOffering offering={offering} setOfferingReview={setOfferingReview} />
+                        : flow
+                }
             </Modal>
             <AssetExchangePFIDetails
                 cta={cta}

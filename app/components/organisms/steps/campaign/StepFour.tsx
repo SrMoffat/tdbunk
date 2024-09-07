@@ -35,8 +35,7 @@ const StepFour = () => {
         unformattedOfferings,
         selectedDestinationCurrency,
     } = useTbdexContext()
-
-    const { userBearerDid } = useWeb5Context()
+    const {  web5, userBearerDid } = useWeb5Context()
 
     const { campaignAmount } = useCreateCampaignContext()
 
@@ -150,6 +149,7 @@ const StepFour = () => {
                         className="mt-4"
                         renderItem={(item, index) => <OfferingDetails
                             key={index}
+                            web5={web5}
                             offering={item}
                             isSelected={isSelected}
                             stateCredentials={credentials}

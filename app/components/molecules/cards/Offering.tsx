@@ -212,21 +212,25 @@ const OfferingDetails = (props: any) => {
         setShowModal(true)
     }
 
-    const dummyIsCompleted = true
-
-
     const handleOk = async () => {
         setIsLoading(true)
 
         if (isCancelled) return
 
-        if (dummyIsCompleted) {
+        if (isCompleted) {
             // Create review VC
-            const credential = await createOfferingReviewCredential(web5, userBearerDid, offeringReview)
+            const status = await createOfferingReviewCredential(
+                web5,
+                userBearerDid,
+                {
+                    ...offeringReview,
+                    pfiDid
+                }
+            )
 
             console.log("Create Review VC", {
                 offeringReview,
-                credential
+                status
             })
 
         } else if (isRequestQuote) {
@@ -268,7 +272,7 @@ const OfferingDetails = (props: any) => {
     };
 
     const handleCancel = async () => {
-        if (dummyIsCompleted) {
+        if (isCompleted) {
             // Create a VC without user review?
             console.log("Canelled out of a review of PFI", offeringReview)
         } else if (isRequestQuote || isCancelled) {
@@ -363,9 +367,9 @@ const OfferingDetails = (props: any) => {
         ? 'Cancel'
         : `${isCancelled ? 'Close' : 'Cancel Transfer'}`
 
-    const submitText = false
+    const submitText = isRequestQuote
         ? 'Request for Quote'
-        : dummyIsCompleted
+        : isCompleted
             ? 'Review Transfer'
             : `Transfer ${destinationCurrencyCode} ${campaignAmount}`
 
@@ -445,19 +449,18 @@ const OfferingDetails = (props: any) => {
             <Modal
                 width={800}
                 open={showModal}
-                title={dummyIsCompleted ? 'Review Offering' : modalTitle}
-                footer={isPaymentStep || dummyIsCompleted ? [
+                title={isCompleted ? 'Review Offering' : modalTitle}
+                footer={isPaymentStep || isCompleted ? [
                     <Button danger key="back" onClick={handleCancel} loading={isCancelling}>
                         {cancelText}
                     </Button>,
-                    <Button loading={isLoading} key="submit" type="primary" onClick={handleOk} disabled={!dummyIsCompleted}>
-                    {/* <Button loading={isLoading} key="submit" type="primary" onClick={handleOk} disabled={isButtonDisabled || isCancelling || !dummyIsCompleted}> */}
+                        <Button loading={isLoading} key="submit" type="primary" onClick={handleOk} disabled={isButtonDisabled || isCancelling || !isCompleted}>
                         {submitText}
                     </Button>
                 ] : []}
             >
                 {
-                    dummyIsCompleted
+                    isCompleted
                         ? <ReviewOffering offering={offering} setOfferingReview={setOfferingReview} />
                         : flow
                 }

@@ -4,7 +4,7 @@ import { Button, Card, Flex, Form, Input, InputNumber, Space, theme, Typography 
 import { useState } from "react";
 
 const MakeTransfer = (props: any) => {
-    const { offering, campaignAmount, requiredPaymentDetails, relevantExchange } = props
+    const { offering, campaignAmount, requiredPaymentDetails, feeDetails } = props
 
     const offeringData = offering?.data
 
@@ -14,8 +14,7 @@ const MakeTransfer = (props: any) => {
     const fromCurrency = payin?.currencyCode
     const toCurrency = payout?.currencyCode
 
-    const payinMethods = payin?.methods
-    const payoutMethods = payout?.methods
+    const exchangeRate = offeringData?.payoutUnitsPerPayinUnit
 
     const fromCurrencyFlag = getCurrencyFlag(fromCurrency)
     const toCurrencyFlag = getCurrencyFlag(toCurrency)
@@ -39,7 +38,7 @@ const MakeTransfer = (props: any) => {
                             style={{ width: "100%" }}
                         >
                             <Input.Password
-                                style={{ width: "100%" }}
+                                style={{ width: "100%", color: "white" }}
                                 name={field}
                                 disabled
                                 defaultValue={details[field]}
@@ -64,15 +63,15 @@ const MakeTransfer = (props: any) => {
         )
     }
 
-    console.log("received values ==>", requiredPaymentDetails)
+    console.log("received values ==>", {
+        feeDetails
+    })
 
-    const { rfq, quote } = relevantExchange
     return (
-        <Flex className="w-full gap-1 flex-col">
-            <Button className="mb-3" style={{ width: 140 }} onClick={() => setPasswordVisible((prevState) => !prevState)}>
+        <Flex className="w-full gap-4 flex-col">
+            <Button style={{ width: 140 }} onClick={() => setPasswordVisible((prevState) => !prevState)}>
                 {passwordVisible ? 'Hide Details' : 'Show Details'}
             </Button>
-
             <Flex className="w-full gap-3">
                 <Card className="w-full">
                     <Flex className="w-full">
@@ -94,8 +93,8 @@ const MakeTransfer = (props: any) => {
                                 <Typography.Text className="font-bold " style={{ color: colorBgContainer }}>.</Typography.Text>
                                 <InputNumber
                                     disabled
-                                    style={{ width: '100%' }}
-                                    value={quote?.fromAmountWithFee}
+                                    style={{ width: '100%', color: 'white' }}
+                                    value={campaignAmount}
                                     defaultValue={campaignAmount}
                                 />
                             </Flex>
@@ -128,8 +127,9 @@ const MakeTransfer = (props: any) => {
                                 <Typography.Text className="font-bold " style={{ color: colorBgContainer }}>.</Typography.Text>
                                 <InputNumber
                                     disabled
-                                    style={{ width: '100%', color: '#ffffff' }}
-                                // value={toValue}
+                                    style={{ width: '100%', color: 'white' }}
+                                    value={exchangeRate * campaignAmount}
+                                    defaultValue={exchangeRate * campaignAmount}
                                 />
                             </Flex>
                         </Space.Compact>
@@ -139,6 +139,22 @@ const MakeTransfer = (props: any) => {
                     </Flex>
                 </Card>
             </Flex>
+            <Card>
+                <Flex className="w-full items-end flex-col">
+                    <Flex className=" gap-3">
+                        <Typography.Text className="text-bold">Transaction Fee:</Typography.Text>
+                        <Typography.Text>{`${feeDetails?.transactionFee}`}</Typography.Text>
+                    </Flex>
+                    <Flex className="gap-3">
+                        <Typography.Text className="text-bold">Platform Fee:</Typography.Text>
+                        <Typography.Text>{`${feeDetails?.platformFee}`}</Typography.Text>
+                    </Flex>
+                    <Flex className="gap-3">
+                        <Typography.Text className="text-bold">Total Fees:</Typography.Text>
+                        <Typography.Text>{`${feeDetails?.total}`}</Typography.Text>
+                    </Flex>
+                </Flex>
+            </Card>
         </Flex>
     )
 }

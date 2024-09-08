@@ -106,3 +106,6 @@ You may work individually or within a team (max of 2 people per team).
 
 
 https://github.com/TBD54566975/tbdex/tree/main/specs/protocol#reserved-paymentmethod-kinds
+
+Payment Processors (e.g., PayPal, Stripe):
+Typically charge around 2.9% + $0.30 per transaction. This is a common standard for payment processing services and can serve as a reference point.

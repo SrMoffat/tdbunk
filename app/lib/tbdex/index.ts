@@ -2,8 +2,8 @@ import { Rfq, TbdexHttpClient, Close, Quote, Order, OrderStatus } from '@tbdex/h
 import { BearerDid } from '@web5/dids';
 import { PFIs, TBDEX_MESSAGE_TYPES, TBDEX_MESSAGE_TYPES_TO_STATUS, TDBUNK_CANCEL_REASON } from "@/app/lib/constants";
 
-// Poll every 3 seconds
-const EXCHANGES_POLLING_INTERVAL_MS = 3000;
+// Poll every 10 seconds
+const EXCHANGES_POLLING_INTERVAL_MS = 10000;
 
 export interface CloseMessageArgs {
     pfiDid: string;
@@ -342,24 +342,27 @@ export const getRfqAndQuoteRenderDetails = (rfq: Rfq, quote: Quote) => {
     }
 }
 
+export const getAllPfiExchanges = async (bearerDid: any) => {
+    const exchangesResults = []
+
+    for (const pfi of PFIs) {
+        const exchanges = await TbdexHttpClient.getExchanges({
+            pfiDid: pfi.did,
+            did: bearerDid.did
+        });
+
+        exchangesResults.push(...exchanges)
+    }
+
+    return exchangesResults
+}
+
 export const pollExchanges = (bearer: any, callback: any) => {
     const fetchAllExchanges = async () => {
         if (!bearer) return
 
         try {
-            // const exchanges = await fetchExchanges({
-            //     userBearerDid: contextUserBearerDid
-            // });
-            const exchangesResults = []
-
-            for (const pfi of PFIs) {
-                const exchanges = await TbdexHttpClient.getExchanges({
-                    pfiDid: pfi.did,
-                    did: bearer.did
-                });
-
-                exchangesResults.push(...exchanges)
-            }
+            const exchangesResults = await getAllPfiExchanges(bearer)
 
             for (const exchange of exchangesResults) {
                 const mostRecentMessage = exchange[exchange.length - 1]

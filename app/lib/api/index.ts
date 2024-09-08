@@ -31,7 +31,7 @@ export const generateUltimateIdentifierVc = async (data: UserDetails) => {
 
 export const getExchangeRate = async (data: ExchangeRate) => {
     const { source, destination } = data
-    const response = await fetch(`/api/rates`, )
+    const response = await fetch(`/api/rates`,)
 
     const vc = await response.json()
 
@@ -48,4 +48,31 @@ export async function fetchUserList(countryName: string): Promise<UserValue[]> {
         label: `${countryName} ${flag}`,
         value: countryCode
     }))
+}
+
+export const getFixedRateConversion = async ({
+    source,
+    destination,
+    amount
+}: {
+    source: string | number;
+    destination: string | number;
+    amount: string | number;
+}) => {
+    try {
+        const response = await fetch('/api/conversions', {
+            method: 'POST',
+            body: JSON.stringify({
+                source,
+                destination,
+                amount
+            })
+        })
+
+        const newAmount = await response.json()
+
+        return newAmount?.conversion_result
+    } catch (error: any) {
+        console.error("getFixedRateConversion: Conversion failed", error)
+    }
 }

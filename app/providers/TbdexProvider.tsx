@@ -7,6 +7,7 @@ import { useWeb5Context } from '@/app/providers/Web5Provider';
 import { Offering, Rfq, TbdexHttpClient } from '@tbdex/http-client';
 import { PresentationDefinitionV2, PresentationExchange } from '@web5/credentials';
 import { createContext, PropsWithChildren, useContext, useEffect, useState } from "react";
+import { getFixedRateConversion } from '../lib/api';
 
 export interface CredentialProp {
     [key: string]: string[]
@@ -128,19 +129,14 @@ const TbdexContextProvider = ({ children }: PropsWithChildren) => {
                 const source = monopolyMoney?.currency
                 const destination = selectedCurrency as string
 
-                // const response = await fetch('/api/conversions', {
-                //     method: 'POST',
-                //     body: JSON.stringify({
-                //         source,
-                //         destination,
-                //         amount
-                //     })
+                // const newAmount = await getFixedRateConversion({
+                //     source,
+                //     destination,
+                //     amount
                 // })
 
-                // const newAmount = await response.json()
-
                 setMonopolyMoney({
-                    // amount: newAmount?.conversion_result,
+                    // amount: newAmount,
                     amount: monopolyMoney?.amount,
                     currency: destination
                 })

@@ -5,7 +5,7 @@ import MakePayment from "@/app/components/molecules/forms/MakePayment";
 import { Credentials } from "@/app/components/organisms/Credentials";
 import { INTERVALS_LOCAL_STORAGE_KEY, MARKET_CONVERSION_RATE_LOCAL_STORAGE_KEY, PFIs, SETTLED_TRANSFER_AT_LOCAL_STORAGE_KEY, STARTED_TRANSFER_AT_LOCAL_STORAGE_KEY, TBDEX_MESSAGE_TYPES_TO_STATUS, TDBUNK_CANCEL_REASON } from "@/app/lib/constants";
 import { pollExchanges, sendCloseMessage, sendOrderMessage } from "@/app/lib/tbdex";
-import { displayTimeWithLabel, getCurrencyFlag, getEstimatedSettlementTime } from "@/app/lib/utils";
+import { displayTimeWithLabel, getCurrencyFlag, getEstimatedSettlementTime, getPlatformFees } from "@/app/lib/utils";
 import { createOfferingReviewCredential } from "@/app/lib/web5";
 import { useNotificationContext } from "@/app/providers/NotificationProvider";
 import { Offering } from "@tbdex/http-client";
@@ -136,8 +136,12 @@ const OfferingDetails = (props: any) => {
     const {
         web5,
         money,
+        isCancelled,
         isSelected,
         credentials,
+        isCompleted,
+        setIsCompleted,
+        setIsCancelled,
         stateCredentials,
         selectedCard,
         setIsSelected,
@@ -157,12 +161,10 @@ const OfferingDetails = (props: any) => {
 
     const [isLoading, setIsLoading] = useState(false)
     const [showModal, setShowModal] = useState(false)
-    const [isCancelled, setIsCancelled] = useState(false)
-    const [isCompleted, setIsCompleted] = useState(false)
     const [isCancelling, setIsCancelling] = useState(false)
     const [activateButton, setActivateButton] = useState(false)
     const [offeringReview, setOfferingReview] = useState({})
-    const [notifiedCompletion, setNotifiedCompletion] = useState(false)
+    const [feeDetails, setFeeDetails] = useState({})
     const [relevantExchange, setRelevantExchanges] = useState<any>()
     const [requiredPaymentDetails, setRequiredPaymentDetails] = useState<any>({
         payin: {},
@@ -230,7 +232,7 @@ const OfferingDetails = (props: any) => {
                 }
             )
 
-            if(status?.status.code === 202){
+            if (status?.status.code === 202) {
                 setIsLoading(false)
                 notify?.('success', {
                     message: 'Review Submitted!',
@@ -319,13 +321,14 @@ const OfferingDetails = (props: any) => {
             : 'Select Credential'
         : 'Request Credentials'
 
-    const flow = hasRequiredCredentials
-        ? isSelected
+    const flow = true
+        ? true
             ? <MakePayment
                 money={money}
                 pfiDid={pfiDid}
                 pfiName={pfiName}
                 offering={rawOffering}
+                feeDetails={feeDetails}
                 userBearerDid={userBearerDid}
                 isRequestQuote={isRequestQuote}
                 campaignAmount={campaignAmount}
@@ -417,35 +420,38 @@ const OfferingDetails = (props: any) => {
                 // setShowModal(false)
                 console.log("Transfer complete")
             }
+
+            const quoteMessage = relevantExchange?.mostRecentMessage
+            const quoteMessageData = quoteMessage?.data
+            const quoteMessageMetadata = quoteMessage?.metadata
+            const quotePayin = quoteMessageData?.payin
+            const quotePayout = quoteMessageData?.payout
+            const quotePayinFee = quotePayin?.fee ?? 0
+            const quotePayoutFee = quotePayout?.fee ?? 0
+            const transactionFee = quotePayinFee + quotePayoutFee
+
+            const feeDetails = {
+                payin: quotePayinFee,
+                payout: quotePayoutFee,
+                transactionFee,
+            }
+
+            getPlatformFees(quotePayin).then((platformFee) => {
+                const details = {
+                    ...feeDetails,
+                    platformFee,
+                    total: feeDetails.transactionFee + platformFee
+                }
+
+                setFeeDetails(details)
+                console.log("tdbunkPlatformFees", details)
+            })
+
         }
 
         console.log("received message", relevantExchange)
     }, [relevantExchange])
 
-    useEffect(() => {
-        if (isCancelled) {
-            notify?.('error', {
-                message: 'Transaction Cancelled!',
-                description: 'Your transaction has been cancelled!'
-            })
-            // setIsCancelled(false)
-        }
-    }, [isCancelled])
-
-    useEffect(() => {
-        if (isCompleted && !notifiedCompletion) {
-            // End timer for the transfer
-            localStorage?.setItem(SETTLED_TRANSFER_AT_LOCAL_STORAGE_KEY, JSON.stringify(new Date()))
-
-            // To Do: Reset form and all relevant state
-            notify?.('success', {
-                message: 'Transaction Complete!',
-                description: 'Your transaction has been completed succesfully!'
-            })
-            setNotifiedCompletion(true)
-            // setIsCompleted(false)
-        }
-    }, [isCompleted])
 
     const isButtonDisabled = !activateButton
 

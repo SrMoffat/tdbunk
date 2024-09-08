@@ -7,24 +7,51 @@ import DebunkCampaignStats from "@/app/components/molecules/description/DebunkCa
 import { CredentialStorage } from "@/app/components/molecules/forms/Credentials";
 import { Credentials } from "@/app/components/organisms/Credentials";
 import useBrowserStorage from "@/app/hooks/useLocalStorage";
-import { CREDENTIALS_LOCAL_STORAGE_KEY, LOCAL_STORAGE_KEY, OFFERINGS_LOCAL_STORAGE_KEY, SPECIAL_OFFERINGS_LOCAL_STORAGE_KEY } from "@/app/lib/constants";
+import { CREDENTIALS_LOCAL_STORAGE_KEY, LOCAL_STORAGE_KEY, OFFERINGS_LOCAL_STORAGE_KEY, SETTLED_TRANSFER_AT_LOCAL_STORAGE_KEY, SPECIAL_OFFERINGS_LOCAL_STORAGE_KEY } from "@/app/lib/constants";
+import { getAllPfiExchanges } from "@/app/lib/tbdex";
 import { getFormattedOfferings } from "@/app/lib/utils";
 import { checkIfUserHasRequiredClaims } from "@/app/lib/web5";
 import { useCreateCampaignContext } from "@/app/providers/CreateCampaignProvider";
+import { useNotificationContext } from "@/app/providers/NotificationProvider";
 import { useTbdexContext } from "@/app/providers/TbdexProvider";
 import { useWeb5Context } from "@/app/providers/Web5Provider";
-import { Avatar, Badge, Button, Card, Flex, Layout, List, theme, Tooltip, Typography } from "antd";
+import { Avatar, Badge, Button, Card, Flex, Layout, List, Modal, theme, Typography } from "antd";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 
-const CancelledTransactions = () => {
+const CancelledTransactions = (props: any) => {
+    const {
+        userBearerDid
+    } = props
     const {
         token: { colorPrimary }
     } = theme.useToken()
+    const [showModal, setShowModal] = useState(false)
+
+    const handleCancel = () => {
+        setShowModal(false)
+    }
+
+    const handleViewCancelTransactions = () => {
+        setShowModal(true)
+    }
+
     return (
         <Flex className="w-full ml-4">
+            <Modal
+                width={800}
+                open={showModal}
+                title="Cancelled Transactions"
+                footer={[
+                    <Button danger key="back" onClick={handleCancel}>
+                        Close
+                    </Button>
+                ]}
+            >
+                Cancelled Transactions Here
+            </Modal>
             <Flex className="items-center gap-1">
-                <Button className="pl-0">
+                <Button className="pl-0" onClick={handleViewCancelTransactions}>
                     <Badge count={2} style={{ color: "white" }}>
                         <Avatar shape='square' style={{ backgroundColor: colorPrimary, borderTopRightRadius: 0, borderBottomRightRadius: 0 }} icon={<Image src={Cancelled} alt="factChecker" width={50} height={50} />} />
                     </Badge>
@@ -43,7 +70,10 @@ const StepFour = () => {
 
     const [isLoading, setIsLoading] = useState(false)
     const [isSelected, setIsSelected] = useState(false)
+    const [isCancelled, setIsCancelled] = useState(false)
+    const [isCompleted, setIsCompleted] = useState(false)
     const [selectedCard, setSelectedCard] = useState('')
+    // const [notifiedCompletion, setNotifiedCompletion] = useState(false)
     const [selectedOffering, setSelectedOffering] = useState<any>()
     const [offerings, setOfferings] = useState<any[]>([])
 
@@ -56,6 +86,8 @@ const StepFour = () => {
         selectedDestinationCurrency,
     } = useTbdexContext()
     const { web5, userBearerDid } = useWeb5Context()
+
+    const { notify } = useNotificationContext()
 
     const { campaignAmount } = useCreateCampaignContext()
 
@@ -139,6 +171,47 @@ const StepFour = () => {
 
     const hasCancelledTransactions = true
 
+
+    useEffect(() => {
+        const getCloseMessageExchanges = async () => {
+            try {
+                if (userBearerDid) {
+                    const exchangesResults = await getAllPfiExchanges(userBearerDid)
+                    console.log("Fetch Cancelled Transactions", exchangesResults)
+                    return exchangesResults
+                } else {
+                    console.log("Fetch Cancelled No Bearer")
+
+                }
+            } catch (error: any) {
+                console.error("Fetch Cancelled Transactions Error", error)
+            }
+        }
+        if (isCancelled) {
+            notify?.('error', {
+                message: 'Transaction Cancelled!',
+                description: 'Your transaction has been cancelled!'
+            })
+            // setIsCancelled(false)
+            getCloseMessageExchanges()
+        }
+    }, [isCancelled])
+
+    useEffect(() => {
+        if (isCompleted) {
+            // End timer for the transfer
+            localStorage?.setItem(SETTLED_TRANSFER_AT_LOCAL_STORAGE_KEY, JSON.stringify(new Date()))
+
+            // To Do: Reset form and all relevant state
+            notify?.('success', {
+                message: 'Transaction Complete!',
+                description: 'Your transaction has been completed succesfully!'
+            })
+            // setNotifiedCompletion(true)
+            // setIsCompleted(false)
+        }
+    }, [isCompleted])
+
     return <Layout style={{ backgroundColor: colorBgContainer }}>
         <Flex className="flex-col">
             <Flex className="justify-between">
@@ -160,7 +233,7 @@ const StepFour = () => {
                             setIsLoading={setIsLoading}
                         />
                         {hasCancelledTransactions && (
-                            <CancelledTransactions />
+                            <CancelledTransactions userBearerDid={userBearerDid} />
                         )}
                         <MarketRate
                             source={selectedCurrency}
@@ -178,6 +251,8 @@ const StepFour = () => {
                             offering={item}
                             money={monopolyMoney}
                             isSelected={isSelected}
+                            isCompleted={isCompleted}
+                            isCancelled={isCancelled}
                             selectedCard={selectedCard}
                             userBearerDid={userBearerDid}
                             stateCredentials={credentials}
@@ -187,6 +262,8 @@ const StepFour = () => {
                             unformattedOfferings={unformattedOfferings}
 
                             setIsSelected={setIsSelected}
+                            setIsCompleted={setIsCompleted}
+                            setIsCancelled={setIsCancelled}
                             createExchange={createExchange}
                             setSelectedCard={setSelectedCard}
                             setSelectedOffering={setSelectedOffering}

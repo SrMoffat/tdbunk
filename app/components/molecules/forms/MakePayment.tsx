@@ -3,13 +3,12 @@ import PFIDetails from "@/app/components/atoms/OfferPFI";
 import MakeTransfer from "@/app/components/molecules/forms//MakeTransfer";
 import RequestForQuote from "@/app/components/molecules/forms/RequestForQuote";
 import { TBDEX_MESSAGE_TYPES_TO_STATUS } from "@/app/lib/constants";
-import { arraysEqual, getEstimatedSettlementTime, msToDays } from "@/app/lib/utils";
+import { arraysEqual, getEstimatedSettlementTime, getPlatformFees, msToDays } from "@/app/lib/utils";
 import { PRIMARY_GOLD_HEX } from "@/app/providers/ThemeProvider";
 import { ClockCircleFilled, CloseCircleFilled } from "@ant-design/icons";
-import { Card, Flex, Statistic, Steps, Tag, Typography, Progress, ProgressProps, theme } from "antd";
+import { Card, Flex, Progress, Statistic, Steps, Tag, Typography } from "antd";
 import { formatDistanceToNow } from "date-fns";
 import { useEffect, useState, } from "react";
-import { clearInterval } from "timers";
 
 const { Countdown } = Statistic
 
@@ -20,11 +19,10 @@ const MakePayment = (props: any) => {
         pfiName,
         offering,
         isLoading,
-        userBearerDid,
-        createExchange,
-        relevantExchange,
+        feeDetails,
         campaignAmount,
         isRequestQuote,
+        relevantExchange,
         offeringCreatedAt,
         setPaymentDetails,
         setActivateButton,
@@ -40,26 +38,7 @@ const MakePayment = (props: any) => {
         payout: {}
     })
 
-    const {
-        token: {
-            colorBgContainer,
-            colorPrimary
-        }
-    } = theme.useToken()
-
-
-
-
-    console.log("🚀 <MakeTransfer /> 🚀", {
-        requiredPaymentDetails,
-        stateDetails
-    })
-
-
     const offeringData = offering?.data
-    const offeringMetadata = offering?.metadata
-
-    const offeringId = offeringMetadata?.id
 
     const payin = offeringData?.payin
     const payout = offeringData?.payout
@@ -81,21 +60,13 @@ const MakePayment = (props: any) => {
 
     const isLessThanOrADay = numberOfDays <= 1
 
-    console.log('Exchange Details Here!', {
-        isLessThanOrADay,
-        relevantExchange,
-        quoteExpiration,
-        quoteExpirationMs: deadline
-    });
-
-    // const deadline = Date.now() + 1000 * 60
-    // 60 * 60 * 24 * 2 + 1000 * 30;
-
     const onQuoteExpired = () => {
         setQuoteExpired(true)
         // To Do: Add notification
         console.log('finished!');
     };
+
+    const { timeWithLabel } = getEstimatedSettlementTime(offeringToCurrencyMethods, true)
 
     useEffect(() => {
         const requiredPayin = payin?.methods[0]?.requiredPaymentDetails?.required
@@ -193,12 +164,8 @@ const MakePayment = (props: any) => {
         })
     }, [intervalId, percent])
 
-    const twoColors: ProgressProps['strokeColor'] = {
-        '0%': colorBgContainer,
-        '100%': colorPrimary,
-    };
 
-    const { timeWithLabel } = getEstimatedSettlementTime(offeringToCurrencyMethods, true)
+
 
 
     return (
@@ -314,7 +281,7 @@ const MakePayment = (props: any) => {
                 </Flex>
             )}
             {
-                isRequestQuote
+                false
                     ? <RequestForQuote
                         money={money}
                         offering={offering}
@@ -323,6 +290,7 @@ const MakePayment = (props: any) => {
                     />
                     : <MakeTransfer
                         offering={offering}
+                        feeDetails={feeDetails}
                         stateDetails={stateDetails}
                         campaignAmount={campaignAmount}
                         relevantExchange={relevantExchange}

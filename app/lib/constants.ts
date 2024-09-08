@@ -111,3 +111,12 @@ export const SETTLED_TRANSFER_AT_LOCAL_STORAGE_KEY = 'TDBunk:SettledTransferAt'
 export const MARKET_CONVERSION_RATE_LOCAL_STORAGE_KEY = 'TDBunk:MarketConversionRate'
 
 export const FEATURE_FLAG_USE_PAID_EXCHAGE_RATE_API = false
+
+export const TDBUNK_PLATFORM_FEE_STRATEGY = {
+    percentage: 0.029, // 2.9%
+    fixed: {
+        currency: 'USD',
+        value: 0.50 // $0.50
+    }
+}
+

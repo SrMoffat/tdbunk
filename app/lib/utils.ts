@@ -1,6 +1,7 @@
 import countries from "@/public/countries.json"
-import { LANDING_PAGE_TABS, DEBUNK_SOURCE, DEBUNK_CAMPAIGN_TYPE } from "@/app/lib/constants";
+import { LANDING_PAGE_TABS, DEBUNK_SOURCE, DEBUNK_CAMPAIGN_TYPE, TDBUNK_PLATFORM_FEE_STRATEGY } from "@/app/lib/constants";
 import { formatDistanceToNow, differenceInSeconds, addSeconds } from "date-fns";
+import { getFixedRateConversion } from "./api";
 
 export const isCampaign = (tab: LANDING_PAGE_TABS) => tab === LANDING_PAGE_TABS.CAMPAIGNS;
 
@@ -245,8 +246,36 @@ export const getCurrencyFlag = (currency: string) => {
     return flag ?? '🏳️'
 }
 
-export function msToDays(ms: number) {
+export const msToDays = (ms: number) => {
     return ms / (1000 * 60 * 60 * 24);
 }
 
+
+export const getPlatformFees = async (quotePayin: any) => {
+    // Charge percentageFee * transactionAmount  + fixedFee
+    //        2.9%          * transactionAmount  + $0.30 equivalent
+    const {
+        amount,
+        currencyCode,
+    } = quotePayin
+
+    const percentageFee = TDBUNK_PLATFORM_FEE_STRATEGY.percentage
+    const fixedFee = TDBUNK_PLATFORM_FEE_STRATEGY.fixed
+
+    const percentageAmount = percentageFee * amount
+
+    const fixedAmount = await getFixedRateConversion({
+        source: fixedFee.currency,
+        destination: currencyCode,
+        amount: fixedFee.value
+    })
+
+    const isCool = !Number.isNaN(fixedAmount)
+
+    const totalFee = isCool
+        ? percentageAmount + fixedAmount
+        : percentageAmount
+
+    return totalFee
+}
 

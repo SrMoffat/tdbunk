@@ -409,7 +409,7 @@ const OfferingDetails = (props: any) => {
             if (completedTransfer) {
                 setIsCompleted(true)
                 setIsLoading(false)
-                setShowModal(false)
+                // setShowModal(false)
                 console.log("Transfer complete")
             }
         }
@@ -456,7 +456,7 @@ const OfferingDetails = (props: any) => {
                     <Button danger key="back" onClick={handleCancel} loading={isCancelling}>
                         {cancelText}
                     </Button>,
-                    <Button loading={isLoading} key="submit" type="primary" onClick={handleOk} disabled={isButtonDisabled || isCancelling || !isCompleted}>
+                    <Button loading={isLoading} key="submit" type="primary" onClick={handleOk} disabled={isButtonDisabled || isCancelling}>
                         {submitText}
                     </Button>
                 ] : []}

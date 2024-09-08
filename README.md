@@ -86,7 +86,7 @@ Consider the following when designing your application:
 
 1. Profitability: how might your wallet application make a profit (charging fees per transaction, platform fees when article is debunked and fact checkers are being paid, we get paid too)
 
-2. Optionality: how will your application handle matching offerings from multiple PFIs (compare settlement time, compare user rating, compare availability status, uder discretion, user transaction history, AI?, compare to market rate?)
+2. Optionality: how will your application handle matching offerings from multiple PFIs (compare settlement time, compare user rating, compare availability status, user discretion, user transaction history, AI?, compare to market rate?)
 
 3. Customer Management: how will your application manage customers’ decentralized identifiers and verifiable credentials (Bearer Did stored in local storage with key uris and keys in key manager, vcs stored in dwn)
 

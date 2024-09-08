@@ -20,12 +20,14 @@ export const DestinationCurrency = (props: any) => {
         isLoading,
         convertedAmount
     } = props
+    const converted = parseFloat(convertedAmount)
+    const isNaN = Number.isNaN(converted)
     return (
         <Typography.Text
             className="text-green-600"
             style={{ fontSize: 11 }}
         >
-            {`${currency} ${isLoading ? '..' : `${parseFloat(convertedAmount)}`}`}
+            {`${currency} ${isLoading ? '..' : `${isNaN ? 'Unavailable' : converted}`}`}
         </Typography.Text>
     )
 }
@@ -46,16 +48,16 @@ const MarketRate = (props: any) => {
                 const data = await response.json()
 
                 if (!data.rate) {
-                    // const responsePaid = await fetch(`/api/conversions`, {
-                    //     method: 'POST',
-                    //     body: JSON.stringify({ source, destination })
-                    // })
-                    // const dataPaid = await responsePaid.json()
-                    // console.log("Use PAID API", dataPaid?.conversion_rate)
-                    // setConvertedAmount(dataPaid?.conversion_rate)
-                    // localStorage.setItem(MARKET_CONVERSION_RATE_LOCAL_STORAGE_KEY, dataPaid?.conversion_rate)
+                    const responsePaid = await fetch(`/api/conversions`, {
+                        method: 'POST',
+                        body: JSON.stringify({ source, destination })
+                    })
+                    const dataPaid = await responsePaid.json()
+                    console.log("Use PAID API", dataPaid)
+                    setConvertedAmount(dataPaid?.conversion_rate)
+                    localStorage.setItem(MARKET_CONVERSION_RATE_LOCAL_STORAGE_KEY, dataPaid?.conversion_rate)
                 } else {
-                    // console.log("Use Free API", data)
+                    console.log("Use Free API", data)
                     setConvertedAmount(data?.rate)
                     localStorage.setItem(MARKET_CONVERSION_RATE_LOCAL_STORAGE_KEY, data?.rate)
                 }

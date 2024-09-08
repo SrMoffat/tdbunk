@@ -21,6 +21,8 @@ handlePost
         const baseUrl = `${EXCHANGE_RATE_API_URL}/${EXCHANGE_RATE_API_KEY}/pair/${source}/${destination}`
         const url = `${amount ? `${baseUrl}/${amount}` : baseUrl}`
 
+        console.log("Use PAID API Handler:url", url)
+
         const response = await fetch(url);
         const conversion = await response.json();
 

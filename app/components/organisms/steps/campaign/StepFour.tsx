@@ -151,15 +151,16 @@ const StepFour = () => {
                             key={index}
                             web5={web5}
                             offering={item}
+                            money={monopolyMoney}
                             isSelected={isSelected}
-                            stateCredentials={credentials}
+                            selectedCard={selectedCard}
                             userBearerDid={userBearerDid}
-                            selectedOffering={selectedOffering}
+                            stateCredentials={credentials}
                             campaignAmount={campaignAmount}
                             credentials={existingCredentials}
+                            selectedOffering={selectedOffering}
                             unformattedOfferings={unformattedOfferings}
 
-                            selectedCard={selectedCard}
                             setIsSelected={setIsSelected}
                             createExchange={createExchange}
                             setSelectedCard={setSelectedCard}

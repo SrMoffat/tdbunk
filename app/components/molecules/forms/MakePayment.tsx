@@ -15,6 +15,7 @@ const { Countdown } = Statistic
 
 const MakePayment = (props: any) => {
     const {
+        money,
         pfiDid,
         pfiName,
         offering,
@@ -315,6 +316,7 @@ const MakePayment = (props: any) => {
             {
                 isRequestQuote
                     ? <RequestForQuote
+                        money={money}
                         offering={offering}
                         campaignAmount={campaignAmount}
                         setRequiredPaymentDetails={setRequiredPaymentDetails}

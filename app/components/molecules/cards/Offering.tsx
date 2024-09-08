@@ -135,6 +135,7 @@ function clearAllIntervals(intervalIds: string[]) {
 const OfferingDetails = (props: any) => {
     const {
         web5,
+        money,
         isSelected,
         credentials,
         stateCredentials,
@@ -316,6 +317,7 @@ const OfferingDetails = (props: any) => {
     const flow = hasRequiredCredentials
         ? isSelected
             ? <MakePayment
+                money={money}
                 pfiDid={pfiDid}
                 pfiName={pfiName}
                 offering={rawOffering}
@@ -454,7 +456,7 @@ const OfferingDetails = (props: any) => {
                     <Button danger key="back" onClick={handleCancel} loading={isCancelling}>
                         {cancelText}
                     </Button>,
-                        <Button loading={isLoading} key="submit" type="primary" onClick={handleOk} disabled={isButtonDisabled || isCancelling || !isCompleted}>
+                    <Button loading={isLoading} key="submit" type="primary" onClick={handleOk} disabled={isButtonDisabled || isCancelling || !isCompleted}>
                         {submitText}
                     </Button>
                 ] : []}

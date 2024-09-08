@@ -1,14 +1,15 @@
 import { LogoIcon2 } from "@/app/components/atoms/Icon";
 import { getCurrencyFlag, toCapitalizedWords } from "@/app/lib/utils";
 import { RightCircleFilled } from "@ant-design/icons";
-import { Button, Card, Flex, Form, Input, InputNumber, Space, Tag, theme, Typography } from "antd";
+import { Button, Card, Flex, Form, Input, InputNumber, Space, Statistic, StatisticProps, Tag, theme, Typography, } from "antd";
 import Image from "next/image";
 import { useEffect, useState } from "react";
+import CountUp from "react-countup";
 
 const RequestForQuote = (props: any) => {
     const [form] = Form.useForm();
 
-    const { offering, campaignAmount, setRequiredPaymentDetails } = props
+    const { offering, campaignAmount, setRequiredPaymentDetails, money } = props
 
     const offeringData = offering?.data
 
@@ -106,6 +107,10 @@ const RequestForQuote = (props: any) => {
         return results
     }
 
+    const formatter: StatisticProps['formatter'] = (value) => (
+        <CountUp end={value as number} separator="," />
+    );
+
     const renderPaymentMethods = (methods: any, type: string) => {
         return (
             <Flex className="w-full">
@@ -138,9 +143,14 @@ const RequestForQuote = (props: any) => {
                                             <Flex className="gap-5">
                                                 <Image src={LogoIcon2} width={60} height={60} alt="TDBunk" />
                                                 <Flex className="flex-col">
-                                                    <Flex>TDBunk Wallet</Flex>
-                                                    <Flex>Wallet Balance</Flex>
-                                                    <Flex>Wallet Balance</Flex>
+                                                    <Statistic
+                                                        prefix={money?.currency}
+                                                        title="Wallet Balance"
+                                                        value={money?.amount}
+                                                        precision={2}
+                                                        formatter={formatter}
+                                                        valueStyle={{ color: colorPrimary, fontSize: 18, fontWeight: "bold" }}
+                                                    />
                                                 </Flex>
                                             </Flex>
                                         </Card>

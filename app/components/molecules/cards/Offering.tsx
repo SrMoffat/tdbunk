@@ -158,10 +158,11 @@ const OfferingDetails = (props: any) => {
     const [isLoading, setIsLoading] = useState(false)
     const [showModal, setShowModal] = useState(false)
     const [isCancelled, setIsCancelled] = useState(false)
-    const [isCompleted, setIsCompleted] = useState(false)
+    const [isCompleted, setIsCompleted] = useState(true)
     const [isCancelling, setIsCancelling] = useState(false)
     const [activateButton, setActivateButton] = useState(false)
     const [offeringReview, setOfferingReview] = useState({})
+    const [notifiedCompletion, setNotifiedCompletion] = useState(false)
     const [relevantExchange, setRelevantExchanges] = useState<any>()
     const [requiredPaymentDetails, setRequiredPaymentDetails] = useState<any>({
         payin: {},
@@ -229,11 +230,15 @@ const OfferingDetails = (props: any) => {
                 }
             )
 
-            console.log("Create Review VC", {
-                offeringReview,
-                status
-            })
+            if(status?.status.code === 202){
+                setIsLoading(false)
+                notify?.('success', {
+                    message: 'Review Submitted!',
+                    description: 'Your review of  the transaction has submitted!'
+                })
+            }
 
+            setShowModal(false)
         } else if (isRequestQuote) {
             // Here ==>
             console.log("requiredPaymentDetails Make Transfer", {
@@ -428,7 +433,7 @@ const OfferingDetails = (props: any) => {
     }, [isCancelled])
 
     useEffect(() => {
-        if (isCompleted) {
+        if (isCompleted && !notifiedCompletion) {
             // End timer for the transfer
             localStorage?.setItem(SETTLED_TRANSFER_AT_LOCAL_STORAGE_KEY, JSON.stringify(new Date()))
 
@@ -437,6 +442,7 @@ const OfferingDetails = (props: any) => {
                 message: 'Transaction Complete!',
                 description: 'Your transaction has been completed succesfully!'
             })
+            setNotifiedCompletion(true)
             // setIsCompleted(false)
         }
     }, [isCompleted])
@@ -456,7 +462,7 @@ const OfferingDetails = (props: any) => {
                     <Button danger key="back" onClick={handleCancel} loading={isCancelling}>
                         {cancelText}
                     </Button>,
-                    <Button loading={isLoading} key="submit" type="primary" onClick={handleOk} disabled={isButtonDisabled || isCancelling}>
+                    <Button loading={isLoading} key="submit" type="primary" onClick={handleOk} disabled={isCompleted ? false : isButtonDisabled || isCancelling}>
                         {submitText}
                     </Button>
                 ] : []}

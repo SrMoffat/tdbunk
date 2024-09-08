@@ -480,17 +480,19 @@ export const createOfferingReviewCredential = async (web5: Web5Api, userBearerDi
             data: details
         });
 
-        console.log("Created Credential", {
-            credential,
-            userBearerDid,
-            details
-        })
-
         // Sign VC
         const vc = await credential.sign({ did: userBearerDid?.did as BearerDid });
 
         // Store VC in DWN
-        const status = await storeVcJwtInDwn(web5, vc, details?.pfiDid)
+        const status = await storeVcJwtInDwn(web5, vc, userBearerDid?.did.uri)
+
+        console.log("Created Credential", {
+            credential,
+            userBearerDid,
+            details,
+            vc,
+            status
+        })
 
         return status
     } catch (error: any) {

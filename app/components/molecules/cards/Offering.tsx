@@ -164,7 +164,7 @@ const OfferingDetails = (props: any) => {
     const [isCancelling, setIsCancelling] = useState(false)
     const [activateButton, setActivateButton] = useState(false)
     const [offeringReview, setOfferingReview] = useState({})
-    const [feeDetails, setFeeDetails] = useState({})
+    const [feeDetails, setFeeDetails] = useState<any>({})
     const [relevantExchange, setRelevantExchanges] = useState<any>()
     const [requiredPaymentDetails, setRequiredPaymentDetails] = useState<any>({
         payin: {},
@@ -327,6 +327,7 @@ const OfferingDetails = (props: any) => {
                 money={money}
                 pfiDid={pfiDid}
                 pfiName={pfiName}
+                monopolyMoney={money}
                 offering={rawOffering}
                 feeDetails={feeDetails}
                 userBearerDid={userBearerDid}
@@ -370,8 +371,40 @@ const OfferingDetails = (props: any) => {
 
     const isPaymentStep = hasRequiredCredentials && isSelected
 
+    const sourceCurrencyCode = rawOffering?.data?.payin.currencyCode
     const destinationCurrencyCode = rawOffering?.data?.payout?.currencyCode
 
+    console.log("get offering details", {
+        rawOffering
+
+    })
+
+    const payinData = rawOffering?.data?.payin
+    const payoutData = rawOffering?.data?.payout
+
+    const payinMethod = payinData?.methods?.[0]
+    const payoutMethod = payinData?.methods?.[0]
+
+    const payinFee = payinMethod?.fee
+    const payoutFee = payoutMethod?.fee
+
+    const payinCode = payinData?.currencyCode
+
+    const currencyCode = feeDetails?.currencyCode
+    const totalFee = Number(feeDetails?.totalFee)?.toFixed(2)
+    const overallFee = payinFee
+        ? Number(payinFee + totalFee).toFixed(2)
+        : Number(totalFee).toFixed(2)
+
+    const transactionFee = `${payinCode} ${payinFee}`
+    const platformFee = `${currencyCode} ${totalFee}`
+    const allFee = `${currencyCode} ${overallFee}`
+
+    console.log("Details For Fees", {
+        transactionFee,
+        platformFee,
+        allFee
+    })
 
     const cancelText = isRequestQuote
         ? 'Cancel'
@@ -381,7 +414,7 @@ const OfferingDetails = (props: any) => {
         ? 'Request for Quote'
         : isCompleted
             ? 'Review Transfer'
-            : `Transfer ${destinationCurrencyCode} ${campaignAmount}`
+            : `Transfer ${sourceCurrencyCode} ${campaignAmount + parseFloat(allFee?.split(" ")[1])}`
 
     useEffect(() => {
         const intervalId = pollExchanges(userBearerDid, setRelevantExchanges)
@@ -422,29 +455,16 @@ const OfferingDetails = (props: any) => {
             }
 
             const quoteMessage = relevantExchange?.mostRecentMessage
+
             const quoteMessageData = quoteMessage?.data
-            const quoteMessageMetadata = quoteMessage?.metadata
+
             const quotePayin = quoteMessageData?.payin
             const quotePayout = quoteMessageData?.payout
-            const quotePayinFee = quotePayin?.fee ?? 0
-            const quotePayoutFee = quotePayout?.fee ?? 0
-            const transactionFee = quotePayinFee + quotePayoutFee
 
-            const feeDetails = {
-                payin: quotePayinFee,
-                payout: quotePayoutFee,
-                transactionFee,
-            }
-
-            getPlatformFees(quotePayin).then((platformFee) => {
-                const details = {
-                    ...feeDetails,
-                    platformFee,
-                    total: feeDetails.transactionFee + platformFee
-                }
-
-                setFeeDetails(details)
-                console.log("tdbunkPlatformFees", details)
+            getPlatformFees([quotePayin, quotePayout]).then((feeDetails) => {
+                // Get fee details in the source currency
+                setFeeDetails(feeDetails)
+                console.log("tdbunkPlatformFees", feeDetails)
             })
 
         }

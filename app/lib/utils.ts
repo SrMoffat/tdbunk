@@ -251,17 +251,27 @@ export const msToDays = (ms: number) => {
 }
 
 
-export const getPlatformFees = async (quotePayin: any) => {
+export const getPlatformFees = async (paymentDetails: any[]) => {
     // Charge percentageFee * transactionAmount  + fixedFee
     //        2.9%          * transactionAmount  + $0.30 equivalent
+
+    const [quotePayin, quotePayout] = paymentDetails
+
+    const quotePayinFee = quotePayin?.fee ?? 0
+    const quotePayoutFee = quotePayout?.fee ?? 0
+
+    const quotePayinFeeCurrency = quotePayin?.currencyCode
+    const quotePayoutFeeCurrency = quotePayout?.currencyCode
+
+    const fixedFee = TDBUNK_PLATFORM_FEE_STRATEGY.fixed
+    const percentageFee = TDBUNK_PLATFORM_FEE_STRATEGY.percentage
+
     const {
         amount,
         currencyCode,
     } = quotePayin
 
-    const percentageFee = TDBUNK_PLATFORM_FEE_STRATEGY.percentage
-    const fixedFee = TDBUNK_PLATFORM_FEE_STRATEGY.fixed
-
+    // % amount in source currency
     const percentageAmount = percentageFee * amount
 
     const fixedAmount = await getFixedRateConversion({
@@ -273,9 +283,16 @@ export const getPlatformFees = async (quotePayin: any) => {
     const isCool = !Number.isNaN(fixedAmount)
 
     const totalFee = isCool
-        ? percentageAmount + fixedAmount
-        : percentageAmount
+        ? Number(percentageAmount) + Number(fixedAmount)
+        : Number(percentageAmount)
 
-    return totalFee
+    const feeDetails = {
+        totalFee,
+        fixedAmount,
+        currencyCode,
+        percentageAmount,
+    }
+
+    return feeDetails
 }
 

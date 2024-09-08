@@ -60,18 +60,19 @@ export const getFixedRateConversion = async ({
     amount: string | number;
 }) => {
     try {
-        const response = await fetch('/api/conversions', {
-            method: 'POST',
-            body: JSON.stringify({
-                source,
-                destination,
-                amount
-            })
-        })
+        // const response = await fetch('/api/conversions', {
+        //     method: 'POST',
+        //     body: JSON.stringify({
+        //         source,
+        //         destination,
+        //         amount
+        //     })
+        // })
 
-        const newAmount = await response.json()
+        // const newAmount = await response.json()
 
-        return newAmount?.conversion_result
+        // return newAmount?.conversion_result
+        return 1
     } catch (error: any) {
         console.error("getFixedRateConversion: Conversion failed", error)
     }

@@ -9,7 +9,7 @@ import CountUp from "react-countup";
 const RequestForQuote = (props: any) => {
     const [form] = Form.useForm();
 
-    const { offering, campaignAmount, setRequiredPaymentDetails, money } = props
+    const { offering, campaignAmount, setRequiredPaymentDetails, money, isLoading } = props
 
     const offeringData = offering?.data
 
@@ -111,7 +111,7 @@ const RequestForQuote = (props: any) => {
         <CountUp end={value as number} separator="," />
     );
 
-    const renderPaymentMethods = (methods: any, type: string) => {
+    const renderPaymentMethods = (methods: any, type: string, disabled: boolean) => {
         return (
             <Flex className="w-full">
                 {methods.map((entry: any) => {
@@ -156,6 +156,7 @@ const RequestForQuote = (props: any) => {
                                         </Card>
                                         : <Form
                                             form={form}
+                                            disabled={disabled}
                                             layout="vertical"
                                             style={{ width: '100%' }}
                                         >
@@ -211,7 +212,7 @@ const RequestForQuote = (props: any) => {
                     </Space.Compact>
                 </Flex>
                 <Flex className="w-full mt-2">
-                    {renderPaymentMethods(payinMethods, 'payin')}
+                    {renderPaymentMethods(payinMethods, 'payin', isLoading)}
                 </Flex>
             </Card>
             <Flex>
@@ -245,7 +246,7 @@ const RequestForQuote = (props: any) => {
                     </Space.Compact>
                 </Flex>
                 <Flex className="w-full mt-2">
-                    {renderPaymentMethods(payoutMethods, 'payout')}
+                    {renderPaymentMethods(payoutMethods, 'payout', isLoading)}
                 </Flex>
             </Card>
         </Flex>

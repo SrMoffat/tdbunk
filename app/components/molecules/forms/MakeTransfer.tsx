@@ -1,10 +1,13 @@
+import { LogoIcon2 } from "@/app/components/atoms/Icon";
 import { getCurrencyFlag, toCapitalizedWords } from "@/app/lib/utils";
 import { RightCircleFilled } from "@ant-design/icons";
-import { Button, Card, Flex, Form, Input, InputNumber, Space, theme, Typography } from "antd";
+import { Button, Card, Flex, Form, Input, InputNumber, Space, Statistic, StatisticProps, Tag, theme, Typography } from "antd";
+import Image from "next/image";
 import { useState } from "react";
+import CountUp from "react-countup";
 
 const MakeTransfer = (props: any) => {
-    const { offering, campaignAmount, requiredPaymentDetails, feeDetails } = props
+    const { offering, campaignAmount, requiredPaymentDetails, feeDetails, monopolyMoney } = props
 
     const offeringData = offering?.data
 
@@ -64,8 +67,28 @@ const MakeTransfer = (props: any) => {
     }
 
     console.log("received values ==>", {
-        feeDetails
+        feeDetails,
+        requiredPaymentDetails
     })
+
+    const payinFee = payin?.fee
+    const payoutFee = payout?.fee
+
+    const payinCode = payin?.currencyCode
+
+    const currencyCode = feeDetails?.currencyCode
+    const totalFee = Number(feeDetails?.totalFee)?.toFixed(2)
+    const overallFee = payinFee
+        ? Number(payinFee + totalFee).toFixed(2)
+        : Number(totalFee).toFixed(2)
+
+    const transactionFee = `${payinCode} ${payinFee}`
+    const platformFee = `${currencyCode} ${totalFee}`
+    const allFee = `${currencyCode} ${overallFee}`
+
+    const formatter: StatisticProps['formatter'] = (value) => (
+        <CountUp end={value as number} separator="," />
+    );
 
     return (
         <Flex className="w-full gap-4 flex-col">
@@ -74,8 +97,17 @@ const MakeTransfer = (props: any) => {
             </Button>
             <Flex className="w-full gap-3">
                 <Card className="w-full">
+                    {
+                        payinFee && (
+                            <Flex className="w-full mb-3 justify-end">
+                                <Tag>
+                                    {`${requiredPaymentDetails?.payin?.currencyCode} ${payinFee}`}
+                                </Tag>
+                            </Flex>
+                        )
+                    }
                     <Flex className="w-full">
-                        <Space.Compact block>
+                        <Space.Compact block className="w-full">
                             <Flex className="flex-col">
                                 <Typography.Text className="font-bold">
                                     You Send
@@ -101,15 +133,42 @@ const MakeTransfer = (props: any) => {
                         </Space.Compact>
                     </Flex>
                     <Flex className="w-full mt-2">
-                        {renderPaymentMethods(requiredPaymentDetails?.payin)}
+                        {
+                            Object.keys(requiredPaymentDetails?.payin).length
+                                ? renderPaymentMethods(requiredPaymentDetails?.payin)
+                                : <Card className="mt-3">
+                                    <Flex className="gap-5">
+                                        <Image src={LogoIcon2} width={60} height={60} alt="TDBunk" />
+                                        <Flex className="flex-col">
+                                            <Statistic
+                                                prefix={monopolyMoney?.currency}
+                                                title="Wallet Balance"
+                                                value={monopolyMoney?.amount}
+                                                precision={2}
+                                                formatter={formatter}
+                                                valueStyle={{ color: colorPrimary, fontSize: 18, fontWeight: "bold" }}
+                                            />
+                                        </Flex>
+                                    </Flex>
+                                </Card>
+                        }
                     </Flex>
                 </Card>
                 <Flex>
                     <RightCircleFilled style={{ color: colorPrimary }} />
                 </Flex>
                 <Card className="w-full">
+                    {
+                        payoutFee && (
+                            <Flex className="w-full mb-3 justify-end">
+                                <Tag>
+                                    {`${requiredPaymentDetails?.payout?.currencyCode} ${payoutFee}`}
+                                </Tag>
+                            </Flex>
+                        )
+                    }
                     <Flex className="w-full">
-                        <Space.Compact block>
+                        <Space.Compact block className="w-full">
                             <Flex className="flex-col">
                                 <Typography.Text className="font-bold">
                                     They Receive
@@ -141,18 +200,24 @@ const MakeTransfer = (props: any) => {
             </Flex>
             <Card>
                 <Flex className="w-full items-end flex-col">
-                    <Flex className=" gap-3">
-                        <Typography.Text className="text-bold">Transaction Fee:</Typography.Text>
-                        <Typography.Text>{`${feeDetails?.transactionFee}`}</Typography.Text>
-                    </Flex>
-                    <Flex className="gap-3">
-                        <Typography.Text className="text-bold">Platform Fee:</Typography.Text>
-                        <Typography.Text>{`${feeDetails?.platformFee}`}</Typography.Text>
-                    </Flex>
-                    <Flex className="gap-3">
-                        <Typography.Text className="text-bold">Total Fee:</Typography.Text>
-                        <Typography.Text>{`${feeDetails?.total}`}</Typography.Text>
-                    </Flex>
+                    {payinFee && (
+                        <Flex className=" gap-3">
+                            <Typography.Text className="text-bold">Transaction Fee:</Typography.Text>
+                            <Typography.Text>{transactionFee}</Typography.Text>
+                        </Flex>
+                    )}
+                    {totalFee && (
+                        <Flex className="gap-3">
+                            <Typography.Text className="text-bold text-xs">Platform Fee:</Typography.Text>
+                            <Typography.Text className="text-xs">{platformFee}</Typography.Text>
+                        </Flex>
+                    )}
+                    {overallFee && (
+                        <Flex className="gap-3 mt-2">
+                            <Typography.Text className="text-bold">Total Fee:</Typography.Text>
+                            <Typography.Text>{allFee}</Typography.Text>
+                        </Flex>
+                    )}
                 </Flex>
             </Card>
         </Flex>

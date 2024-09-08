@@ -20,6 +20,7 @@ const MakePayment = (props: any) => {
         offering,
         isLoading,
         feeDetails,
+        monopolyMoney,
         campaignAmount,
         isRequestQuote,
         relevantExchange,
@@ -164,10 +165,6 @@ const MakePayment = (props: any) => {
         })
     }, [intervalId, percent])
 
-
-
-
-
     return (
         <Flex className={`gap-2 flex-col ${isLoading ? 'opacity-30' : 'opacity-100'}`}>
             {isRequestQuote ? (
@@ -285,13 +282,17 @@ const MakePayment = (props: any) => {
                     ? <RequestForQuote
                         money={money}
                         offering={offering}
+                        isLoading={isLoading}
+                        monopolyMoney={monopolyMoney}
                         campaignAmount={campaignAmount}
                         setRequiredPaymentDetails={setRequiredPaymentDetails}
                     />
                     : <MakeTransfer
                         offering={offering}
+                        isLoading={isLoading}
                         feeDetails={feeDetails}
                         stateDetails={stateDetails}
+                        monopolyMoney={monopolyMoney}
                         campaignAmount={campaignAmount}
                         relevantExchange={relevantExchange}
                         requiredPaymentDetails={requiredPaymentDetails}

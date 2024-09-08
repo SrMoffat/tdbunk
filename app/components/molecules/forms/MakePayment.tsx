@@ -281,7 +281,7 @@ const MakePayment = (props: any) => {
                 </Flex>
             )}
             {
-                false
+                isRequestQuote
                     ? <RequestForQuote
                         money={money}
                         offering={offering}

@@ -150,7 +150,7 @@ const MakeTransfer = (props: any) => {
                         <Typography.Text>{`${feeDetails?.platformFee}`}</Typography.Text>
                     </Flex>
                     <Flex className="gap-3">
-                        <Typography.Text className="text-bold">Total Fees:</Typography.Text>
+                        <Typography.Text className="text-bold">Total Fee:</Typography.Text>
                         <Typography.Text>{`${feeDetails?.total}`}</Typography.Text>
                     </Flex>
                 </Flex>

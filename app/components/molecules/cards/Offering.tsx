@@ -321,8 +321,8 @@ const OfferingDetails = (props: any) => {
             : 'Select Credential'
         : 'Request Credentials'
 
-    const flow = true
-        ? true
+    const flow = hasRequiredCredentials
+        ? isSelected
             ? <MakePayment
                 money={money}
                 pfiDid={pfiDid}

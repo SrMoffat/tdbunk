@@ -198,7 +198,7 @@ const MakeTransfer = (props: any) => {
                     </Flex>
                 </Card>
             </Flex>
-            <Card>
+            <Card className="mb-2">
                 <Flex className="w-full items-end flex-col">
                     {payinFee && (
                         <Flex className=" gap-3">

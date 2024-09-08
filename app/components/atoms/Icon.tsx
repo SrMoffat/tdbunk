@@ -27,10 +27,11 @@ import TBDVCLogoBlack from '@/app/assets/TBDVCLogoBlack.svg';
 import TBDVCLogoYellow from '@/app/assets/TBDVCLogoYellow.svg';
 import TikTok from '@/app/assets/TikTok.svg';
 import Tips from '@/app/assets/Tips.svg';
+import Transaction from '@/app/assets/Transcation.svg';
 import True from '@/app/assets/True.svg';
 import ValidCredential from '@/app/assets/ValidCredential.svg';
 import X from '@/app/assets/X.svg';
 import Youtube from '@/app/assets/Youtube.png';
 
-export { Campaigns, Cancelled, Card1, Card2, Card3, Card4, Card5, Clock, Community, Create, Debunks, Evidence, Evidences, Facebook, FactCheckers, False, Import, Instagram, Logo, LogoIcon, LogoIcon2, Request, Sponsor, Sponsorships, StartCampaign, TBDVCLogoBlack, TBDVCLogoYellow, TikTok, Tips, True, ValidCredential, X, Youtube };
+export { Campaigns, Cancelled, Card1, Card2, Card3, Card4, Card5, Clock, Community, Create, Debunks, Evidence, Evidences, Facebook, FactCheckers, False, Import, Instagram, Logo, LogoIcon, LogoIcon2, Request, Sponsor, Sponsorships, StartCampaign, TBDVCLogoBlack, TBDVCLogoYellow, TikTok, Tips, Transaction, True, ValidCredential, X, Youtube };
 

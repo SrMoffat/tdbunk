@@ -109,3 +109,5 @@ export const SPECIAL_OFFERINGS_LOCAL_STORAGE_KEY = 'TDBunk:SpecialOfferings'
 export const STARTED_TRANSFER_AT_LOCAL_STORAGE_KEY = 'TDBunk:StartedTransferAt'
 export const SETTLED_TRANSFER_AT_LOCAL_STORAGE_KEY = 'TDBunk:SettledTransferAt'
 export const MARKET_CONVERSION_RATE_LOCAL_STORAGE_KEY = 'TDBunk:MarketConversionRate'
+
+export const FEATURE_FLAG_USE_PAID_EXCHAGE_RATE_API = false

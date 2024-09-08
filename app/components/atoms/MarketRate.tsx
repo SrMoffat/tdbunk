@@ -48,14 +48,14 @@ const MarketRate = (props: any) => {
                 const data = await response.json()
 
                 if (!data.rate) {
-                    const responsePaid = await fetch(`/api/conversions`, {
-                        method: 'POST',
-                        body: JSON.stringify({ source, destination })
-                    })
-                    const dataPaid = await responsePaid.json()
-                    console.log("Use PAID API", dataPaid)
-                    setConvertedAmount(dataPaid?.conversion_rate)
-                    localStorage.setItem(MARKET_CONVERSION_RATE_LOCAL_STORAGE_KEY, dataPaid?.conversion_rate)
+                    // const responsePaid = await fetch(`/api/conversions`, {
+                    //     method: 'POST',
+                    //     body: JSON.stringify({ source, destination })
+                    // })
+                    // const dataPaid = await responsePaid.json()
+                    // console.log("Use PAID API", dataPaid)
+                    // setConvertedAmount(dataPaid?.conversion_rate)
+                    // localStorage.setItem(MARKET_CONVERSION_RATE_LOCAL_STORAGE_KEY, dataPaid?.conversion_rate)
                 } else {
                     console.log("Use Free API", data)
                     setConvertedAmount(data?.rate)

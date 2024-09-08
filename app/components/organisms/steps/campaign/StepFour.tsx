@@ -1,3 +1,4 @@
+import { Cancelled } from "@/app/components/atoms/Icon";
 import MarketRate from "@/app/components/atoms/MarketRate";
 import { SearchOffers } from "@/app/components/atoms/SearchOffersInput";
 import OfferingDetails from "@/app/components/molecules/cards/Offering";
@@ -8,12 +9,31 @@ import { Credentials } from "@/app/components/organisms/Credentials";
 import useBrowserStorage from "@/app/hooks/useLocalStorage";
 import { CREDENTIALS_LOCAL_STORAGE_KEY, LOCAL_STORAGE_KEY, OFFERINGS_LOCAL_STORAGE_KEY, SPECIAL_OFFERINGS_LOCAL_STORAGE_KEY } from "@/app/lib/constants";
 import { getFormattedOfferings } from "@/app/lib/utils";
-import { checkIfUserHasRequiredClaims, parseJwtToVc } from "@/app/lib/web5";
+import { checkIfUserHasRequiredClaims } from "@/app/lib/web5";
 import { useCreateCampaignContext } from "@/app/providers/CreateCampaignProvider";
 import { useTbdexContext } from "@/app/providers/TbdexProvider";
 import { useWeb5Context } from "@/app/providers/Web5Provider";
-import { Card, Flex, Layout, List, theme } from "antd";
+import { Avatar, Badge, Button, Card, Flex, Layout, List, theme, Tooltip, Typography } from "antd";
+import Image from "next/image";
 import { useEffect, useState } from "react";
+
+const CancelledTransactions = () => {
+    const {
+        token: { colorPrimary }
+    } = theme.useToken()
+    return (
+        <Flex className="w-full ml-4">
+            <Flex className="items-center gap-1">
+                <Button className="pl-0">
+                    <Badge count={2} style={{ color: "white" }}>
+                        <Avatar shape='square' style={{ backgroundColor: colorPrimary, borderTopRightRadius: 0, borderBottomRightRadius: 0 }} icon={<Image src={Cancelled} alt="factChecker" width={50} height={50} />} />
+                    </Badge>
+                    <Typography.Text className="ml-1 text-xs">View Cancelled Transactions</Typography.Text>
+                </Button>
+            </Flex>
+        </Flex>
+    )
+}
 
 
 const StepFour = () => {
@@ -35,7 +55,7 @@ const StepFour = () => {
         unformattedOfferings,
         selectedDestinationCurrency,
     } = useTbdexContext()
-    const {  web5, userBearerDid } = useWeb5Context()
+    const { web5, userBearerDid } = useWeb5Context()
 
     const { campaignAmount } = useCreateCampaignContext()
 
@@ -117,6 +137,8 @@ const StepFour = () => {
     //     credentials
     // })
 
+    const hasCancelledTransactions = true
+
     return <Layout style={{ backgroundColor: colorBgContainer }}>
         <Flex className="flex-col">
             <Flex className="justify-between">
@@ -137,6 +159,9 @@ const StepFour = () => {
                             isLoading={isLoading}
                             setIsLoading={setIsLoading}
                         />
+                        {hasCancelledTransactions && (
+                            <CancelledTransactions />
+                        )}
                         <MarketRate
                             source={selectedCurrency}
                             destination={selectedDestinationCurrency}

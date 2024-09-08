@@ -158,7 +158,7 @@ const OfferingDetails = (props: any) => {
     const [isLoading, setIsLoading] = useState(false)
     const [showModal, setShowModal] = useState(false)
     const [isCancelled, setIsCancelled] = useState(false)
-    const [isCompleted, setIsCompleted] = useState(true)
+    const [isCompleted, setIsCompleted] = useState(false)
     const [isCancelling, setIsCancelling] = useState(false)
     const [activateButton, setActivateButton] = useState(false)
     const [offeringReview, setOfferingReview] = useState({})

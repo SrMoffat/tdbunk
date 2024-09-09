@@ -266,17 +266,12 @@ export const getPlatformFees = async (paymentDetails: any[]) => {
     const fixedFee = TDBUNK_PLATFORM_FEE_STRATEGY.fixed
     const percentageFee = TDBUNK_PLATFORM_FEE_STRATEGY.percentage
 
-    const {
-        amount,
-        currencyCode,
-    } = quotePayin
-
     // % amount in source currency
-    const percentageAmount = percentageFee * amount
+    const percentageAmount = percentageFee * quotePayin?.amount
 
     const fixedAmount = await getFixedRateConversion({
         source: fixedFee.currency,
-        destination: currencyCode,
+        destination: quotePayin?.currencyCode,
         amount: fixedFee.value
     })
 
@@ -289,9 +284,21 @@ export const getPlatformFees = async (paymentDetails: any[]) => {
     const feeDetails = {
         totalFee,
         fixedAmount,
-        currencyCode,
+        currencyCode: quotePayin?.currencyCode,
         percentageAmount,
     }
+
+    console.log("=====>", {
+        fixedFee,
+        feeDetails,
+        quotePayoutFeeCurrency,
+        quotePayinFeeCurrency,
+        quotePayoutFee,
+        quotePayinFee,
+        percentageFee,
+        paymentDetails
+
+    })
 
     return feeDetails
 }

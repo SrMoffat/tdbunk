@@ -15,7 +15,8 @@ import { useCreateCampaignContext } from "@/app/providers/CreateCampaignProvider
 import { useNotificationContext } from "@/app/providers/NotificationProvider";
 import { useTbdexContext } from "@/app/providers/TbdexProvider";
 import { useWeb5Context } from "@/app/providers/Web5Provider";
-import { Avatar, Badge, Button, Card, Flex, Layout, List, Modal, theme, Typography } from "antd";
+import { ArrowRightOutlined } from "@ant-design/icons";
+import { Avatar, Badge, Button, Card, Flex, Layout, List, Modal, theme, Typography, Tag } from "antd";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 
@@ -146,10 +147,23 @@ const Transactions = (props: any) => {
                         const createdAt = metadata?.createdAt
                         const exchangeId = metadata?.exchangeId
 
+                        const from = `${fromDidUri?.slice(0, 14)}...${fromDidUri?.slice(-8)}`
+                        const to = `${toDidUri?.slice(0, 14)}...${toDidUri?.slice(-8)}`
+
                         return (
                             <List.Item key={index} className="flex flex-row gap-2">
                                 <Card>
-                                    Transaction
+                                    <Flex className="w-full gap-2 items-center">
+                                        <Tag>
+                                            <Typography.Text copyable>{`${from}`}</Typography.Text>
+                                        </Tag>
+                                        <Flex>
+                                            <ArrowRightOutlined style={{ color: colorPrimary }} />
+                                        </Flex>
+                                        <Tag className="ml-2">
+                                            <Typography.Text copyable>{`${to}`}</Typography.Text>
+                                        </Tag>
+                                    </Flex>
                                 </Card>
                             </List.Item>
                         )

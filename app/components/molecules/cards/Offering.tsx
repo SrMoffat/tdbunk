@@ -197,6 +197,27 @@ const OfferingDetails = (props: any) => {
 
     const isRequestQuote = paymentStage === PaymentStage.REQUEST_QUOTE
 
+    const payinData = rawOffering?.data?.payin
+    const payoutData = rawOffering?.data?.payout
+
+    const payinMethod = payinData?.methods?.[0]
+    const payoutMethod = payinData?.methods?.[0]
+
+    const payinFee = payinMethod?.fee
+    const payoutFee = payoutMethod?.fee
+
+    const payinCode = payinData?.currencyCode
+
+    const currencyCode = feeDetails?.currencyCode
+    const totalFee = Number(feeDetails?.totalFee)?.toFixed(2)
+    const overallFee = payinFee
+        ? Number(payinFee + totalFee).toFixed(2)
+        : Number(totalFee).toFixed(2)
+
+    const transactionFee = `${payinCode} ${payinFee}`
+    const platformFee = `${currencyCode} ${totalFee}`
+    const allFee = `${currencyCode} ${overallFee}`
+
     const clearAllPollingTimers = () => {
         const storedIntervals = localStorage.getItem(INTERVALS_LOCAL_STORAGE_KEY)
         if (storedIntervals) {
@@ -262,12 +283,35 @@ const OfferingDetails = (props: any) => {
             // Start timer for the transfer
             localStorage?.setItem(STARTED_TRANSFER_AT_LOCAL_STORAGE_KEY, JSON.stringify(new Date()))
 
+            const isUsingWlletBalance = !Object.keys(requiredPaymentDetails?.payin).length
+
+            if (isUsingWlletBalance) {
+                const currentBalance = money?.amount
+                const sameCurrency = money?.currency === offeringFromCurrency
+
+                const totalAmount = overallFee + campaignAmount
+
+                const hasSufficientBalance = currentBalance > totalAmount
+
+                if (!hasSufficientBalance && sameCurrency) {
+                    // Set error and disable button
+                    console.log("Set error and disable button", {
+                        hasSufficientBalance,
+                        sameCurrency
+                    })
+                }
+            }
+
             // To Do: Check if the offering allows cancellations also aler user after they request quote
             const orderMessage = await sendOrderMessage({
                 pfiDid,
                 userBearerDid,
                 exchangeId: relevantExchange?.mostRecentMessage?.metadata?.exchangeId,
             })
+
+            //   To Do: Since we are assuming the user of wallet balance here
+            //     we should also check for insufficient balance and send
+            //         Close message
 
             if (orderMessage) {
                 console.log("Close modal and toast success txn complete", orderMessage)
@@ -379,26 +423,7 @@ const OfferingDetails = (props: any) => {
 
     })
 
-    const payinData = rawOffering?.data?.payin
-    const payoutData = rawOffering?.data?.payout
 
-    const payinMethod = payinData?.methods?.[0]
-    const payoutMethod = payinData?.methods?.[0]
-
-    const payinFee = payinMethod?.fee
-    const payoutFee = payoutMethod?.fee
-
-    const payinCode = payinData?.currencyCode
-
-    const currencyCode = feeDetails?.currencyCode
-    const totalFee = Number(feeDetails?.totalFee)?.toFixed(2)
-    const overallFee = payinFee
-        ? Number(payinFee + totalFee).toFixed(2)
-        : Number(totalFee).toFixed(2)
-
-    const transactionFee = `${payinCode} ${payinFee}`
-    const platformFee = `${currencyCode} ${totalFee}`
-    const allFee = `${currencyCode} ${overallFee}`
 
     console.log("Details For Fees", {
         transactionFee,
@@ -410,11 +435,13 @@ const OfferingDetails = (props: any) => {
         ? 'Cancel'
         : `${isCancelled ? 'Close' : 'Cancel Transfer'}`
 
+    const finalPayoutValue = campaignAmount + parseFloat(allFee?.split(" ")[1])
+
     const submitText = isRequestQuote
         ? 'Request for Quote'
         : isCompleted
             ? 'Review Transfer'
-            : `Transfer ${sourceCurrencyCode} ${campaignAmount + parseFloat(allFee?.split(" ")[1])}`
+            : `Transfer ${sourceCurrencyCode} ${Number(finalPayoutValue).toFixed(2)}`
 
     useEffect(() => {
         const intervalId = pollExchanges(userBearerDid, setRelevantExchanges)
@@ -474,6 +501,43 @@ const OfferingDetails = (props: any) => {
 
 
     const isButtonDisabled = !activateButton
+
+    useEffect(() => {
+        const isUsingWlletBalance = !Object.keys(requiredPaymentDetails?.payin).length
+
+        if (isUsingWlletBalance && !isRequestQuote) {
+            const currentBalance = money?.amount
+            const sameCurrency = money?.currency === offeringFromCurrency
+
+            const totalAmount = overallFee
+                ? overallFee + campaignAmount
+                : campaignAmount
+
+            const hasSufficientBalance = currentBalance > totalAmount
+
+            if (!hasSufficientBalance && sameCurrency) {
+                // Set error and disable button
+                console.log("Set error and disable button", {
+                    hasSufficientBalance,
+                    sameCurrency
+                })
+            }
+
+            console.log("||||currentBalance|||||", {
+                currentBalance,
+                sameCurrency,
+                totalAmount,
+                hasSufficientBalance
+            })
+        }
+
+        console.log("Payment Details or Fees Changes", {
+            isUsingWlletBalance,
+            requiredPaymentDetails,
+            feeDetails
+        })
+
+    }, [requiredPaymentDetails, feeDetails])
 
     console.log("Required Claims Exists", offering?.requiredClaimsExist)
 

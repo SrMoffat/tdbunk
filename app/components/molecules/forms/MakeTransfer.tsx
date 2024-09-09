@@ -148,6 +148,11 @@ const MakeTransfer = (props: any) => {
                                                 formatter={formatter}
                                                 valueStyle={{ color: colorPrimary, fontSize: 18, fontWeight: "bold" }}
                                             />
+                                            {/**
+                                             * To Do: Since we are assuming the user of wallet balance here
+                                             *         we should also check for insufficient balance and send
+                                             *         Close message
+                                             */}
                                         </Flex>
                                     </Flex>
                                 </Card>

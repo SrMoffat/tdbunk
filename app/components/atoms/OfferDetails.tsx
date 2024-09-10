@@ -5,6 +5,7 @@ export interface AssetExchangeOfferProps {
     offeringId: string;
     isSelected: boolean;
     isRecommended: boolean;
+    isSpecial: boolean;
     hasRequiredClaims: boolean;
     issuerVcSchema: string;
     issuerDid: string;
@@ -18,6 +19,7 @@ const AssetExchangeOffer = ({
     issuerVcSchema,
     issuerDid,
     isRecommended,
+    isSpecial,
     hasRequiredClaims,
     offeringToCurrencyMethods
 }: AssetExchangeOfferProps) => {
@@ -28,6 +30,7 @@ const AssetExchangeOffer = ({
                 issuerDid={issuerDid}
                 hasRequiredClaims={hasRequiredClaims}
                 isRecommended={isRecommended}
+                isSpecial={isSpecial}
                 isSelected={isSelected}
                 issuerVcSchema={issuerVcSchema}
                 offeringToCurrencyMethods={offeringToCurrencyMethods}
@@ -36,6 +39,7 @@ const AssetExchangeOffer = ({
         : <OfferCard
             offeringId={offeringId}
             issuerDid={issuerDid}
+            isSpecial={isSpecial}
             hasRequiredClaims={hasRequiredClaims}
             isRecommended={isRecommended}
             isSelected={isSelected}

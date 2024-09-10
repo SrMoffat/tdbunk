@@ -7,6 +7,7 @@ export interface OfferCardProps {
     offeringId: string
     issuerDid: string
     isSelected: boolean
+    isSpecial: boolean
     hasRequiredClaims: boolean
     isRecommended: boolean
     issuerVcSchema: string
@@ -45,6 +46,7 @@ const OfferCard = ({
     offeringId,
     issuerDid,
     isSelected,
+    isSpecial,
     hasRequiredClaims,
     isRecommended,
     issuerVcSchema,
@@ -55,7 +57,7 @@ const OfferCard = ({
     const hasClaims = isSelected && hasRequiredClaims
 
     return (
-        <Card className={`w-[470px] min-h-[200px] ${isRecommended ? 'opacity-100' : 'opacity-40'}`}>
+        <Card className={`w-[470px] min-h-[200px] ${!isSpecial ? 'opacity-100' : 'opacity-40'}`}>
             <Flex className="w-full gap-2">
                 <Typography.Text className="font-bold">
                     Offer ID:

@@ -173,7 +173,7 @@ const MakePayment = (props: any) => {
         diff,
         exchangeRate,
         currentMarketRate
-    }); // Output: "1.32% higher than the first value"
+    });
 
     const comparison = currentMarketRate > parseFloat(exchangeRate)
         ? 'higher than'
@@ -184,19 +184,22 @@ const MakePayment = (props: any) => {
             {isRequestQuote ? (
                 <Flex className="w-full items-center flex-col">
                     <Typography.Text style={{ fontSize: 12 }}>Exchange Rate in Offering</Typography.Text>
-                    {/* <Typography.Text style={{ fontSize: 12 }}>{`${comparisonText}`}</Typography.Text> */}
-                    <Typography.Text style={{ fontSize: 12 }}>
-                        <Typography.Text style={{
-                            fontSize: 12,
-                            color: currentMarketRate > parseFloat(exchangeRate)
-                                ? 'red'
-                                : 'green'
-                        }}
-                        >
-                            {`${diff}%`}
-                        </Typography.Text >
-                        <Typography.Text style={{ fontSize: 12 }}> {comparison} Market Rate</Typography.Text>
-                    </Typography.Text>
+                    {
+                        Boolean(currentMarketRate) && (
+                            <Typography.Text style={{ fontSize: 12 }}>
+                                <Typography.Text style={{
+                                    fontSize: 12,
+                                    color: currentMarketRate > parseFloat(exchangeRate)
+                                        ? 'red'
+                                        : 'green'
+                                }}
+                                >
+                                    {`${diff}%`}
+                                </Typography.Text >
+                                <Typography.Text style={{ fontSize: 12 }}> {comparison} Market Rate</Typography.Text>
+                            </Typography.Text>
+                        )
+                    }
                     <Steps
                         type="inline"
                         items={[

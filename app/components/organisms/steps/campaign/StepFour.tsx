@@ -373,31 +373,37 @@ const StepFour = () => {
                         loading={isLoading}
                         dataSource={offerings}
                         className="mt-4"
-                        renderItem={(item, index) => <OfferingDetails
-                            key={index}
-                            web5={web5}
-                            offering={item}
-                            money={monopolyMoney}
-                            isSelected={isSelected}
-                            isCompleted={isCompleted}
-                            isCancelled={isCancelled}
-                            selectedCard={selectedCard}
-                            userBearerDid={userBearerDid}
-                            stateCredentials={credentials}
-                            campaignAmount={campaignAmount}
-                            credentials={existingCredentials}
-                            selectedOffering={selectedOffering}
-                            currentMarketRate={currentMarketRate}
-                            unformattedOfferings={unformattedOfferings}
+                        renderItem={(item, index) => {
+                            const isOnlyResult = offerings?.length === 1
+                            return (
+                                <OfferingDetails
+                                    key={index}
+                                    web5={web5}
+                                    offering={item}
+                                    money={monopolyMoney}
+                                    isSelected={isSelected}
+                                    isCompleted={isCompleted}
+                                    isCancelled={isCancelled}
+                                    selectedCard={selectedCard}
+                                    isOnlyResult={isOnlyResult}
+                                    userBearerDid={userBearerDid}
+                                    stateCredentials={credentials}
+                                    campaignAmount={campaignAmount}
+                                    credentials={existingCredentials}
+                                    selectedOffering={selectedOffering}
+                                    currentMarketRate={currentMarketRate}
+                                    unformattedOfferings={unformattedOfferings}
 
-                            setIsSelected={setIsSelected}
-                            setIsCompleted={setIsCompleted}
-                            setIsCancelled={setIsCancelled}
-                            createExchange={createExchange}
-                            setSelectedCard={setSelectedCard}
-                            setCampaignAmount={setCampaignAmount}
-                            setSelectedOffering={setSelectedOffering}
-                        />}
+                                    setIsSelected={setIsSelected}
+                                    setIsCompleted={setIsCompleted}
+                                    setIsCancelled={setIsCancelled}
+                                    createExchange={createExchange}
+                                    setSelectedCard={setSelectedCard}
+                                    setCampaignAmount={setCampaignAmount}
+                                    setSelectedOffering={setSelectedOffering}
+                                />
+                            )
+                        }}
                     />
                 </Card>
                 <Flex className="w-1/4 flex flex-row">

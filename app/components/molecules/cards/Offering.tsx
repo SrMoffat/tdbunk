@@ -136,6 +136,7 @@ const OfferingDetails = (props: any) => {
     const {
         web5,
         money,
+        isOnlyResult,
         isCancelled,
         isSelected,
         credentials,
@@ -156,10 +157,6 @@ const OfferingDetails = (props: any) => {
         setSelectedOffering,
         unformattedOfferings,
     } = props
-
-    console.log("<OfferingDetails />", {
-        selectedOffering
-    })
 
     const [isLoading, setIsLoading] = useState(false)
     const [showModal, setShowModal] = useState(false)
@@ -186,6 +183,18 @@ const OfferingDetails = (props: any) => {
     const offeringFromCurrencyMethods = offeringFromCurrency?.methods
     const offeringToCurrencyMethods = offeringToCurrency?.methods
     const offeringCreatedTime = formatDistanceToNow(new Date(offeringCreatedAt), { addSuffix: true });
+
+    const isCheaperThanMarketRate = offeringToCurrency?.unit > Number(currentMarketRate) // || isOnlyResult
+
+    console.log("[Offer]: handle this", {
+        item: values,
+        isCheaperThanMarketRate,
+        currentMarketRate
+    })
+
+    console.log("<OfferingDetails />", {
+        selectedOffering
+    })
 
     const pfiName = PFIs.filter(pfi => pfi?.did === pfiDid)[0]?.name
 
@@ -549,6 +558,9 @@ const OfferingDetails = (props: any) => {
     console.log("Required Claims Exists", offering?.requiredClaimsExist)
 
 
+    console.log("Check that conversion rate is lower than market rate then check rating after")
+
+
     return (
         <List.Item className="flex flex-row gap-2">
             <Modal
@@ -592,7 +604,8 @@ const OfferingDetails = (props: any) => {
                 isSelected={isSelected}
                 offeringId={offeringId}
                 issuerVcSchema={issuerVcSchema}
-                isRecommended={Boolean(pfiName)}
+                isRecommended={Boolean(pfiName) && isCheaperThanMarketRate}
+                isSpecial={!Boolean(pfiName)}
                 hasRequiredClaims={offering?.requiredClaimsExist}
                 offeringToCurrencyMethods={offeringToCurrencyMethods}
             />

@@ -31,7 +31,7 @@ const RequestForQuote = (props: any) => {
     const [convertedToValue, setConvertedToValue] = useState<number>(campaignAmount * exchangeRate)
 
     const {
-        token: { colorPrimary, colorBgContainer },
+        token: { colorPrimary, colorBgContainer, colorError },
     } = theme.useToken()
 
     const renderRequiredDetails = (details: any[], type: string) => {
@@ -110,7 +110,7 @@ const RequestForQuote = (props: any) => {
         <CountUp end={value as number} separator="," />
     );
 
-    const renderPaymentMethods = (methods: any, type: string, disabled: boolean) => {
+    const renderPaymentMethods = (methods: any, type: string, disabled: boolean, insufficientBalance: boolean) => {
         return (
             <Flex className="w-full">
                 {methods.map((entry: any) => {
@@ -138,18 +138,21 @@ const RequestForQuote = (props: any) => {
                             <Flex className="mt-2 w-full">
                                 {
                                     isAssumedStoredBalance
-                                        ? <Card className="w-full">
+                                        ? <Card className={`transition-all w-full ${insufficientBalance ? 'border border-red-400' : ''}`}>
                                             <Flex className="gap-5">
                                                 <Image src={LogoIcon2} width={60} height={60} alt="TDBunk" />
-                                                <Flex className="flex-col">
+                                                <Flex className="flex-col transition-all">
                                                     <Statistic
                                                         prefix={money?.currency}
                                                         title="Wallet Balance"
                                                         value={money?.amount}
                                                         precision={2}
                                                         formatter={formatter}
-                                                        valueStyle={{ color: colorPrimary, fontSize: 18, fontWeight: "bold" }}
+                                                        valueStyle={{ color: insufficientBalance ? colorError : colorPrimary, fontSize: 18, fontWeight: "bold" }}
                                                     />
+                                                    {insufficientBalance && (
+                                                        <Typography.Text style={{ fontSize: 10, color: colorError }}>Insufficient wallet balance.</Typography.Text>
+                                                    )}
                                                 </Flex>
                                             </Flex>
                                         </Card>
@@ -180,6 +183,8 @@ const RequestForQuote = (props: any) => {
         setConvertedToValue(convertedResult)
         // setCampaignAmount(convertedResult)
     }, [toValue])
+
+    const insufficientBalance = Math.floor(campaignAmount / exchangeRate) > money?.amount
     return (
         <Flex className="gap-3">
             <Card className="w-full">
@@ -214,7 +219,7 @@ const RequestForQuote = (props: any) => {
                     </Space.Compact>
                 </Flex>
                 <Flex className="w-full mt-2">
-                    {renderPaymentMethods(payinMethods, 'payin', isLoading)}
+                    {renderPaymentMethods(payinMethods, 'payin', isLoading, insufficientBalance)}
                 </Flex>
             </Card>
             <Flex>
@@ -252,7 +257,7 @@ const RequestForQuote = (props: any) => {
                     </Space.Compact>
                 </Flex>
                 <Flex className="w-full mt-2">
-                    {renderPaymentMethods(payoutMethods, 'payout', isLoading)}
+                    {renderPaymentMethods(payoutMethods, 'payout', isLoading, false)}
                 </Flex>
             </Card>
         </Flex>

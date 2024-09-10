@@ -238,8 +238,12 @@ const RequestForQuote = (props: any) => {
                             <InputNumber
                                 disabled
                                 style={{ width: '100%', color: '#ffffff' }}
-                                defaultValue={convertedToValue}
-                                value={convertedToValue ? convertedToValue : toValue}
+
+                                defaultValue={Math.floor(campaignAmount / exchangeRate * exchangeRate)}
+
+
+                                // defaultValue={convertedToValue}
+                                // value={convertedToValue ? convertedToValue : toValue}
                             />
                         </Flex>
                     </Space.Compact>

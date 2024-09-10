@@ -192,8 +192,11 @@ const MakeTransfer = (props: any) => {
                                 <InputNumber
                                     disabled
                                     style={{ width: '100%', color: 'white' }}
-                                    value={exchangeRate * campaignAmount}
-                                    defaultValue={exchangeRate * campaignAmount}
+                                    // value={exchangeRate * campaignAmount}
+                                    // defaultValue={exchangeRate * campaignAmount}
+
+                                    value={Math.floor(campaignAmount / exchangeRate) * exchangeRate}
+                                    defaultValue={Math.floor(campaignAmount / exchangeRate) * exchangeRate}
                                 />
                             </Flex>
                         </Space.Compact>

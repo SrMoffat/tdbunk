@@ -303,3 +303,11 @@ export const getPlatformFees = async (paymentDetails: any[]) => {
     return feeDetails
 }
 
+export const percentageDifference = (value1: number, value2: number) => {
+    const diff = Math.abs((value2 - value1) / ((value1 + value2) / 2)) * 100;
+    return {
+        value1,
+        value2,
+        diff: diff.toFixed(2)
+    }
+}

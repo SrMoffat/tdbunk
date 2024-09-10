@@ -6,7 +6,6 @@ export const SourceCurrency = (props: any) => {
     const { currency } = props
     return (
         <Typography.Text
-            className="text-green-600"
             style={{ fontSize: 11 }}
         >
             {`${currency} ${parseFloat('1').toFixed(2)}`}
@@ -24,7 +23,6 @@ export const DestinationCurrency = (props: any) => {
     const isNaN = Number.isNaN(converted)
     return (
         <Typography.Text
-            className="text-green-600"
             style={{ fontSize: 11 }}
         >
             {`${currency} ${isLoading ? '..' : `${isNaN ? 'Unavailable' : converted}`}`}

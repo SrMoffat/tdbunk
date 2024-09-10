@@ -3,7 +3,7 @@ import PFIDetails from "@/app/components/atoms/OfferPFI";
 import MakeTransfer from "@/app/components/molecules/forms//MakeTransfer";
 import RequestForQuote from "@/app/components/molecules/forms/RequestForQuote";
 import { TBDEX_MESSAGE_TYPES_TO_STATUS } from "@/app/lib/constants";
-import { arraysEqual, getEstimatedSettlementTime, getPlatformFees, msToDays } from "@/app/lib/utils";
+import { arraysEqual, getEstimatedSettlementTime, getPlatformFees, msToDays, percentageDifference } from "@/app/lib/utils";
 import { PRIMARY_GOLD_HEX } from "@/app/providers/ThemeProvider";
 import { ClockCircleFilled, CloseCircleFilled } from "@ant-design/icons";
 import { Card, Flex, Progress, Statistic, Steps, Tag, Typography } from "antd";
@@ -166,12 +166,36 @@ const MakePayment = (props: any) => {
         })
     }, [intervalId, percent])
 
+    const { diff } = percentageDifference(currentMarketRate, parseFloat(exchangeRate));
+
+    console.log("marketRate", {
+        diff,
+        exchangeRate,
+        currentMarketRate
+    }); // Output: "1.32% higher than the first value"
+
+    const comparison = currentMarketRate > parseFloat(exchangeRate)
+        ? 'higher than'
+        : 'lower than';
+
     return (
         <Flex className={`gap-2 flex-col ${isLoading ? 'opacity-30' : 'opacity-100'}`}>
             {isRequestQuote ? (
                 <Flex className="w-full items-center flex-col">
                     <Typography.Text style={{ fontSize: 12 }}>Exchange Rate in Offering</Typography.Text>
-                    {/* <Typography.Text style={{ fontSize: 12 }}>%05 Market Rate</Typography.Text> */}
+                    {/* <Typography.Text style={{ fontSize: 12 }}>{`${comparisonText}`}</Typography.Text> */}
+                    <Typography.Text style={{ fontSize: 12 }}>
+                        <Typography.Text style={{
+                            fontSize: 12,
+                            color: currentMarketRate > parseFloat(exchangeRate)
+                                ? 'red'
+                                : 'green'
+                        }}
+                        >
+                            {`${diff}%`}
+                        </Typography.Text >
+                        <Typography.Text style={{ fontSize: 12 }}> {comparison} Market Rate</Typography.Text>
+                    </Typography.Text>
                     <Steps
                         type="inline"
                         items={[

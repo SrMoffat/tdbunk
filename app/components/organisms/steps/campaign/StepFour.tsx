@@ -201,7 +201,9 @@ const StepFour = () => {
         credentials,
         monopolyMoney,
         createExchange,
+        currentMarketRate,
         selectedCurrency,
+        setCurrentMarketRate,
         unformattedOfferings,
         selectedDestinationCurrency,
     } = useTbdexContext()
@@ -356,6 +358,8 @@ const StepFour = () => {
                         )}
                         <MarketRate
                             source={selectedCurrency}
+                            currentMarketRate={currentMarketRate}
+                            setCurrentMarketRate={setCurrentMarketRate}
                             destination={selectedDestinationCurrency}
                         />
                     </Flex>

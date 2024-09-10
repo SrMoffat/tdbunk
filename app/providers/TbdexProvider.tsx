@@ -27,6 +27,7 @@ export interface TbdexContextProps {
     specialOfferings: any[];
     sourceCurrencies: any[];
     selectedCurrency: string;
+    currentMarketRate: number;
     unformattedOfferings: any[];
     credentials: CredentialProp;
     destinationCurrencies: any[];
@@ -40,6 +41,7 @@ export interface TbdexContextProps {
     setSourceCurrencies: React.Dispatch<React.SetStateAction<any[]>>;
     setSpecialOfferings: React.Dispatch<React.SetStateAction<any[]>>;
     setSelectedCurrency: React.Dispatch<React.SetStateAction<string>>;
+    setCurrentMarketRate: React.Dispatch<React.SetStateAction<number>>;
     setUnformattedOfferings: React.Dispatch<React.SetStateAction<any[]>>;
     setDestinationCurrencies: React.Dispatch<React.SetStateAction<any[]>>;
     setMonopolyMoney: React.Dispatch<React.SetStateAction<MonopolyMoney>>;
@@ -66,6 +68,7 @@ const useTbdexContext = (): Partial<TbdexContextProps> => {
 const TbdexContextProvider = ({ children }: PropsWithChildren) => {
     const { userBearerDid: contextUserBearerDid } = useWeb5Context()
     const [offerings, setOfferings] = useState<any[]>([])
+    const [currentMarketRate, setCurrentMarketRate] = useState<number>(1)
     const [specialOfferings, setSpecialOfferings] = useState<any[]>([])
     const [unformattedOfferings, setUnformattedOfferings] = useState<any[]>([])
     const [unformattedSpecialOfferings, setUnformattedSpecialOfferings] = useState<any[]>([])
@@ -218,6 +221,7 @@ const TbdexContextProvider = ({ children }: PropsWithChildren) => {
         specialOfferings,
         sourceCurrencies,
         selectedCurrency,
+        currentMarketRate,
         unformattedOfferings,
         destinationCurrencies,
         specialSourceCurrencies,
@@ -232,6 +236,7 @@ const TbdexContextProvider = ({ children }: PropsWithChildren) => {
         setSelectedCurrency,
         setSpecialOfferings,
         setSourceCurrencies,
+        setCurrentMarketRate,
         setUnformattedOfferings,
         setDestinationCurrencies,
         setSpecialSourceCurrencies,

@@ -9,7 +9,7 @@ export const SourceCurrency = (props: any) => {
             className="text-green-600"
             style={{ fontSize: 11 }}
         >
-            {`${currency} ${parseFloat('1').toFixed(2) }`}
+            {`${currency} ${parseFloat('1').toFixed(2)}`}
         </Typography.Text>
     )
 }
@@ -34,7 +34,7 @@ export const DestinationCurrency = (props: any) => {
 
 
 const MarketRate = (props: any) => {
-    const { source, destination } = props
+    const { source, destination, setCurrentMarketRate } = props
 
     const [isLoading, setIsLoading] = useState(false)
     const [convertedAmount, setConvertedAmount] = useState(1)
@@ -53,13 +53,20 @@ const MarketRate = (props: any) => {
                         body: JSON.stringify({ source, destination })
                     })
                     const dataPaid = await responsePaid.json()
+
                     console.log("Use PAID API", dataPaid)
-                    setConvertedAmount(dataPaid?.conversion_rate)
-                    localStorage.setItem(MARKET_CONVERSION_RATE_LOCAL_STORAGE_KEY, dataPaid?.conversion_rate)
+                    const rate = dataPaid?.conversion_rate
+
+                    setConvertedAmount(rate)
+                    setCurrentMarketRate(rate)
+                    localStorage.setItem(MARKET_CONVERSION_RATE_LOCAL_STORAGE_KEY, rate)
                 } else {
                     console.log("Use Free API", data)
-                    setConvertedAmount(data?.rate)
-                    localStorage.setItem(MARKET_CONVERSION_RATE_LOCAL_STORAGE_KEY, data?.rate)
+                    const rate = data?.rate
+
+                    setConvertedAmount(rate)
+                    setCurrentMarketRate(rate)
+                    localStorage.setItem(MARKET_CONVERSION_RATE_LOCAL_STORAGE_KEY, rate)
                 }
                 setIsLoading(false)
             } catch (error: any) {

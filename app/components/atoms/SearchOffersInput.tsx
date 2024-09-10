@@ -158,11 +158,30 @@ export const SearchOffers = (props: any) => {
             <Flex className="px-4 border-[0.2px] border-gray-700">
                 <RightCircleFilled style={{ color: colorPrimary }} />
             </Flex>
-            <Select style={{ width: 130 }} defaultValue={selectedDestinationCurrency} onChange={(value) => {
-                setSelectedDestinationCurrency?.(value)
-                // Convert campaignAmount and set it
+            <Select style={{ width: 130 }} defaultValue={selectedDestinationCurrency} onChange={async (value) => {
+                try {
+                    const response = await fetch(`/api/rates?source=${selectedDestinationCurrency}&destination=${value}`)
+                    const data = await response.json()
 
-                
+                    if (!data.rate) {
+                        const responsePaid = await fetch(`/api/conversions`, {
+                            method: 'POST',
+                            body: JSON.stringify({ source: selectedDestinationCurrency, destination: value })
+                        })
+
+                        const dataPaid = await responsePaid.json()
+                        const rate = dataPaid?.conversion_rate
+
+                        setCampaignAmount?.(Math.floor(rate * Number(campaignAmount)))
+                    } else {
+                        const rate = data?.rate
+                        setCampaignAmount?.(Math.floor(rate * Number(campaignAmount)))
+                    }
+
+                } catch (error: any) {
+                    console.error("Conversion failed", error)
+                }
+                setSelectedDestinationCurrency?.(value)
             }}>
                 {mergedDestinationCurrencies?.map(entry => <Option key={entry} value={entry}>{`${entry} ${getCurrencyFlag(entry)}`}</Option>)}
             </Select>

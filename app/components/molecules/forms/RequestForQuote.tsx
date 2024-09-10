@@ -178,6 +178,18 @@ const RequestForQuote = (props: any) => {
 
         setConvertedToValue(campaignAmount * exchangeRate)
     }, [])
+
+    useEffect(() => {
+        const rate = parseFloat(exchangeRate)
+        const convertedResult = rate * toValue
+        setConvertedToValue(convertedResult)
+        console.log("toValue ==>", {
+            rate,
+            toValue,
+            exchangeRate,
+            convertedResult,
+        })
+    }, [toValue])
     return (
         <Flex className="gap-3">
             <Card className="w-full">
@@ -202,9 +214,11 @@ const RequestForQuote = (props: any) => {
                                 style={{ width: '100%' }}
                                 defaultValue={Math.floor(campaignAmount / exchangeRate)}
                                 onChange={(value) => {
+                                    console.log("<=== Value Here ==>", value)
                                     // @ts-ignore
-                                    setToValue(value * exchangeRate)
-                                    setConvertedToValue((value as number) * exchangeRate)
+                                    setToValue(value)
+                                    // setToValue(value * exchangeRate)
+                                    // setConvertedToValue((value as number) * exchangeRate)
                                 }}
                             />
                         </Flex>
@@ -238,12 +252,12 @@ const RequestForQuote = (props: any) => {
                             <InputNumber
                                 disabled
                                 style={{ width: '100%', color: '#ffffff' }}
-
                                 defaultValue={Math.floor(campaignAmount / exchangeRate * exchangeRate)}
-
-
-                                // defaultValue={convertedToValue}
-                                // value={convertedToValue ? convertedToValue : toValue}
+                                value={
+                                    convertedToValue
+                                        ? convertedToValue
+                                        : Math.floor(campaignAmount / exchangeRate * exchangeRate)
+                                }
                             />
                         </Flex>
                     </Space.Compact>

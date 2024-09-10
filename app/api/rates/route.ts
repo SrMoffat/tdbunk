@@ -3,7 +3,8 @@ import { createEdgeRouter } from "next-connect";
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 
-const EXCHANGE_RATE_API_KEY = process.env.EXCHANGE_RATE_API_KEY || '58faa419858f91e90f7ab302'
+const EXCHANGE_RATE_API_KEY = process.env.EXCHANGE_RATE_API_KEY || '17caec0b37b62a0b986d745e'
+// const EXCHANGE_RATE_API_KEY = process.env.EXCHANGE_RATE_API_KEY || '58faa419858f91e90f7ab302' // Exhausted
 const EXCHANGE_RATE_API_URL = 'https://v6.exchangerate-api.com/v6'
 const CRYPTO_EXCHANGE_RATE_API_URL = 'https://api.coingate.com/api/v2/rates/merchant'
 

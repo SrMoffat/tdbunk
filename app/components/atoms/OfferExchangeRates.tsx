@@ -31,7 +31,7 @@ const AssetExchangeRates = ({
                             {' '}
                             {fromCurrencyFlag}
                         </Flex>
-                        <Flex className="-mt-1 text-xs text-white" > {`${fromUnit}`}</Flex>
+                        <Flex className="-mt-1 text-xs text-white" > {`${parseFloat(fromUnit).toFixed(2)}`}</Flex>
                     </Flex>
                 </Button>
                 <Button className="h-[70px] w-[50px]">
@@ -44,7 +44,7 @@ const AssetExchangeRates = ({
                             {' '}
                             {toCurrencyFlag}
                         </Flex>
-                        <Flex className="-mt-1 text-xs text-white" > {toUnit} </Flex>
+                        <Flex className="-mt-1 text-xs text-white" > {`${parseFloat(toUnit)}`} </Flex>
                     </Flex>
                 </Button>
             </Space.Compact>

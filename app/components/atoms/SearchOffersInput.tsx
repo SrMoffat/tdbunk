@@ -32,7 +32,7 @@ export const SearchOffers = (props: any) => {
         setSelectedDestinationCurrency
     } = useTbdexContext()
 
-    const { campaignAmount } = useCreateCampaignContext()
+    const { campaignAmount, setCampaignAmount } = useCreateCampaignContext()
 
     const handleRefreshOfferings = () => {
         setIsLoading(true)
@@ -50,8 +50,18 @@ export const SearchOffers = (props: any) => {
     const lastUpdate = localStorage.getItem(OFFERINGS_LAST_UPDATED)
 
     console.log("Last Updated", lastUpdate)
+    console.log("Convert then set result to campaignAmount", {
+        campaignAmount,
+        from: selectedDestinationCurrency,
+        to: selectedCurrency
+
+    })
 
     // const destinationCountry = countries.filter(entry => entry.currencyCode === selectedDestinationCurrency)[0]?.flag
+
+    // campaignAmount is amount the campaign will receive in selectedCurrency
+    // default: convert campaignAmount to USD and set as defaultValue
+    // changed: convert campaignAmount to selectedCurrency and set as defaultValue
     return (
         <Space.Compact block >
             <Select style={{ width: 130 }} defaultValue={selectedCurrency || 'USD'} onChange={(value) => {
@@ -59,7 +69,9 @@ export const SearchOffers = (props: any) => {
             }}>
                 {mergedSourceCurrencies?.map(entry => <Option key={entry} value={entry}>{`${entry} ${getCurrencyFlag(entry)}`}</Option>)}
             </Select>
-            <InputNumber defaultValue={campaignAmount} />
+            <InputNumber defaultValue={campaignAmount} onChange={(value) => {
+                setCampaignAmount?.(value as number)
+            }} />
             <Flex className="px-4 border-[0.2px] border-gray-700">
                 <RightCircleFilled style={{ color: colorPrimary }} />
             </Flex>

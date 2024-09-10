@@ -71,11 +71,11 @@ const ReviewOffering = (props: any) => {
                         <Typography.Text className="font-extrabold">Exchange Rate</Typography.Text>
                         <Flex className="gap-1">
                             <Typography.Text>Market Rate:</Typography.Text>
-                            <Tag>{marketRate}</Tag>
+                            <Tag>{parseFloat(marketRate as string).toFixed(2)}</Tag>
                         </Flex>
                         <Flex className="gap-1">
                             <Typography.Text>Offering Rate:</Typography.Text>
-                            <Tag>{toMethods.unit}</Tag>
+                            <Tag>{parseFloat(toMethods.unit).toFixed(2)}</Tag>
                         </Flex>
                     </Flex>
                 </Card>
@@ -505,26 +505,29 @@ const OfferingDetails = (props: any) => {
     useEffect(() => {
         const isUsingWlletBalance = !Object.keys(requiredPaymentDetails?.payin).length
 
-        if (isUsingWlletBalance && !isRequestQuote) {
+        if (isUsingWlletBalance) {
             const currentBalance = money?.amount
             const sameCurrency = money?.currency === offeringFromCurrency
 
-            const totalAmount = overallFee
-                ? overallFee + campaignAmount
-                : campaignAmount
+            const totalAmount = !isRequestQuote
+                ? parseFloat(overallFee) + parseFloat(campaignAmount)
+                : parseFloat(campaignAmount)
 
             const hasSufficientBalance = currentBalance > totalAmount
 
-            if (!hasSufficientBalance && sameCurrency) {
-                // Set error and disable button
-                console.log("Set error and disable button", {
-                    hasSufficientBalance,
-                    sameCurrency
-                })
-            }
+            // if (!hasSufficientBalance && sameCurrency) {
+            //     // Set error and disable button
+            //     console.log("Set error and disable button", {
+            //         hasSufficientBalance,
+            //         sameCurrency
+            //     })
+            // }
 
             console.log("||||currentBalance|||||", {
+                isRequestQuote,
+                overallFee,
                 currentBalance,
+                campaignAmount,
                 sameCurrency,
                 totalAmount,
                 hasSufficientBalance

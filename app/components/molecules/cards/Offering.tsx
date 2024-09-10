@@ -152,6 +152,7 @@ const OfferingDetails = (props: any) => {
         setSelectedCard,
         offering: values,
         selectedOffering,
+        setCampaignAmount,
         setSelectedOffering,
         unformattedOfferings,
     } = props
@@ -383,6 +384,7 @@ const OfferingDetails = (props: any) => {
                 relevantExchange={relevantExchange}
                 isLoading={isLoading || isCancelling}
                 setActivateButton={setActivateButton}
+                setCampaignAmount={setCampaignAmount}
                 offeringCreatedAt={offeringCreatedAt}
                 requiredPaymentDetails={requiredPaymentDetails}
                 setPaymentDetails={setRequiredPaymentDetails}

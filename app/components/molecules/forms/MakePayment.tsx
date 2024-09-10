@@ -28,6 +28,7 @@ const MakePayment = (props: any) => {
         offeringCreatedAt,
         setPaymentDetails,
         setActivateButton,
+        setCampaignAmount,
         requiredPaymentDetails: stateDetails,
         offeringToCurrencyMethods
     } = props
@@ -310,6 +311,7 @@ const MakePayment = (props: any) => {
                         isLoading={isLoading}
                         monopolyMoney={monopolyMoney}
                         campaignAmount={campaignAmount}
+                        setCampaignAmount={setCampaignAmount}
                         currentMarketRate={currentMarketRate}
                         setRequiredPaymentDetails={setRequiredPaymentDetails}
                     />

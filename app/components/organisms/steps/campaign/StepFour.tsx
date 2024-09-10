@@ -211,7 +211,7 @@ const StepFour = () => {
 
     const { notify } = useNotificationContext()
 
-    const { campaignAmount } = useCreateCampaignContext()
+    const { campaignAmount, setCampaignAmount } = useCreateCampaignContext()
 
     const [localStorageData] = useBrowserStorage<CredentialStorage>(
         OFFERINGS_LOCAL_STORAGE_KEY,
@@ -395,6 +395,7 @@ const StepFour = () => {
                             setIsCancelled={setIsCancelled}
                             createExchange={createExchange}
                             setSelectedCard={setSelectedCard}
+                            setCampaignAmount={setCampaignAmount}
                             setSelectedOffering={setSelectedOffering}
                         />}
                     />

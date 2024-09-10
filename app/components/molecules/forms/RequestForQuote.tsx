@@ -9,7 +9,7 @@ import CountUp from "react-countup";
 const RequestForQuote = (props: any) => {
     const [form] = Form.useForm();
 
-    const { offering, campaignAmount, setRequiredPaymentDetails, money, isLoading, currentMarketRate } = props
+    const { offering, campaignAmount, setRequiredPaymentDetails, money, isLoading, setCampaignAmount } = props
 
     const offeringData = offering?.data
 
@@ -171,11 +171,6 @@ const RequestForQuote = (props: any) => {
     }
 
     useEffect(() => {
-        console.log("Handle set converted to Value", {
-            amount: campaignAmount,
-            converted: campaignAmount * exchangeRate
-        })
-
         setConvertedToValue(campaignAmount * exchangeRate)
     }, [])
 
@@ -183,12 +178,7 @@ const RequestForQuote = (props: any) => {
         const rate = parseFloat(exchangeRate)
         const convertedResult = rate * toValue
         setConvertedToValue(convertedResult)
-        console.log("toValue ==>", {
-            rate,
-            toValue,
-            exchangeRate,
-            convertedResult,
-        })
+        // setCampaignAmount(convertedResult)
     }, [toValue])
     return (
         <Flex className="gap-3">
@@ -214,11 +204,10 @@ const RequestForQuote = (props: any) => {
                                 style={{ width: '100%' }}
                                 defaultValue={Math.floor(campaignAmount / exchangeRate)}
                                 onChange={(value) => {
-                                    console.log("<=== Value Here ==>", value)
                                     // @ts-ignore
                                     setToValue(value)
-                                    // setToValue(value * exchangeRate)
-                                    // setConvertedToValue((value as number) * exchangeRate)
+                                    setCampaignAmount(parseFloat(exchangeRate) * (value as number))
+
                                 }}
                             />
                         </Flex>

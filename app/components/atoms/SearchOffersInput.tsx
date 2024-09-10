@@ -160,6 +160,9 @@ export const SearchOffers = (props: any) => {
             </Flex>
             <Select style={{ width: 130 }} defaultValue={selectedDestinationCurrency} onChange={(value) => {
                 setSelectedDestinationCurrency?.(value)
+                // Convert campaignAmount and set it
+
+                
             }}>
                 {mergedDestinationCurrencies?.map(entry => <Option key={entry} value={entry}>{`${entry} ${getCurrencyFlag(entry)}`}</Option>)}
             </Select>

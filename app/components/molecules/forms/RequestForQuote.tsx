@@ -9,7 +9,7 @@ import CountUp from "react-countup";
 const RequestForQuote = (props: any) => {
     const [form] = Form.useForm();
 
-    const { offering, campaignAmount, setRequiredPaymentDetails, money, isLoading } = props
+    const { offering, campaignAmount, setRequiredPaymentDetails, money, isLoading, currentMarketRate } = props
 
     const offeringData = offering?.data
 
@@ -29,7 +29,6 @@ const RequestForQuote = (props: any) => {
 
     const [toValue, setToValue] = useState<number>(0)
     const [convertedToValue, setConvertedToValue] = useState<number>(campaignAmount * exchangeRate)
-
 
     const {
         token: { colorPrimary, colorBgContainer },
@@ -201,11 +200,11 @@ const RequestForQuote = (props: any) => {
                             <Typography.Text className="font-bold " style={{ color: colorBgContainer }}>.</Typography.Text>
                             <InputNumber
                                 style={{ width: '100%' }}
-                                defaultValue={campaignAmount}
+                                defaultValue={Math.floor(campaignAmount / exchangeRate)}
                                 onChange={(value) => {
                                     // @ts-ignore
                                     setToValue(value * exchangeRate)
-                                    setConvertedToValue(value * exchangeRate)
+                                    setConvertedToValue((value as number) * exchangeRate)
                                 }}
                             />
                         </Flex>

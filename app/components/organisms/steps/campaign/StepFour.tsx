@@ -121,7 +121,7 @@ const Transactions = (props: any) => {
     }
 
     return (
-        <Flex className="w-full ml-4">
+        <Flex className="w-full ml-4 items-center mt-5">
             <Modal
                 width={800}
                 open={showModal}
@@ -349,10 +349,15 @@ const StepFour = () => {
             <Flex className="flex-row mt-4 gap-3 justify-between">
                 <Card className="w-full">
                     <Flex className="items-center w-full">
-                        <SearchOffers
-                            isLoading={isLoading}
-                            setIsLoading={setIsLoading}
-                        />
+                        <Flex className="flex-col">
+                            <Typography.Text style={{ fontSize: 11 }} className="mb-1 opacity-50">
+                                The campaign amount converted at market rate
+                            </Typography.Text>
+                            <SearchOffers
+                                isLoading={isLoading}
+                                setIsLoading={setIsLoading}
+                            />
+                        </Flex>
                         {hasCancelledTransactions && (
                             <Transactions userBearerDid={userBearerDid} />
                         )}
@@ -382,6 +387,7 @@ const StepFour = () => {
                             campaignAmount={campaignAmount}
                             credentials={existingCredentials}
                             selectedOffering={selectedOffering}
+                            currentMarketRate={currentMarketRate}
                             unformattedOfferings={unformattedOfferings}
 
                             setIsSelected={setIsSelected}

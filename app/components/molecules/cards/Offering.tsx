@@ -140,6 +140,7 @@ const OfferingDetails = (props: any) => {
         isSelected,
         credentials,
         isCompleted,
+        currentMarketRate,
         setIsCompleted,
         setIsCancelled,
         stateCredentials,
@@ -378,6 +379,7 @@ const OfferingDetails = (props: any) => {
                 isRequestQuote={isRequestQuote}
                 campaignAmount={campaignAmount}
                 createExchange={createExchange}
+                currentMarketRate={currentMarketRate}
                 relevantExchange={relevantExchange}
                 isLoading={isLoading || isCancelling}
                 setActivateButton={setActivateButton}

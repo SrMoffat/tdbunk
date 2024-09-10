@@ -24,6 +24,7 @@ const MakePayment = (props: any) => {
         campaignAmount,
         isRequestQuote,
         relevantExchange,
+        currentMarketRate,
         offeringCreatedAt,
         setPaymentDetails,
         setActivateButton,
@@ -285,6 +286,7 @@ const MakePayment = (props: any) => {
                         isLoading={isLoading}
                         monopolyMoney={monopolyMoney}
                         campaignAmount={campaignAmount}
+                        currentMarketRate={currentMarketRate}
                         setRequiredPaymentDetails={setRequiredPaymentDetails}
                     />
                     : <MakeTransfer
@@ -295,6 +297,7 @@ const MakePayment = (props: any) => {
                         monopolyMoney={monopolyMoney}
                         campaignAmount={campaignAmount}
                         relevantExchange={relevantExchange}
+                        currentMarketRate={currentMarketRate}
                         requiredPaymentDetails={requiredPaymentDetails}
                     />}
         </Flex>

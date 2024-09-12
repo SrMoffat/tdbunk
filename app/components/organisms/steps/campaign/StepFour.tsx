@@ -7,18 +7,21 @@ import DebunkCampaignStats from "@/app/components/molecules/description/DebunkCa
 import { CredentialStorage } from "@/app/components/molecules/forms/Credentials";
 import { Credentials } from "@/app/components/organisms/Credentials";
 import useBrowserStorage from "@/app/hooks/useLocalStorage";
-import { CREDENTIALS_LOCAL_STORAGE_KEY, LOCAL_STORAGE_KEY, OFFERINGS_LOCAL_STORAGE_KEY, SETTLED_TRANSFER_AT_LOCAL_STORAGE_KEY, SPECIAL_OFFERINGS_LOCAL_STORAGE_KEY } from "@/app/lib/constants";
+import { CREDENTIALS_LOCAL_STORAGE_KEY, LOCAL_STORAGE_KEY, OFFERINGS_LOCAL_STORAGE_KEY, PFIs, SETTLED_TRANSFER_AT_LOCAL_STORAGE_KEY, SPECIAL_OFFERINGS_LOCAL_STORAGE_KEY, TBDEX_MESSAGE_TYPES, TBDEX_MESSAGE_TYPES_TO_STATUS, TDBUNK_CANCEL_REASON, TDBUNK_SUCCESS_REASON, TDBUNK_SUCCESS_TEXT } from "@/app/lib/constants";
 import { getAllPfiExchanges } from "@/app/lib/tbdex";
-import { getFormattedOfferings } from "@/app/lib/utils";
+import { getCurrencyFlag, getFormattedOfferings } from "@/app/lib/utils";
 import { checkIfUserHasRequiredClaims } from "@/app/lib/web5";
 import { useCreateCampaignContext } from "@/app/providers/CreateCampaignProvider";
 import { useNotificationContext } from "@/app/providers/NotificationProvider";
 import { useTbdexContext } from "@/app/providers/TbdexProvider";
 import { useWeb5Context } from "@/app/providers/Web5Provider";
-import { ArrowRightOutlined } from "@ant-design/icons";
-import { Avatar, Badge, Button, Card, Flex, Layout, List, Modal, theme, Typography, Tag } from "antd";
+import { ArrowRightOutlined, RightCircleFilled, ClockCircleOutlined } from "@ant-design/icons";
+import { Avatar, Badge, Button, Card, Flex, Layout, List, Modal, theme, Typography, Tag, Space, Rate, Collapse } from "antd";
+import { formatDistanceToNow, format } from "date-fns";
 import Image from "next/image";
 import { useEffect, useState } from "react";
+import type { CollapseProps } from 'antd';
+
 
 const dummyExchanges = [
     {
@@ -100,15 +103,31 @@ const dummyExchanges = [
             "reason": "User cancelled transaction."
         },
         "signature": "eyJhbGciOiJFZERTQSIsImtpZCI6ImRpZDpkaHQ6ZTE0cHdlZnJ5eGN0NjRnenFqNGhzeWRicmZpODl5eWI3em1meWpncmdmenV0eHJpeDZweSMwIn0..RBkz1-iUHgCdkYHrZSZcDJK-XD6WZKPp3fudCAUFkFRmomPjL6ClDRAiaD5D4jGX_ViwjDdgMqnIqSZTUMAVBg"
+    },
+    {
+        "metadata": {
+            "from": "did:dht:e14pwefryxct64gzqj4hsydbrfi89yyb7zmfyjgrgfzutxrix6py",
+            "to": "did:dht:3fkz5ssfxbriwks3iy5nwys3q5kyx64ettp9wfn1yfekfkiguj1y",
+            "exchangeId": "rfq_01j719jpg6e6psqs0eje018xg7",
+            "kind": "close",
+            "id": "close_01j719m71hfjj8brjm7e328pje",
+            "createdAt": "2024-09-05T14:32:45.361Z",
+            "protocol": "1.0"
+        },
+        "data": {
+            "reason": "SUCCESS",
+            "success": "true",
+        },
+        "signature": "eyJhbGciOiJFZERTQSIsImtpZCI6ImRpZDpkaHQ6ZTE0cHdlZnJ5eGN0NjRnenFqNGhzeWRicmZpODl5eWI3em1meWpncmdmenV0eHJpeDZweSMwIn0..RBkz1-iUHgCdkYHrZSZcDJK-XD6WZKPp3fudCAUFkFRmomPjL6ClDRAiaD5D4jGX_ViwjDdgMqnIqSZTUMAVBg"
     }
-]
+].filter(({ metadata: { kind } }: any) => kind === TBDEX_MESSAGE_TYPES.CLOSE)
 
 const Transactions = (props: any) => {
     const {
         userBearerDid
     } = props
     const {
-        token: { colorPrimary }
+        token: { colorPrimary, colorSuccess, colorError }
     } = theme.useToken()
     const [showModal, setShowModal] = useState(false)
 
@@ -120,10 +139,357 @@ const Transactions = (props: any) => {
         setShowModal(true)
     }
 
+    const transactions: CollapseProps['items'] = [
+        {
+            key: '1',
+            label: (
+                <Flex className="justify-between flex-col items-center gap-2">
+                    <Space.Compact className="w-full">
+                        <Button className="w-full" disabled>
+                            <Typography.Text className="text-white">🇺🇸 USD 200.00</Typography.Text>
+                        </Button>
+                        <Button className="w-[80px] opacity-100">
+                            <RightCircleFilled style={{ color: colorPrimary }} />
+                        </Button>
+                        <Button className="w-full" disabled>
+                            <Typography.Text className="text-white">🇰🇪 KES 26000.00</Typography.Text>
+                        </Button>
+                    </Space.Compact>
+                    <Flex className="justify-between w-full">
+                        <Flex className="">
+                            <Tag color="green" className="mr-0">
+                                {/* {TBDEX_MESSAGE_TYPES_TO_STATUS.CLOSE_SUCCESS} */}
+                                {TBDEX_MESSAGE_TYPES_TO_STATUS.CLOSE}
+                            </Tag>
+                        </Flex>
+                        <Flex className="">
+                            <Tag className="mr-0">
+                                2 days ago
+                            </Tag>
+                        </Flex>
+                    </Flex>
+                </Flex>
+            ),
+            children: <Card className="flex-col gap-2 w-full">
+                <Flex className="justify-between mb-3">
+                    <Typography.Text style={{ fontSize: 10 }} className="opacity-40">
+                        {
+
+                            TDBUNK_SUCCESS_TEXT
+                        }
+                    </Typography.Text>
+                    <Typography.Text style={{ fontSize: 10 }} className="opacity-40">
+                        {format(new Date(), "dd MMMM yyyy 'at' hh:mm a")}
+                    </Typography.Text>
+                </Flex>
+                <Space.Compact className="w-full">
+                    <Button className="h-[70px] w-full" disabled>
+                        <Flex className="flex flex-col justify-center items-center">
+                            <Flex className="text-white" >
+                                USD
+                                {' '}
+                                {getCurrencyFlag('USD')}
+                            </Flex>
+                            <Flex className="-mt-1 text-xs text-white" > {`${parseFloat('1.0').toFixed(2)}`}</Flex>
+                            {/* <Tag>
+                                                    {payinKind}
+                                                </Tag> */}
+                        </Flex>
+                    </Button>
+                    <Button className="h-[70px] w-[80px]">
+                        <RightCircleFilled style={{ color: colorPrimary }} />
+                    </Button>
+                    <Button className="h-[70px] w-full" disabled >
+                        <Flex className="flex flex-col justify-center items-center">
+                            <Flex className="text-white" >
+                                KES
+                                {' '}
+                                {getCurrencyFlag('KES')}
+                            </Flex>
+                            <Flex className="-mt-1 text-xs text-white" > {`${parseFloat('129.99').toFixed(2)}`} </Flex>
+                            {/* <Tag>
+                                                    {payinKind}
+                                                </Tag> */}
+                        </Flex>
+                    </Button>
+                </Space.Compact>
+                {true && (
+                    <Flex className="justify-between mt-3">
+                        <Tag className="w-full p-4 mr-0">
+                            <Flex className="items-center justify-between w-full">
+                                <Flex className="gap-3">
+                                    <Avatar shape="square" style={{ backgroundColor: '#f56a00', width: 40, height: 40 }}>A</Avatar>
+                                    {/* <Avatar shape="square" style={{ backgroundColor: '#f56a00', width: 40, height: 40 }}>{pfiDetails?.name?.charAt(0)?.toUpperCase()}</Avatar> */}
+                                    <Flex className="flex-col">
+                                        <Typography.Text style={{ marginTop: -4 }}>
+                                            {/* {pfiDetails?.name} */}
+                                            Aquafinance
+                                        </Typography.Text>
+                                        <Typography.Text style={{ fontSize: 12 }} copyable>
+                                            {/* {`${pfiDetails?.did?.slice(0, 14)}...${pfiDetails?.did?.slice(-8)}`} */}
+                                            0xtetet....iueiueiu
+                                        </Typography.Text>
+                                    </Flex>
+                                </Flex>
+                                <Flex className="flex-col gap-2">
+                                    <Tag className="items-center mr-0">
+                                        <Rate style={{ fontSize: 11, color: '#CC9933' }} disabled allowHalf defaultValue={5} />
+                                    </Tag>
+                                    <Flex className="justify-end -mt-1">
+                                        <Typography.Text style={{ fontSize: 12 }}>
+                                            Your Rating
+                                        </Typography.Text>
+                                    </Flex>
+                                </Flex>
+                            </Flex>
+                        </Tag>
+                    </Flex>
+                )}
+                <Flex className="justify-between mt-3">
+                    <Typography.Text style={{ fontSize: 10 }} className="opacity-20">
+                        {`664646x6363673`}
+                    </Typography.Text>
+                    <Typography.Text style={{ fontSize: 10 }} className="opacity-20">
+                        {`tbDEX v1.0`}
+                    </Typography.Text>
+                </Flex>
+            </Card>,
+        },
+        {
+            key: '2',
+            label: (
+                <Flex className="justify-between flex-col items-center gap-2">
+                    <Space.Compact className="w-full">
+                        <Button className="w-full" disabled>
+                            <Typography.Text className="text-white">🇺🇸 USD 200.00</Typography.Text>
+                        </Button>
+                        <Button className="w-[80px] opacity-100">
+                            <RightCircleFilled style={{ color: colorPrimary }} />
+                        </Button>
+                        <Button className="w-full" disabled>
+                            <Typography.Text className="text-white">🇰🇪 KES 26000.00</Typography.Text>
+                        </Button>
+                    </Space.Compact>
+                    <Flex className="justify-between w-full">
+                        <Flex className="">
+                            <Tag color="green" className="mr-0">
+                                {/* {TBDEX_MESSAGE_TYPES_TO_STATUS.CLOSE_SUCCESS} */}
+                                {TBDEX_MESSAGE_TYPES_TO_STATUS.CLOSE}
+                            </Tag>
+                        </Flex>
+                        <Flex className="">
+                            <Tag className="mr-0">
+                                2 days ago
+                            </Tag>
+                        </Flex>
+                    </Flex>
+                </Flex>
+            ),
+            children: <Card className="flex-col gap-2 w-full">
+                <Flex className="justify-between mb-3">
+                    <Typography.Text style={{ fontSize: 10 }} className="opacity-40">
+                        {
+
+                            TDBUNK_SUCCESS_TEXT
+                        }
+                    </Typography.Text>
+                    <Typography.Text style={{ fontSize: 10 }} className="opacity-40">
+                        {format(new Date(), "dd MMMM yyyy 'at' hh:mm a")}
+                    </Typography.Text>
+                </Flex>
+                <Space.Compact className="w-full">
+                    <Button className="h-[70px] w-full" disabled>
+                        <Flex className="flex flex-col justify-center items-center">
+                            <Flex className="text-white" >
+                                USD
+                                {' '}
+                                {getCurrencyFlag('USD')}
+                            </Flex>
+                            <Flex className="-mt-1 text-xs text-white" > {`${parseFloat('1.0').toFixed(2)}`}</Flex>
+                            {/* <Tag>
+                                                    {payinKind}
+                                                </Tag> */}
+                        </Flex>
+                    </Button>
+                    <Button className="h-[70px] w-[80px]">
+                        <RightCircleFilled style={{ color: colorPrimary }} />
+                    </Button>
+                    <Button className="h-[70px] w-full" disabled >
+                        <Flex className="flex flex-col justify-center items-center">
+                            <Flex className="text-white" >
+                                KES
+                                {' '}
+                                {getCurrencyFlag('KES')}
+                            </Flex>
+                            <Flex className="-mt-1 text-xs text-white" > {`${parseFloat('129.99').toFixed(2)}`} </Flex>
+                            {/* <Tag>
+                                                    {payinKind}
+                                                </Tag> */}
+                        </Flex>
+                    </Button>
+                </Space.Compact>
+                {true && (
+                    <Flex className="justify-between mt-3">
+                        <Tag className="w-full p-4 mr-0">
+                            <Flex className="items-center justify-between w-full">
+                                <Flex className="gap-3">
+                                    <Avatar shape="square" style={{ backgroundColor: '#f56a00', width: 40, height: 40 }}>A</Avatar>
+                                    {/* <Avatar shape="square" style={{ backgroundColor: '#f56a00', width: 40, height: 40 }}>{pfiDetails?.name?.charAt(0)?.toUpperCase()}</Avatar> */}
+                                    <Flex className="flex-col">
+                                        <Typography.Text style={{ marginTop: -4 }}>
+                                            {/* {pfiDetails?.name} */}
+                                            Aquafinance
+                                        </Typography.Text>
+                                        <Typography.Text style={{ fontSize: 12 }} copyable>
+                                            {/* {`${pfiDetails?.did?.slice(0, 14)}...${pfiDetails?.did?.slice(-8)}`} */}
+                                            0xtetet....iueiueiu
+                                        </Typography.Text>
+                                    </Flex>
+                                </Flex>
+                                <Flex className="flex-col gap-2">
+                                    <Tag className="items-center mr-0">
+                                        <Rate style={{ fontSize: 11, color: '#CC9933' }} disabled allowHalf defaultValue={5} />
+                                    </Tag>
+                                    <Flex className="justify-end -mt-1">
+                                        <Typography.Text style={{ fontSize: 12 }}>
+                                            Your Rating
+                                        </Typography.Text>
+                                    </Flex>
+                                </Flex>
+                            </Flex>
+                        </Tag>
+                    </Flex>
+                )}
+                <Flex className="justify-between mt-3">
+                    <Typography.Text style={{ fontSize: 10 }} className="opacity-20">
+                        {`664646x6363673`}
+                    </Typography.Text>
+                    <Typography.Text style={{ fontSize: 10 }} className="opacity-20">
+                        {`tbDEX v1.0`}
+                    </Typography.Text>
+                </Flex>
+            </Card>,
+        },
+        {
+            key: '3',
+            label: (
+                <Flex className="justify-between flex-col items-center gap-2">
+                    <Space.Compact className="w-full">
+                        <Button className="w-full" disabled>
+                            <Typography.Text className="text-white">🇺🇸 USD 200.00</Typography.Text>
+                        </Button>
+                        <Button className="w-[80px] opacity-100">
+                            <RightCircleFilled style={{ color: colorPrimary }} />
+                        </Button>
+                        <Button className="w-full" disabled>
+                            <Typography.Text className="text-white">🇰🇪 KES 26000.00</Typography.Text>
+                        </Button>
+                    </Space.Compact>
+                    <Flex className="justify-between w-full">
+                        <Flex className="">
+                            <Tag color="red" className="mr-0">
+                                {/* {TBDEX_MESSAGE_TYPES_TO_STATUS.CLOSE_SUCCESS} */}
+                                {TBDEX_MESSAGE_TYPES_TO_STATUS.CLOSE}
+                            </Tag>
+                        </Flex>
+                        <Flex className="">
+                            <Tag className="mr-0">
+                                2 days ago
+                            </Tag>
+                        </Flex>
+                    </Flex>
+                </Flex>
+            ),
+            children: <Card className="flex-col gap-2 w-full">
+                <Flex className="justify-between mb-3">
+                    <Typography.Text style={{ fontSize: 10 }} className="opacity-40">
+                        {
+
+                            TDBUNK_SUCCESS_TEXT
+                        }
+                    </Typography.Text>
+                    <Typography.Text style={{ fontSize: 10 }} className="opacity-40">
+                        {format(new Date(), "dd MMMM yyyy 'at' hh:mm a")}
+                    </Typography.Text>
+                </Flex>
+                <Space.Compact className="w-full">
+                    <Button className="h-[70px] w-full" disabled>
+                        <Flex className="flex flex-col justify-center items-center">
+                            <Flex className="text-white" >
+                                USD
+                                {' '}
+                                {getCurrencyFlag('USD')}
+                            </Flex>
+                            <Flex className="-mt-1 text-xs text-white" > {`${parseFloat('1.0').toFixed(2)}`}</Flex>
+                            {/* <Tag>
+                                                    {payinKind}
+                                                </Tag> */}
+                        </Flex>
+                    </Button>
+                    <Button className="h-[70px] w-[80px]">
+                        <RightCircleFilled style={{ color: colorPrimary }} />
+                    </Button>
+                    <Button className="h-[70px] w-full" disabled >
+                        <Flex className="flex flex-col justify-center items-center">
+                            <Flex className="text-white" >
+                                KES
+                                {' '}
+                                {getCurrencyFlag('KES')}
+                            </Flex>
+                            <Flex className="-mt-1 text-xs text-white" > {`${parseFloat('129.99').toFixed(2)}`} </Flex>
+                            {/* <Tag>
+                                                    {payinKind}
+                                                </Tag> */}
+                        </Flex>
+                    </Button>
+                </Space.Compact>
+                {true && (
+                    <Flex className="justify-between mt-3">
+                        <Tag className="w-full p-4 mr-0">
+                            <Flex className="items-center justify-between w-full">
+                                <Flex className="gap-3">
+                                    <Avatar shape="square" style={{ backgroundColor: '#f56a00', width: 40, height: 40 }}>A</Avatar>
+                                    {/* <Avatar shape="square" style={{ backgroundColor: '#f56a00', width: 40, height: 40 }}>{pfiDetails?.name?.charAt(0)?.toUpperCase()}</Avatar> */}
+                                    <Flex className="flex-col">
+                                        <Typography.Text style={{ marginTop: -4 }}>
+                                            {/* {pfiDetails?.name} */}
+                                            Aquafinance
+                                        </Typography.Text>
+                                        <Typography.Text style={{ fontSize: 12 }} copyable>
+                                            {/* {`${pfiDetails?.did?.slice(0, 14)}...${pfiDetails?.did?.slice(-8)}`} */}
+                                            0xtetet....iueiueiu
+                                        </Typography.Text>
+                                    </Flex>
+                                </Flex>
+                                <Flex className="flex-col gap-2">
+                                    <Tag className="items-center mr-0">
+                                        <Rate style={{ fontSize: 11, color: '#CC9933' }} disabled allowHalf defaultValue={5} />
+                                    </Tag>
+                                    <Flex className="justify-end -mt-1">
+                                        <Typography.Text style={{ fontSize: 12 }}>
+                                            Your Rating
+                                        </Typography.Text>
+                                    </Flex>
+                                </Flex>
+                            </Flex>
+                        </Tag>
+                    </Flex>
+                )}
+                <Flex className="justify-between mt-3">
+                    <Typography.Text style={{ fontSize: 10 }} className="opacity-20">
+                        {`664646x6363673`}
+                    </Typography.Text>
+                    <Typography.Text style={{ fontSize: 10 }} className="opacity-20">
+                        {`tbDEX v1.0`}
+                    </Typography.Text>
+                </Flex>
+            </Card>,
+        },
+    ];
+
     return (
         <Flex className="w-full ml-4 items-center mt-5">
             <Modal
-                width={800}
                 open={showModal}
                 title="Transactions"
                 footer={[
@@ -132,43 +498,7 @@ const Transactions = (props: any) => {
                     </Button>
                 ]}
             >
-                <List
-                    pagination={{ position: "bottom", align: "start", pageSize: 4 }}
-                    loading={false}
-                    dataSource={dummyExchanges}
-                    className="mt-4"
-                    renderItem={(item, index) => {
-                        const data = item?.data
-                        const metadata = item?.metadata
-
-                        const kind = metadata?.kind
-                        const toDidUri = metadata?.to
-                        const fromDidUri = metadata?.from
-                        const createdAt = metadata?.createdAt
-                        const exchangeId = metadata?.exchangeId
-
-                        const from = `${fromDidUri?.slice(0, 14)}...${fromDidUri?.slice(-8)}`
-                        const to = `${toDidUri?.slice(0, 14)}...${toDidUri?.slice(-8)}`
-
-                        return (
-                            <List.Item key={index} className="flex flex-row gap-2">
-                                <Card>
-                                    <Flex className="w-full gap-2 items-center">
-                                        <Tag>
-                                            <Typography.Text copyable>{`${from}`}</Typography.Text>
-                                        </Tag>
-                                        <Flex>
-                                            <ArrowRightOutlined style={{ color: colorPrimary }} />
-                                        </Flex>
-                                        <Tag className="ml-2">
-                                            <Typography.Text copyable>{`${to}`}</Typography.Text>
-                                        </Tag>
-                                    </Flex>
-                                </Card>
-                            </List.Item>
-                        )
-                    }}
-                />
+                <Collapse accordion items={transactions} expandIcon={() => <></>} />
             </Modal>
             <Flex className="items-center gap-1">
                 <Button className="pl-0" onClick={handleViewCancelTransactions}>

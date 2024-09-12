@@ -212,7 +212,6 @@ const RequestForQuote = (props: any) => {
                                     // @ts-ignore
                                     setToValue(value)
                                     setCampaignAmount(parseFloat(exchangeRate) * (value as number))
-
                                 }}
                             />
                         </Flex>
@@ -245,7 +244,7 @@ const RequestForQuote = (props: any) => {
                             <Typography.Text className="font-bold " style={{ color: colorBgContainer }}>.</Typography.Text>
                             <InputNumber
                                 disabled
-                                style={{ width: '100%', color: '#ffffff' }}
+                                style={{ width: '100%', color: 'white' }}
                                 defaultValue={Math.floor(campaignAmount / exchangeRate * exchangeRate)}
                                 value={
                                     convertedToValue

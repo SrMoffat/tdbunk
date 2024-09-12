@@ -96,7 +96,9 @@ export enum TBDEX_MESSAGE_TYPES {
     CLOSE = 'close',
 }
 
+export const TDBUNK_SUCCESS_REASON = 'SUCCESS'
 export const TDBUNK_CANCEL_REASON = 'User cancelled transaction.'
+export const TDBUNK_SUCCESS_TEXT = 'Transaction completed successfully.'
 
 export const LOCAL_STORAGE_KEY = 'local'
 export const SESSION_STORAGE_KEY = 'session'
@@ -113,6 +115,7 @@ export const MARKET_CONVERSION_RATE_LOCAL_STORAGE_KEY = 'TDBunk:MarketConversion
 export const FEATURE_FLAG_USE_PAID_EXCHAGE_RATE_API = false
 
 export const TDBUNK_PLATFORM_FEE_STRATEGY = {
+    displayText: '2.9% + $0.50',
     percentage: 0.029, // 2.9%
     fixed: {
         currency: 'USD',

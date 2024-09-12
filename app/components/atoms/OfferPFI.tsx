@@ -26,6 +26,8 @@ const PFIDetails = (props: PFIDetailsProps) => {
         ? `${pfiDid?.slice(0, 14)}...${pfiDid?.slice(-8)}`
         : SPECIAL_PFI.did
 
+        const pfiRating = 0
+
     return (
         <Flex className="items-center justify-between w-full">
             <Flex className="gap-3">
@@ -49,7 +51,7 @@ const PFIDetails = (props: PFIDetailsProps) => {
             </Flex>
             <Flex className="flex-col gap-2">
                 <Tag className="items-center">
-                    <Rate style={{ fontSize: 11, color: '#CC9933' }} disabled allowHalf defaultValue={2.5} />
+                    <Rate style={{ fontSize: 11, color: '#CC9933' }} disabled allowHalf defaultValue={pfiRating} />
                 </Tag>
                 <Flex className="justify-end">
                     <Tag className="items-center" color="gold">

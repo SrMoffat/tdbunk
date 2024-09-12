@@ -1,4 +1,5 @@
 import { LogoIcon2 } from "@/app/components/atoms/Icon";
+import { TDBUNK_PLATFORM_FEE_STRATEGY } from "@/app/lib/constants";
 import { getCurrencyFlag, toCapitalizedWords } from "@/app/lib/utils";
 import { RightCircleFilled } from "@ant-design/icons";
 import { Button, Card, Flex, Form, Input, InputNumber, Space, Statistic, StatisticProps, Tag, theme, Typography } from "antd";
@@ -126,8 +127,8 @@ const MakeTransfer = (props: any) => {
                                 <InputNumber
                                     disabled
                                     style={{ width: '100%', color: 'white' }}
-                                    value={campaignAmount}
-                                    defaultValue={campaignAmount}
+                                    defaultValue={Math.floor(campaignAmount / exchangeRate)}
+                                    value={Math.floor(campaignAmount / exchangeRate)}
                                 />
                             </Flex>
                         </Space.Compact>
@@ -192,11 +193,8 @@ const MakeTransfer = (props: any) => {
                                 <InputNumber
                                     disabled
                                     style={{ width: '100%', color: 'white' }}
-                                    // value={exchangeRate * campaignAmount}
-                                    // defaultValue={exchangeRate * campaignAmount}
-
-                                    value={Math.floor(campaignAmount / exchangeRate) * exchangeRate}
-                                    defaultValue={Math.floor(campaignAmount / exchangeRate) * exchangeRate}
+                                    value={campaignAmount}
+                                    defaultValue={campaignAmount}
                                 />
                             </Flex>
                         </Space.Compact>
@@ -216,7 +214,10 @@ const MakeTransfer = (props: any) => {
                     )}
                     {totalFee && (
                         <Flex className="gap-3">
-                            <Typography.Text className="text-bold text-xs">Platform Fee:</Typography.Text>
+                            <Flex className="flex-col">
+                                <Typography.Text className="text-bold text-xs">Platform Fee:</Typography.Text>
+                                <Typography.Text style={{ fontSize: 10 }} className="opacity-40">{TDBUNK_PLATFORM_FEE_STRATEGY.displayText}</Typography.Text>
+                            </Flex>
                             <Typography.Text className="text-xs">{platformFee}</Typography.Text>
                         </Flex>
                     )}

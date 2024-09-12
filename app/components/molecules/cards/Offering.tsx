@@ -9,7 +9,7 @@ import { displayTimeWithLabel, getCurrencyFlag, getEstimatedSettlementTime, getP
 import { createOfferingReviewCredential } from "@/app/lib/web5";
 import { useNotificationContext } from "@/app/providers/NotificationProvider";
 import { Offering } from "@tbdex/http-client";
-import { Button, List, Modal, Rate, Flex, Typography, Input, Tag, Card } from "antd";
+import { Button, List, Modal, Rate, Flex, Typography, Input, Tag, Card, Spin } from "antd";
 import { formatDistanceToNow, differenceInSeconds } from 'date-fns';
 import { SetStateAction, useEffect, useState } from "react";
 
@@ -219,6 +219,8 @@ const OfferingDetails = (props: any) => {
 
     const payinCode = payinData?.currencyCode
 
+    const exchangeRate = rawOffering?.data?.payoutUnitsPerPayinUnit
+
     const currencyCode = feeDetails?.currencyCode
     const totalFee = Number(feeDetails?.totalFee)?.toFixed(2)
     const overallFee = payinFee
@@ -274,19 +276,15 @@ const OfferingDetails = (props: any) => {
 
             setShowModal(false)
         } else if (isRequestQuote) {
-            // Here ==>
-            console.log("requiredPaymentDetails Make Transfer", {
-                requiredPaymentDetails,
-                credentials,
-                userBearerDid,
-                stateCredentials
-            })
+            const convertedCampaignAmount = Math.floor(campaignAmount / parseFloat(exchangeRate))
+
+            console.log("Adviser", convertedCampaignAmount)
 
             createExchange({
                 requiredPaymentDetails,
                 credentials,
                 userBearerDid,
-                amount: campaignAmount,
+                amount: convertedCampaignAmount,
                 offering: rawOffering,
                 stateCredentials
             })
@@ -576,11 +574,13 @@ const OfferingDetails = (props: any) => {
                     </Button>
                 ] : []}
             >
-                {
-                    isCompleted
-                        ? <ReviewOffering offering={offering} setOfferingReview={setOfferingReview} />
-                        : flow
-                }
+                <Spin spinning={isCancelling || isLoading}>
+                    {
+                        isCompleted
+                            ? <ReviewOffering offering={offering} setOfferingReview={setOfferingReview} />
+                            : flow
+                    }
+                </Spin>
             </Modal>
             <AssetExchangePFIDetails
                 cta={cta}

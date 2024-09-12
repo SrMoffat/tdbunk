@@ -1,5 +1,5 @@
 import countries from "@/public/countries.json"
-import { LANDING_PAGE_TABS, DEBUNK_SOURCE, DEBUNK_CAMPAIGN_TYPE, TDBUNK_PLATFORM_FEE_STRATEGY } from "@/app/lib/constants";
+import { LANDING_PAGE_TABS, DEBUNK_SOURCE, DEBUNK_CAMPAIGN_TYPE, TDBUNK_PLATFORM_FEE_STRATEGY, PFIs, TBDEX_MESSAGE_TYPES, TDBUNK_CANCEL_REASON, TDBUNK_SUCCESS_REASON, TBDEX_MESSAGE_TYPES_TO_STATUS } from "@/app/lib/constants";
 import { formatDistanceToNow, differenceInSeconds, addSeconds } from "date-fns";
 import { getFixedRateConversion } from "./api";
 
@@ -309,5 +309,70 @@ export const percentageDifference = (value1: number, value2: number) => {
         value1,
         value2,
         diff: diff.toFixed(2)
+    }
+}
+
+export const extractMessageDetailsFromExchange = (item: any) => {
+    const data = item?.data;
+    const metadata = item?.metadata;
+
+    const kind = metadata?.kind;
+    const toDidUri = metadata?.to;
+    const fromDidUri = metadata?.from;
+    const protocol = metadata?.protocol;
+    const createdAt = metadata?.createdAt;
+    const exchangeId = metadata?.exchangeId;
+
+    const from = `${fromDidUri?.slice(
+        0,
+        14
+    )}...${fromDidUri?.slice(-8)}`;
+
+    const to = `${toDidUri?.slice(
+        0,
+        14
+    )}...${toDidUri?.slice(-8)}`;
+
+    const pfiDetails = PFIs.find(
+        (entry: any) => entry?.did === toDidUri
+    );
+
+    const exchangeTime = formatDistanceToNow(new Date(createdAt), { addSuffix: true })
+
+    const payin = data?.payin
+    const payout = data?.payout
+
+
+    const isRfq = kind === TBDEX_MESSAGE_TYPES.RFQ
+    const isQuote = kind === TBDEX_MESSAGE_TYPES.QUOTE
+    const isClose = kind === TBDEX_MESSAGE_TYPES.CLOSE
+
+    const isCancel = isClose && data?.reason && data?.reason?.includes(TDBUNK_CANCEL_REASON)
+    const isSuccess = isClose && data?.reason && data?.reason?.includes(TDBUNK_SUCCESS_REASON)
+
+    const tag = isRfq
+        ? TBDEX_MESSAGE_TYPES_TO_STATUS.RFQ
+        : isQuote
+            ? TBDEX_MESSAGE_TYPES_TO_STATUS.QUOTE
+            : ''
+
+    const finalTag = isCancel
+        ? TBDEX_MESSAGE_TYPES_TO_STATUS.CLOSE
+        : isSuccess
+            ? TBDEX_MESSAGE_TYPES_TO_STATUS.CLOSE_SUCCESS
+            : ''
+
+    return {
+        to,
+        tag,
+        from,
+        createdAt,
+        isCancel,
+        isSuccess,
+        finalTag,
+        protocol,
+        exchangeId,
+        pfiDetails,
+        exchangeTime,
     }
 }

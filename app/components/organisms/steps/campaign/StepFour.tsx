@@ -1,27 +1,22 @@
-import { Cancelled, Transaction } from "@/app/components/atoms/Icon";
 import MarketRate from "@/app/components/atoms/MarketRate";
 import { SearchOffers } from "@/app/components/atoms/SearchOffersInput";
 import OfferingDetails from "@/app/components/molecules/cards/Offering";
+import Transactions from "@/app/components/molecules/cards/Transaction";
 import { WalletBalance } from "@/app/components/molecules/cards/WalletBalance";
 import DebunkCampaignStats from "@/app/components/molecules/description/DebunkCampaignStats";
 import { CredentialStorage } from "@/app/components/molecules/forms/Credentials";
 import { Credentials } from "@/app/components/organisms/Credentials";
 import useBrowserStorage from "@/app/hooks/useLocalStorage";
-import { CREDENTIALS_LOCAL_STORAGE_KEY, LOCAL_STORAGE_KEY, OFFERINGS_LOCAL_STORAGE_KEY, PFIs, SETTLED_TRANSFER_AT_LOCAL_STORAGE_KEY, SPECIAL_OFFERINGS_LOCAL_STORAGE_KEY, TBDEX_MESSAGE_TYPES, TBDEX_MESSAGE_TYPES_TO_STATUS, TDBUNK_CANCEL_REASON, TDBUNK_SUCCESS_REASON, TDBUNK_SUCCESS_TEXT } from "@/app/lib/constants";
+import { CREDENTIALS_LOCAL_STORAGE_KEY, LOCAL_STORAGE_KEY, OFFERINGS_LOCAL_STORAGE_KEY, SETTLED_TRANSFER_AT_LOCAL_STORAGE_KEY, SPECIAL_OFFERINGS_LOCAL_STORAGE_KEY, TBDEX_MESSAGE_TYPES } from "@/app/lib/constants";
 import { getAllPfiExchanges } from "@/app/lib/tbdex";
-import { getCurrencyFlag, getFormattedOfferings } from "@/app/lib/utils";
-import { checkIfUserHasRequiredClaims } from "@/app/lib/web5";
+import { getFormattedOfferings } from "@/app/lib/utils";
+import { checkIfUserHasRequiredClaims, getUserBearerDid } from "@/app/lib/web5";
 import { useCreateCampaignContext } from "@/app/providers/CreateCampaignProvider";
 import { useNotificationContext } from "@/app/providers/NotificationProvider";
 import { useTbdexContext } from "@/app/providers/TbdexProvider";
 import { useWeb5Context } from "@/app/providers/Web5Provider";
-import { ArrowRightOutlined, RightCircleFilled, ClockCircleOutlined } from "@ant-design/icons";
-import { Avatar, Badge, Button, Card, Flex, Layout, List, Modal, theme, Typography, Tag, Space, Rate, Collapse } from "antd";
-import { formatDistanceToNow, format } from "date-fns";
-import Image from "next/image";
+import { Card, Flex, Layout, List, theme, Typography } from "antd";
 import { useEffect, useState } from "react";
-import type { CollapseProps } from 'antd';
-import Transactions from "@/app/components/molecules/cards/Transaction";
 
 
 const dummyExchanges = [
@@ -242,7 +237,13 @@ const StepFour = () => {
                     console.log("Fetch Cancelled Transactions", exchangesResults)
                     return exchangesResults
                 } else {
-                    console.log("Fetch Cancelled No Bearer")
+                    const bearerDid = getUserBearerDid()
+                    const exchangesResults = await getAllPfiExchanges(bearerDid)
+                    console.log("Fetch Cancelled No Bearer", {
+                        bearerDid,
+                        exchangesResults
+                    })
+                    return exchangesResults
                 }
             } catch (error: any) {
                 console.error("Fetch Cancelled Transactions Error", error)
@@ -273,6 +274,11 @@ const StepFour = () => {
         }
     }, [isCompleted])
 
+
+    const theBearerDid = userBearerDid
+    ? userBearerDid
+    : getUserBearerDid()
+
     return <Layout style={{ backgroundColor: colorBgContainer }}>
         <Flex className="flex-col">
             <Flex className="justify-between">
@@ -299,7 +305,7 @@ const StepFour = () => {
                             />
                         </Flex>
                         {hasCancelledTransactions && (
-                            <Transactions userBearerDid={userBearerDid} exchanges={dummyExchanges} />
+                            <Transactions userBearerDid={theBearerDid} exchanges={dummyExchanges} />
                         )}
                         <MarketRate
                             source={selectedCurrency}
@@ -326,7 +332,7 @@ const StepFour = () => {
                                     isCancelled={isCancelled}
                                     selectedCard={selectedCard}
                                     isOnlyResult={isOnlyResult}
-                                    userBearerDid={userBearerDid}
+                                    userBearerDid={theBearerDid}
                                     stateCredentials={credentials}
                                     campaignAmount={campaignAmount}
                                     credentials={existingCredentials}

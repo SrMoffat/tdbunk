@@ -5,7 +5,7 @@ import CreateCredential from '@/app/components/molecules/forms/CreateCredential'
 import ImportCredential from '@/app/components/molecules/forms/ImportCredential';
 import RequestCredential from '@/app/components/molecules/forms/RequestCredential';
 import useBrowserStorage from '@/app/hooks/useLocalStorage';
-import { CREDENTIAL_TYPES, CREDENTIALS_LOCAL_STORAGE_KEY, LOCAL_STORAGE_KEY } from '@/app/lib/constants';
+import { CREDENTIAL_TYPES, CREDENTIALS_LOCAL_STORAGE_KEY, CREDENTIALS_STAREGY_LOCAL_STORAGE_KEY, LOCAL_STORAGE_KEY } from '@/app/lib/constants';
 import { useWeb5Context } from '@/app/providers/Web5Provider';
 import countries from '@/public/countries.json';
 import { BearerIdentity } from '@web5/agent';
@@ -194,6 +194,22 @@ const StepOne: React.FC<CampaignStepProps> = ({
         setNextButtonDisabled,
         setIsCreatingCredential
     }
+
+    const getDefaultSelectedMode = () => {
+        const storedValue = localStorage.getItem(CREDENTIALS_STAREGY_LOCAL_STORAGE_KEY)
+
+        const isCreate = storedValue === CredentialMode.CREATE
+        const isRequest = storedValue === CredentialMode.REQUEST
+        const isImport = storedValue === CredentialMode.IMPORT
+
+        return isCreate
+            ? CredentialMode.CREATE
+            : isRequest
+                ? CredentialMode.REQUEST
+                : isImport
+                    ? CredentialMode.IMPORT
+                    : CredentialMode.CREATE
+    }
     return (
         <Layout style={{ backgroundColor: colorBgContainer }}>
             <CredentialDocumentDrawer
@@ -206,10 +222,14 @@ const StepOne: React.FC<CampaignStepProps> = ({
             <Flex className="justify-center mb-6">
                 <Segmented
                     onChange={(value) => {
-                        console.log("Values", value)
-                        setMode(value)
-                        // showModal()
+                        setMode(value as CredentialMode)
+                        localStorage.setItem(CREDENTIALS_STAREGY_LOCAL_STORAGE_KEY, value)
                     }}
+                    defaultValue={
+                        getDefaultSelectedMode()
+                            ? getDefaultSelectedMode()
+                            : mode
+                    }
                     options={options}
                     disabled={!nextButtonDisabled || !noCredentials || isCreatingCredential}
                     style={{ backgroundColor: "#334155", height: 118 }}

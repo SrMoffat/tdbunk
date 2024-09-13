@@ -105,11 +105,14 @@ export const SESSION_STORAGE_KEY = 'session'
 export const WALLET_LOCAL_STORAGE_KEY = 'TDBunk:Wallet'
 export const INTERVALS_LOCAL_STORAGE_KEY = 'TDBunk:Intervals'
 export const OFFERINGS_LOCAL_STORAGE_KEY = 'TDBunk:Offerings'
+// To Do: Look into key managers and how to use them to store the bearer did
+export const BEARER_DID_LOCAL_STORAGE_KEY = 'TDBunk:BearerDid'
 export const CREDENTIALS_LOCAL_STORAGE_KEY = 'TDBunk:Credentials'
 export const OFFERINGS_LAST_UPDATED = 'TDBunk:OfferingsLastUpdatedAt'
 export const SPECIAL_OFFERINGS_LOCAL_STORAGE_KEY = 'TDBunk:SpecialOfferings'
 export const STARTED_TRANSFER_AT_LOCAL_STORAGE_KEY = 'TDBunk:StartedTransferAt'
 export const SETTLED_TRANSFER_AT_LOCAL_STORAGE_KEY = 'TDBunk:SettledTransferAt'
+export const CREDENTIALS_STAREGY_LOCAL_STORAGE_KEY = 'TDBunk:CredentialsStrategy'
 export const MARKET_CONVERSION_RATE_LOCAL_STORAGE_KEY = 'TDBunk:MarketConversionRate'
 
 export const FEATURE_FLAG_USE_PAID_EXCHAGE_RATE_API = false

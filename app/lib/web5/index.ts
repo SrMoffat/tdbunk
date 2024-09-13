@@ -4,8 +4,9 @@ import { Web5 as Web5Api } from "@web5/api";
 import { VerifiableCredential, type VerifiableCredential as VC } from "@web5/credentials";
 import { Jwk, LocalKeyManager } from "@web5/crypto";
 import { BearerDid, DidDht, DidResolutionResult } from '@web5/dids';
-import { CREDENTIAL_TYPES, VC_JWT_MIME_TYPE } from "../constants";
+import { BEARER_DID_LOCAL_STORAGE_KEY, CREDENTIAL_TYPES, VC_JWT_MIME_TYPE } from "../constants";
 import { generateUltimateIdentifierVc } from "../api";
+import { parse, stringify, toJSON, fromJSON } from 'flatted';
 
 const DWN_SYNC_INTERVAL = '5s'
 const ULTIMATE_IDENTITY_DID_URI = 'did:dht:bh8me68fsdb6xuyy3dsh4aanczexga3k3m7fk4ie6hj5jy6inq5y'
@@ -187,6 +188,18 @@ export const parseJwtToVc = (signedVcJwt: any): VC => {
     return VerifiableCredential.parseJwt({ vcJwt: signedVcJwt })
 }
 
+export const storeBearerDid = async (bearerDid: any) => {
+    try {
+        const stringifiedBearerDid = stringify(bearerDid)
+        // To Do: Find out best practices around management of Bearer Dids on web
+        // Ideally key material should npt be serialised into a string like this
+        // and storing keys on the browser beats the whole point of keys.
+        localStorage.setItem(BEARER_DID_LOCAL_STORAGE_KEY, stringifiedBearerDid)
+    } catch (error: any) {
+        console.error("storeBearerDid error", error)
+    }
+}
+
 export const initWeb5 = async ({ password }: { password: string }) => {
     const { web5, did, recoveryPhrase } = await Web5Api.connect({
         password,
@@ -194,7 +207,9 @@ export const initWeb5 = async ({ password }: { password: string }) => {
     });
     const agent = web5.agent as Web5PlatformAgent
     const bearerDid = await agent.identity.get({ didUri: did });
-    // const identites = await agent.identity.list();
+
+    await storeBearerDid(bearerDid)
+
     return {
         web5,
         did,
@@ -203,10 +218,20 @@ export const initWeb5 = async ({ password }: { password: string }) => {
     };
 }
 
-export const getBearerDid = async (web5: Web5Api, did: string) => {
-    const agent = web5.agent as Web5PlatformAgent
-    const bearerDid = await agent.identity.get({ didUri: did });
-    // const identites = await agent.identity.list();
+export const getUserBearerDid = async (web5?: Web5Api, did?: string) => {
+    let bearerDid
+
+    if (web5 && did) {
+        const agent = web5.agent as Web5PlatformAgent
+        const web5BearerDid = await agent.identity.get({ didUri: did });
+        bearerDid = web5BearerDid
+    } else {
+        const details = localStorage.getItem(BEARER_DID_LOCAL_STORAGE_KEY)
+
+        if (details) {
+            bearerDid = parse(details)
+        }
+    }
     return bearerDid;
 }
 

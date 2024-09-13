@@ -1,22 +1,16 @@
 import { Transaction } from "@/app/components/atoms/Icon";
-import { PFIs, TBDEX_MESSAGE_TYPES, TBDEX_MESSAGE_TYPES_TO_STATUS, TDBUNK_CANCEL_REASON, TDBUNK_SUCCESS_REASON, TDBUNK_SUCCESS_TEXT } from "@/app/lib/constants";
-import { getCurrencyFlag } from "@/app/lib/utils";
-import { RightCircleFilled } from "@ant-design/icons";
 import type { CollapseProps } from 'antd';
-import { Avatar, Badge, Button, Card, Collapse, Flex, Modal, Rate, Space, Tag, theme, Typography } from "antd";
-import { format, formatDistanceToNow } from "date-fns";
+import { Avatar, Badge, Button, Collapse, Flex, Modal, theme, Typography } from "antd";
 import Image from "next/image";
 import { useState } from "react";
 import { generateExchangesComponents } from "../../atoms/Transaction";
-import { PRIMARY_GOLD_HEX } from "@/app/providers/ThemeProvider";
 
 const Transactions = (props: any) => {
     const {
         exchanges,
-        userBearerDid
     } = props
     const {
-        token: { colorPrimary, colorSuccess, colorError }
+        token: { colorPrimary }
     } = theme.useToken()
     const [showModal, setShowModal] = useState(false)
 
@@ -29,8 +23,6 @@ const Transactions = (props: any) => {
     }
 
     const transactions: CollapseProps['items'] = generateExchangesComponents(exchanges)
-
-    // console.log("dummyExchanges:>>", exchanges)
 
     return (
         <Flex className="w-full ml-4 items-center mt-5">

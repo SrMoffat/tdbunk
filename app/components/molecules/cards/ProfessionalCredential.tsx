@@ -1,9 +1,9 @@
-import { Card3 } from "@/app/components/atoms/Icon";
-import { CredentialParsedMetadata, extractVcDocumentDetails } from "@/app/components/molecules/cards/FinancialCredential";
+import { Card3, Evidence, ValidCredential } from "@/app/components/atoms/Icon";
+import { CredentialParsedMetadata, DrawerHeader, extractVcDocumentDetails } from "@/app/components/molecules/cards/FinancialCredential";
 import { CREDENTIAL_TYPES } from "@/app/lib/constants";
 import { parseJwtToVc } from "@/app/lib/web5";
 import { resolveDid } from "@tbdex/http-client";
-import { Flex, Typography, Drawer } from "antd";
+import { Flex, Typography, Drawer, Card } from "antd";
 import { formatDistanceToNow } from "date-fns";
 import Image from "next/image";
 import { useEffect, useState } from "react";
@@ -141,10 +141,39 @@ const ProfessionalInstitutionCredential = (props: any) => {
             <Flex className="h-[200px]">
                 <ProfessionalCredentialCard {...commonProps} />
             </Flex>
-            <Drawer title={'Title'} onClose={onClose} open={open} width={600}>
+            <Drawer title={<DrawerHeader type={[CREDENTIAL_TYPES.VERIFIABLE_CREDENTIAL, CREDENTIAL_TYPES.GOVERNMENT_CREDENTIAL]} />} onClose={onClose} open={open} width={600}>
                 <Flex className="h-[200px]">
                     <ProfessionalCredentialCard {...commonProps} />
                 </Flex>
+                <Card className="flex-col mb-4">
+                    <Flex className="mb-3 justify-between">
+                        <Flex className="flex-col">
+                            <Typography.Text style={{ fontSize: 18 }}>Issuer Name:</Typography.Text>
+                            <Typography.Text style={{ fontSize: 14 }}>Ultimate Identity</Typography.Text>
+                        </Flex>
+                        <Image src={ValidCredential} width={50} height={50} alt="valid" />
+                    </Flex>
+                    <Flex className="flex-col mb-3">
+                        <Typography.Text style={{ fontSize: 18 }}>Service Endpoint:</Typography.Text>
+                        {/* <Typography.Text style={{ fontSize: 14 }} copyable>{vcServiceUrl}</Typography.Text> */}
+                    </Flex>
+                    <Flex className="flex-col mb-3">
+                        <Typography.Text style={{ fontSize: 18 }}>Issuer DID:</Typography.Text>
+                        {/* <Typography.Text style={{ fontSize: 14 }} copyable>{vcMetadata?.issuerDidUri}</Typography.Text> */}
+                    </Flex>
+                </Card>
+                <Card className="flex-col mb-4">
+                    <Flex className="mb-3 justify-between">
+                        <Flex className="flex-col">
+                            <Typography.Text style={{ fontSize: 18 }}>Credential Document:</Typography.Text>
+                        </Flex>
+                        <Image src={Evidence} width={40} height={40} alt="valid" />
+                    </Flex>
+                    <Flex className="flex-col mb-3">
+                        Here
+                        {/* <pre>{JSON.stringify(credentialDidDocument, null, 2)}</pre> */}
+                    </Flex>
+                </Card>
             </Drawer>
         </Flex>
     );

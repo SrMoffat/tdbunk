@@ -113,7 +113,7 @@ export interface DrawerHeaderProps {
     type: string[] | undefined;
 }
 
-const DrawerHeader: React.FC<DrawerHeaderProps> = ({
+export const DrawerHeader: React.FC<DrawerHeaderProps> = ({
     type
 }) => {
     return (<Flex className="justify-end">

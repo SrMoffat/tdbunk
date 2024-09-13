@@ -1,16 +1,12 @@
 import AssetExchangeOffer from "@/app/components/atoms/OfferDetails";
 import AssetExchangePFIDetails from "@/app/components/molecules/cards/OfferingPFIDetails";
-import CredentialsForm from '@/app/components/molecules/forms/Credentials';
-import MakePayment from "@/app/components/molecules/forms/MakePayment";
-import { Credentials } from "@/app/components/organisms/Credentials";
-import { INTERVALS_LOCAL_STORAGE_KEY, PFIs, STARTED_TRANSFER_AT_LOCAL_STORAGE_KEY, TBDEX_MESSAGE_TYPES_TO_STATUS, TDBUNK_CANCEL_REASON } from "@/app/lib/constants";
-import { pollExchanges, sendCloseMessage, sendOrderMessage } from "@/app/lib/tbdex";
+import { INTERVALS_LOCAL_STORAGE_KEY, PFIs, TBDEX_MESSAGE_TYPES_TO_STATUS } from "@/app/lib/constants";
+import { pollExchanges } from "@/app/lib/tbdex";
 import { getCurrencyFlag, getPlatformFees } from "@/app/lib/utils";
-import { createOfferingReviewCredential } from "@/app/lib/web5";
 import { useNotificationContext } from "@/app/providers/NotificationProvider";
 import { Offering } from "@tbdex/http-client";
 import { List } from "antd";
-import { SetStateAction, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import PaymentFlowModal from "../modals/PaymentFlow";
 
 export interface AssetExchangePFIDetailsProps {
@@ -33,13 +29,7 @@ export enum PaymentStage {
     MAKE_TRANSFER = 'MAKE_TRANSFER',
 }
 
-function clearAllIntervals(intervalIds: string[]) {
-    for (const interval of intervalIds) {
-        console.log("Clearing interval with ID:", interval)
-        window && window.clearInterval(interval);
-    }
-    localStorage && localStorage.removeItem(INTERVALS_LOCAL_STORAGE_KEY)
-}
+
 
 
 const OfferingDetails = (props: any) => {
@@ -116,14 +106,7 @@ const OfferingDetails = (props: any) => {
         : Number(totalFee).toFixed(2)
 
 
-    const clearAllPollingTimers = () => {
-        const storedIntervals = localStorage.getItem(INTERVALS_LOCAL_STORAGE_KEY)
-        if (storedIntervals) {
-            const existingIntervals = JSON.parse(storedIntervals)
-            const newIntervals = [...existingIntervals]
-            clearAllIntervals(newIntervals)
-        }
-    }
+
 
     const showPaymentModal = () => {
         const isReadyForQuote = hasRequiredCredentials && isSelected
@@ -212,24 +195,44 @@ const OfferingDetails = (props: any) => {
 
     return (
         <List.Item className="flex flex-row gap-2">
+            {/* TODO: Move all these into a context to avoid the prop drilling 🤢 */}
             <PaymentFlowModal
+                money={money}
+                pfiDid={pfiDid}
+                values={values}
+                pfiName={pfiName}
                 offering={offering}
                 isLoading={isLoading}
                 showModal={showModal}
                 overallFee={overallFee}
                 isSelected={isSelected}
                 feeDetails={feeDetails}
+                credentials={credentials}
                 isCancelled={isCancelled}
                 rawOffering={rawOffering}
                 isCompleted={isCompleted}
                 isCancelling={isCancelling}
+                selectedCard={selectedCard}
                 setShowModal={setShowModal}
+                userBearerDid={userBearerDid}
+                setIsSelected={setIsSelected}
+                offeringReview={offeringReview}
+                createExchange={createExchange}
                 activateButton={activateButton}
                 campaignAmount={campaignAmount}
                 isRequestQuote={isRequestQuote}
+                setSelectedCard={setSelectedCard}
+                setIsCancelling={setIsCancelling}
+                relevantExchange={relevantExchange}
+                currentMarketRate={currentMarketRate}
                 setOfferingReview={setOfferingReview}
+                setActivateButton={setActivateButton}
+                setCampaignAmount={setCampaignAmount}
+                offeringCreatedAt={offeringCreatedAt}
+                requiredPaymentDetails={requiredPaymentDetails}
                 hasRequiredCredentials={hasRequiredCredentials}
-
+                offeringToCurrencyMethods={offeringToCurrencyMethods}
+                setRequiredPaymentDetails={setRequiredPaymentDetails}
             />
             <AssetExchangePFIDetails
                 cta={cta}

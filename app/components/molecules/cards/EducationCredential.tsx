@@ -3,18 +3,54 @@ import { CredentialParsedMetadata, extractVcDocumentDetails } from "@/app/compon
 import { CREDENTIAL_TYPES } from "@/app/lib/constants";
 import { parseJwtToVc } from "@/app/lib/web5";
 import { resolveDid } from "@tbdex/http-client";
-import { Flex, Typography } from "antd";
+import { Flex, Typography, Drawer } from "antd";
 import { formatDistanceToNow } from "date-fns";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 
-const EducationalInstitutionCredential = (props: any) => {
+const EducationalCredentialCard = (props: any) => {
     const {
         showDrawer,
+        vcSubject,
+        startedDate,
+        endedDate,
+        issuance,
+        expiration
+    } = props
+
+    return (
+        <Flex className="h-[200px]">
+            <Flex onClick={() => showDrawer()} className="absolute hover:opacity-70 rounded-md transition-all cursor-pointer">
+                <Image alt="Card4" src={Card4} width={300} height={300} />
+                <Flex className="top-[70px] absolute w-full right-0">
+                    <Flex className="w-full pl-2 flex-col mt-4">
+                        <Typography.Text style={{ fontSize: 12 }}>{`${vcSubject?.nameOfInstituion}`}</Typography.Text>
+                        <Typography.Text style={{ fontSize: 10 }}>{`${vcSubject?.nameOfCourse}`}</Typography.Text>
+                        <Typography.Text style={{ fontSize: 10 }}>{`${startedDate} - ${endedDate}`}</Typography.Text>
+                    </Flex>
+                    <Flex className="w-full flex-col pr-2">
+                        <Flex className="flex-col">
+                            <Typography.Text style={{ fontSize: 12, textAlign: "right", fontWeight: 'bold' }}>{`Issued:`}</Typography.Text>
+                            <Typography.Text style={{ fontSize: 10, textAlign: "right" }}>{`${issuance}`}</Typography.Text>
+                        </Flex>
+                        <Flex className="flex-col">
+                            <Typography.Text style={{ fontSize: 12, textAlign: "right", fontWeight: 'bold' }}>{`Expires:`}</Typography.Text>
+                            <Typography.Text style={{ fontSize: 10, textAlign: "right" }}>{`${expiration}`}</Typography.Text>
+                        </Flex>
+                    </Flex>
+                </Flex>
+            </Flex>
+        </Flex>
+    )
+}
+
+const EducationalInstitutionCredential = (props: any) => {
+    const {
         stateCredentials,
         localStorageCredentials
     } = props
 
+    const [open, setOpen] = useState(false);
     const [issuance, setIssuance] = useState<string | undefined>()
     const [expiration, setExpiration] = useState<string | undefined>()
     const [issuerServiceUrl, setIssuerServiceUrl] = useState<string | undefined>()
@@ -72,28 +108,34 @@ const EducationalInstitutionCredential = (props: any) => {
     const endedDate = new Date(vcSubject?.endedDate as string).toLocaleString('default', {
         dateStyle: 'short'
     })
+
+    const showDrawer = () => {
+        setOpen(true)
+    }
+
+    const onClose = () => {
+        setOpen(false)
+    }
+
+    const commonProps = {
+        showDrawer,
+        vcSubject,
+        startedDate,
+        endedDate,
+        issuance,
+        expiration
+    }
+
     return (
-        <Flex className="h-[200px]">
-            <Flex onClick={() => showDrawer()} className="absolute hover:opacity-70 rounded-md transition-all cursor-pointer">
-                <Image alt="Card4" src={Card4} width={300} height={300} />
-                <Flex className="top-[70px] absolute w-full right-0">
-                    <Flex className="w-full pl-2 flex-col mt-4">
-                        <Typography.Text style={{ fontSize: 12 }}>{`${vcSubject?.nameOfInstituion}`}</Typography.Text>
-                        <Typography.Text style={{ fontSize: 10 }}>{`${vcSubject?.nameOfCourse}`}</Typography.Text>
-                        <Typography.Text style={{ fontSize: 10 }}>{`${startedDate} - ${endedDate}`}</Typography.Text>
-                    </Flex>
-                    <Flex className="w-full flex-col pr-2">
-                        <Flex className="flex-col">
-                            <Typography.Text style={{ fontSize: 12, textAlign: "right", fontWeight: 'bold' }}>{`Issued:`}</Typography.Text>
-                            <Typography.Text style={{ fontSize: 10, textAlign: "right" }}>{`${issuance}`}</Typography.Text>
-                        </Flex>
-                        <Flex className="flex-col">
-                            <Typography.Text style={{ fontSize: 12, textAlign: "right", fontWeight: 'bold' }}>{`Expires:`}</Typography.Text>
-                            <Typography.Text style={{ fontSize: 10, textAlign: "right" }}>{`${expiration}`}</Typography.Text>
-                        </Flex>
-                    </Flex>
-                </Flex>
+         <Flex>
+            <Flex className="h-[200px]">
+                <EducationalCredentialCard {...commonProps} />
             </Flex>
+            <Drawer title={'Title'} onClose={onClose} open={open} width={600}>
+                <Flex className="h-[200px]">
+                    <EducationalCredentialCard {...commonProps} />
+                </Flex>
+            </Drawer>
         </Flex>
     );
 };

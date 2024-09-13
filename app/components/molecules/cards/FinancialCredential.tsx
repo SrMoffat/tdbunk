@@ -1,5 +1,6 @@
 "use client"
 import { Card1, Evidence, TBDVCLogoYellow, ValidCredential } from "@/app/components/atoms/Icon";
+import { CREDENTIAL_TYPES } from "@/app/lib/constants";
 import { parseJwtToVc, resolveDid } from "@/app/lib/web5";
 import countries from '@/public/countries.json';
 import { VerifiableCredential } from "@web5/credentials";
@@ -208,11 +209,17 @@ const FinancialInstitutionCredential = (props: any) => {
     const vcDidDoc = vcIssuerDidDocument?.didDocument
     const vcServiceUrl = `${vcDidDoc?.service?.[0]?.serviceEndpoint}`
 
+    const nameParts = vcMetadata?.subject?.name?.split(":");
+    const hasParts = nameParts?.length
+    const renderName = hasParts
+        ? `${nameParts[0]} ${nameParts[1]}`
+        : vcMetadata?.subject?.name
+
 
     const commonCardProps = {
         credential,
         vcServiceUrl,
-        name: vcMetadata?.subject?.name,
+        name: renderName,
         issuanceDate: vcMetadata?.issuanceDate,
         expirationDate: vcMetadata?.expirationDate,
         countryCode: vcMetadata?.subject?.countryCode,
@@ -252,12 +259,11 @@ const FinancialInstitutionCredential = (props: any) => {
             }]
         }
 
-        // To Do: Handle multiple credential case
-        const cred = parsedCredentials[0]
-        setVcMetadata(cred?.formattedCred)
-        getDidDdocument(cred?.issuer)
-        setCredentialDidDocument(cred?.rawCred)
-        console.log("Log", cred)
+        const kccCredential = parsedCredentials.find((entry: any) => entry?.formattedCred?.type?.includes(CREDENTIAL_TYPES.KNOWN_CUSTOMER_CREDENTIAL))
+
+        setVcMetadata(kccCredential?.formattedCred)
+        getDidDdocument(kccCredential?.issuer)
+        setCredentialDidDocument(kccCredential?.rawCred)
     }, [])
 
     return (

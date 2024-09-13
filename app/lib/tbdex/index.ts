@@ -43,14 +43,6 @@ export const createRfQ = async ({
     userBearerDid: any
     requiredPaymentDetails: any
 }) => {
-    console.log("Create RFQ 🚀", {
-        amount,
-        offering,
-        credentials,
-        userBearerDid,
-        requiredPaymentDetails
-    })
-
     const userDidUri = userBearerDid.did.uri as string
     const pfiDidUri = offering.metadata.from as string
 
@@ -102,15 +94,10 @@ export const createRfQ = async ({
             did: userBearerDid?.did
         })
 
-        console.log("RFQ Flow", {
-            rfq,
-        })
-
         return rfq
 
     } catch (error: any) {
         console.log("Create RFQ Failed", error)
-
     }
 }
 
@@ -135,7 +122,6 @@ export const fetchExchanges = async ({ pfiDidUri, userBearerDid }: { pfiDidUri: 
     });
 
     console.log("fetchExchanges", exchanges);
-
     return exchanges
 };
 
@@ -210,36 +196,21 @@ export const generateExchangeStatusValues = (exchangeMessage: any) => {
             // const rfqData = exchangeMessage?.data
             // const rfqAmount = rfqData?.payin?.amount
             status = RFQ_STATUS_NAME
-            console.log("RFQ_STATUS_NAME", {
-                exchangeMessage,
-            })
             break
         }
         case quote: {
             // const quoteData = exchangeMessage?.data
             // const quoteExpiration = quoteData?.expiresAt
             status = QUOTE_STATUS_NAME
-            console.log("QUOTE_STATUS_NAME", {
-                exchangeMessage,
-            })
-
             break
         }
         case order: {
             status = ORDER_STATUS_NAME
-            console.log("ORDER_STATUS_NAME", {
-                exchangeMessage,
-            })
-
             // const orderData = exchangeMessage?.data
             break
         }
         case orderStatus: {
             status = ORDER_STATUS_STATUS_NAME
-            console.log("ORDER_STATUS_STATUS_NAME", {
-                exchangeMessage,
-            })
-
             // const orderStatusData = exchangeMessage?.data
             break
         }
@@ -256,12 +227,6 @@ export const generateExchangeStatusValues = (exchangeMessage: any) => {
             } else if (isCompletion && closeSuccess) {
                 status = CLOSE_SUCCESS_STATUS_NAME
             }
-
-            console.log("CLOSE_STATUS_NAME", {
-                exchangeMessage,
-                closeReason,
-                closeSuccess
-            })
             break
         }
         default: {
@@ -270,7 +235,8 @@ export const generateExchangeStatusValues = (exchangeMessage: any) => {
     }
 
     console.log("Check Message Status", {
-        status
+        status,
+        exchangeMessage
     })
 
     return status

@@ -36,22 +36,22 @@ const OfferingDetails = (props: any) => {
     const {
         web5,
         money,
-        isCancelled,
         isSelected,
         credentials,
         isCompleted,
-        currentMarketRate,
-        setIsCompleted,
-        setIsCancelled,
-        stateCredentials,
+        isCancelled,
         selectedCard,
         setIsSelected,
         userBearerDid,
         createExchange,
+        setIsCompleted,
+        setIsCancelled,
         campaignAmount,
         setSelectedCard,
         offering: values,
+        stateCredentials,
         selectedOffering,
+        currentMarketRate,
         setCampaignAmount,
         setSelectedOffering,
         unformattedOfferings,
@@ -211,9 +211,11 @@ const OfferingDetails = (props: any) => {
                 isCancelled={isCancelled}
                 rawOffering={rawOffering}
                 isCompleted={isCompleted}
+                exchangeRate={exchangeRate}
                 isCancelling={isCancelling}
                 selectedCard={selectedCard}
                 setShowModal={setShowModal}
+                setIsLoading={setIsLoading}
                 userBearerDid={userBearerDid}
                 setIsSelected={setIsSelected}
                 offeringReview={offeringReview}
@@ -223,6 +225,7 @@ const OfferingDetails = (props: any) => {
                 isRequestQuote={isRequestQuote}
                 setSelectedCard={setSelectedCard}
                 setIsCancelling={setIsCancelling}
+                stateCredentials={stateCredentials}
                 relevantExchange={relevantExchange}
                 currentMarketRate={currentMarketRate}
                 setOfferingReview={setOfferingReview}

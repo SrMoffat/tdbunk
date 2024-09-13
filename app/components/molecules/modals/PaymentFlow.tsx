@@ -1,9 +1,10 @@
 import MakePayment from "@/app/components/molecules/forms/MakePayment";
 import { Credentials } from "@/app/components/organisms/Credentials";
-import { INTERVALS_LOCAL_STORAGE_KEY, TDBUNK_CANCEL_REASON } from "@/app/lib/constants";
-import { sendCloseMessage } from "@/app/lib/tbdex";
+import { INTERVALS_LOCAL_STORAGE_KEY, STARTED_TRANSFER_AT_LOCAL_STORAGE_KEY, TDBUNK_CANCEL_REASON } from "@/app/lib/constants";
+import { sendCloseMessage, sendOrderMessage } from "@/app/lib/tbdex";
 import { Button, Modal, Spin } from "antd";
 import ReviewOffering from "../cards/Review";
+import { createOfferingReviewCredential } from "@/app/lib/web5";
 
 const clearAllIntervals = (intervalIds: string[]) => {
     for (const interval of intervalIds) {
@@ -41,6 +42,8 @@ const PaymentFlowModal = (props: any) => {
         setShowModal,
         isCancelling,
         selectedCard,
+        setIsLoading,
+        exchangeRate,
         userBearerDid,
         setIsSelected,
         campaignAmount,
@@ -50,6 +53,7 @@ const PaymentFlowModal = (props: any) => {
         createExchange,
         setSelectedCard,
         setIsCancelling,
+        stateCredentials,
         relevantExchange,
         setActivateButton,
         setCampaignAmount,
@@ -93,83 +97,97 @@ const PaymentFlowModal = (props: any) => {
         : 'Request Credentials'
 
     const handleOk = async () => {
-        // setIsLoading(true)
+        setIsLoading(true)
 
-        // if (isCancelled) return
+        if (isCancelled) return
 
-        // if (isCompleted) {
-        //     // Create review VC
-        //     const status = await createOfferingReviewCredential(
-        //         web5,
-        //         userBearerDid,
-        //         {
-        //             ...offeringReview,
-        //             pfiDid
-        //         }
-        //     )
+        if (isCompleted) {
+        console.log("IS Completed")
+            // Create review VC
+            // const status = await createOfferingReviewCredential(
+            //     web5,
+            //     userBearerDid,
+            //     {
+            //         ...offeringReview,
+            //         pfiDid
+            //     }
+            // )
 
-        //     if (status?.status.code === 202) {
-        //         setIsLoading(false)
-        //         notify?.('success', {
-        //             message: 'Review Submitted!',
-        //             description: 'Your review of  the transaction has submitted!'
-        //         })
-        //     }
+            // if (status?.status.code === 202) {
+            //     setIsLoading(false)
+            //     notify?.('success', {
+            //         message: 'Review Submitted!',
+            //         description: 'Your review of  the transaction has submitted!'
+            //     })
+            // }
 
-        //     setShowModal(false)
-        // } else if (isRequestQuote) {
-        //     const convertedCampaignAmount = Math.floor(campaignAmount / parseFloat(exchangeRate))
+            // setShowModal(false)
+        } else if (isRequestQuote) {
+            const convertedCampaignAmount = Math.floor(campaignAmount / parseFloat(exchangeRate))
 
-        //     createExchange({
-        //         requiredPaymentDetails,
-        //         credentials,
-        //         userBearerDid,
-        //         amount: convertedCampaignAmount,
-        //         offering: rawOffering,
-        //         stateCredentials
-        //     })
-        // } else {
-        //     // Start timer for the transfer
-        //     localStorage?.setItem(STARTED_TRANSFER_AT_LOCAL_STORAGE_KEY, JSON.stringify(new Date()))
+            createExchange({
+                requiredPaymentDetails,
+                credentials,
+                userBearerDid,
+                amount: convertedCampaignAmount,
+                offering: rawOffering,
+                stateCredentials
+            })
 
-        //     const isUsingWlletBalance = !Object.keys(requiredPaymentDetails?.payin).length
+            console.log("IS Request Quote", {
+                isRequestQuote,
+                requiredPaymentDetails,
+                credentials,
+                userBearerDid,
+                amount: convertedCampaignAmount,
+                offering: rawOffering,
+                stateCredentials
+            })
 
-        //     if (isUsingWlletBalance) {
-        //         const currentBalance = money?.amount
-        //         const sameCurrency = money?.currency === offeringFromCurrency
+        } else {
+            console.log("IS Make Transfer")
 
-        //         const totalAmount = overallFee + campaignAmount
+            // Start timer for the transfer
+            // localStorage?.setItem(STARTED_TRANSFER_AT_LOCAL_STORAGE_KEY, JSON.stringify(new Date()))
 
-        //         const hasSufficientBalance = currentBalance > totalAmount
+            // const isUsingWlletBalance = !Object.keys(requiredPaymentDetails?.payin).length
 
-        //         if (!hasSufficientBalance && sameCurrency) {
-        //             // Set error and disable button
-        //             console.log("Set error and disable button", {
-        //                 hasSufficientBalance,
-        //                 sameCurrency
-        //             })
-        //         }
-        //     }
+            // if (isUsingWlletBalance) {
+            //     const currentBalance = money?.amount
+            //     const sameCurrency = money?.currency === offeringFromCurrency
 
-        //     // To Do: Check if the offering allows cancellations also aler user after they request quote
-        //     const orderMessage = await sendOrderMessage({
-        //         pfiDid,
-        //         userBearerDid,
-        //         exchangeId: relevantExchange?.mostRecentMessage?.metadata?.exchangeId,
-        //     })
+            //     const totalAmount = overallFee + campaignAmount
 
-        //     //   To Do: Since we are assuming the user of wallet balance here
-        //     //     we should also check for insufficient balance and send
-        //     //         Close message
+            //     const hasSufficientBalance = currentBalance > totalAmount
 
-        //     if (orderMessage) {
-        //         console.log("Close modal and toast success txn complete", orderMessage)
-        //         // setShowModal(false);
-        //         // setIsCompleted(true)
-        //     }
+            //     if (!hasSufficientBalance && sameCurrency) {
+            //         // Set error and disable button
+            //         console.log("Set error and disable button", {
+            //             hasSufficientBalance,
+            //             sameCurrency
+            //         })
+            //     }
+            // }
 
-        //     clearAllPollingTimers()
-        // }
+            // // To Do: Check if the offering allows cancellations also aler user after they request quote
+            // const orderMessage = await sendOrderMessage({
+            //     pfiDid,
+            //     userBearerDid,
+            //     exchangeId: relevantExchange?.mostRecentMessage?.metadata?.exchangeId,
+            // })
+
+            // //   To Do: Since we are assuming the user of wallet balance here
+            // //     we should also check for insufficient balance and send
+            // //         Close message
+
+            // if (orderMessage) {
+            //     console.log("Close modal and toast success txn complete", orderMessage)
+            //     // setShowModal(false);
+            //     // setIsCompleted(true)
+            // }
+
+            // clearAllPollingTimers()
+        }
     };
 
     const handleCancel = async () => {

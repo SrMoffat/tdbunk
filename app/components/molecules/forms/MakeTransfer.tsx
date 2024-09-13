@@ -10,6 +10,12 @@ import CountUp from "react-countup";
 const MakeTransfer = (props: any) => {
     const { offering, campaignAmount, requiredPaymentDetails, feeDetails, monopolyMoney } = props
 
+    const [passwordVisible, setPasswordVisible] = useState(false);
+
+    const {
+        token: { colorPrimary, colorBgContainer },
+    } = theme.useToken()
+
     const offeringData = offering?.data
 
     const payin = offeringData?.payin
@@ -20,14 +26,24 @@ const MakeTransfer = (props: any) => {
 
     const exchangeRate = offeringData?.payoutUnitsPerPayinUnit
 
+    const payinFee = payin?.fee
+    const payoutFee = payout?.fee
+
+    const payinCode = payin?.currencyCode
+
+    const currencyCode = feeDetails?.currencyCode
+    const totalFee = Number(feeDetails?.totalFee)?.toFixed(2)
+    const overallFee = payinFee
+        ? Number(payinFee + totalFee).toFixed(2)
+        : Number(totalFee).toFixed(2)
+
+    const transactionFee = `${payinCode} ${payinFee}`
+    const platformFee = `${currencyCode} ${totalFee}`
+    const allFee = `${currencyCode} ${overallFee}`
+
     const fromCurrencyFlag = getCurrencyFlag(fromCurrency)
     const toCurrencyFlag = getCurrencyFlag(toCurrency)
 
-    const [passwordVisible, setPasswordVisible] = useState(false);
-
-    const {
-        token: { colorPrimary, colorBgContainer },
-    } = theme.useToken()
 
     const renderFields = (details: any) => {
         const fields = Object.keys(details)
@@ -56,7 +72,6 @@ const MakeTransfer = (props: any) => {
     }
 
     const renderPaymentMethods = (details: any) => {
-        console.log("Details to render", details)
         return (
             <Form
                 layout="vertical"
@@ -66,26 +81,6 @@ const MakeTransfer = (props: any) => {
             </Form>
         )
     }
-
-    console.log("received values ==>", {
-        feeDetails,
-        requiredPaymentDetails
-    })
-
-    const payinFee = payin?.fee
-    const payoutFee = payout?.fee
-
-    const payinCode = payin?.currencyCode
-
-    const currencyCode = feeDetails?.currencyCode
-    const totalFee = Number(feeDetails?.totalFee)?.toFixed(2)
-    const overallFee = payinFee
-        ? Number(payinFee + totalFee).toFixed(2)
-        : Number(totalFee).toFixed(2)
-
-    const transactionFee = `${payinCode} ${payinFee}`
-    const platformFee = `${currencyCode} ${totalFee}`
-    const allFee = `${currencyCode} ${overallFee}`
 
     const formatter: StatisticProps['formatter'] = (value) => (
         <CountUp end={value as number} separator="," />
@@ -151,8 +146,7 @@ const MakeTransfer = (props: any) => {
                                             />
                                             {/**
                                              * To Do: Since we are assuming the user of wallet balance here
-                                             *         we should also check for insufficient balance and send
-                                             *         Close message
+                                             *         we should also check for insufficient balance
                                              */}
                                         </Flex>
                                     </Flex>

@@ -33,8 +33,6 @@ const MakePayment = (props: any) => {
         offeringToCurrencyMethods
     } = props
 
-    const [intervalId, setIntervalId] = useState<any>();
-    const [percent, setPercent] = useState<number>(0);
     const [quoteExpired, setQuoteExpired] = useState(false)
     const [requiredPaymentDetails, setRequiredPaymentDetails] = useState<any>({
         payin: {},
@@ -136,51 +134,14 @@ const MakePayment = (props: any) => {
 
     }, [requiredPaymentDetails])
 
-    useEffect(() => {
-        const dummyLoaderTimer = setTimeout(() => {
-            setPercent((prevPercent) => {
-                const newPercent = prevPercent + 5;
-                if (newPercent > 100) {
-                    return 100;
-                }
-                return newPercent;
-            });
-        }, 1000)
-        setIntervalId(dummyLoaderTimer)
-        // return () => {
-        //     if (percent >= 100) {
-        //         clearInterval(dummyLoaderTimer)
-        //     }
-        // }
-        console.log("Is Loading for Loader", {
-            isLoading
-        })
-    }, [isLoading])
-
-    useEffect(() => {
-        // if (percent >= 100) {
-        //     clearInterval(dummyLoaderTimer)
-        // }
-        console.log("Percentage changed or intervalID changed", {
-            intervalId,
-            percent
-        })
-    }, [intervalId, percent])
-
     const { diff } = percentageDifference(currentMarketRate, parseFloat(exchangeRate));
-
-    console.log("marketRate", {
-        diff,
-        exchangeRate,
-        currentMarketRate
-    });
 
     const comparison = currentMarketRate > parseFloat(exchangeRate)
         ? 'higher than'
         : 'lower than';
 
     return (
-        <Flex className={`gap-2 flex-col ${isLoading ? 'opacity-30' : 'opacity-100'}`}>
+        <Flex className="gap-2 flex-col">
             {isRequestQuote ? (
                 <Flex className="w-full items-center flex-col">
                     <Typography.Text style={{ fontSize: 12 }}>Exchange Rate in Offering</Typography.Text>
@@ -224,17 +185,6 @@ const MakePayment = (props: any) => {
                 </Flex>
             ) : (
                 <Flex className={isLoading ? 'flex-col opacity-100' : ''}>
-                    {isLoading && (
-                        <Flex className="w-full opacity-100" style={{ opacity: 1 }}>
-                            <Progress
-                                steps={7}
-                                size={[100, 5]}
-                                percent={percent}
-                                style={{ opacity: 1 }}
-                                strokeColor={PRIMARY_GOLD_HEX}
-                            />
-                        </Flex>
-                    )}
                     <Flex className="w-full justify-between mb-4 gap-4 mt-4">
                         <Flex className="w-full">
                             <Card className="w-full">

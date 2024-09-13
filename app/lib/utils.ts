@@ -288,7 +288,7 @@ export const getPlatformFees = async (paymentDetails: any[]) => {
         percentageAmount,
     }
 
-    console.log("=====>", {
+    console.log("To DO: Calculate fees", {
         fixedFee,
         feeDetails,
         quotePayoutFeeCurrency,

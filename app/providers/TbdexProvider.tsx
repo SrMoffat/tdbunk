@@ -110,11 +110,6 @@ const TbdexContextProvider = ({ children }: PropsWithChildren) => {
                 credentials: selectedCredentials,
                 requiredPaymentDetails: details.requiredPaymentDetails
             })
-            console.log("Create Eachage Args", {
-                ...details,
-                rfq,
-                contextUserBearerDid
-            })
 
             TbdexHttpClient.createExchange(rfq as Rfq, {
                 replyTo: 'http://localhost:3000/api/exchanges'

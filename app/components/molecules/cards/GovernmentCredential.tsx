@@ -3,7 +3,7 @@ import { CredentialParsedMetadata, DrawerHeader, extractVcDocumentDetails } from
 import { CREDENTIAL_TYPES, TDBUNK_ISSUER_NAME } from "@/app/lib/constants";
 import { parseJwtToVc } from "@/app/lib/web5";
 import { resolveDid } from "@tbdex/http-client";
-import { Flex, Typography, Drawer, Card } from "antd";
+import { Flex, Typography, Drawer, Card, QRCode } from "antd";
 import { formatDistanceToNow } from "date-fns";
 import Image from "next/image";
 import { useEffect, useState } from "react";
@@ -69,7 +69,7 @@ const GovernmentInstitutionCredential = (props: any) => {
     useEffect(() => {
         (async () => {
             const isState = Object.keys(stateCredentials)?.length
-            
+
             const credentialTypes = isState
                 ? Object.keys(stateCredentials)[0]
                 : Object.keys(localStorageCredentials)[0]
@@ -134,6 +134,15 @@ const GovernmentInstitutionCredential = (props: any) => {
             <Drawer title={<DrawerHeader type={[CREDENTIAL_TYPES.VERIFIABLE_CREDENTIAL, CREDENTIAL_TYPES.GOVERNMENT_CREDENTIAL]} />} onClose={onClose} open={open} width={600}>
                 <Flex className="h-[200px]">
                     <GovernmentCredentialCard {...commonProps} />
+                </Flex>
+                <Flex className="mb-4">
+                    <QRCode
+                        errorLevel="H"
+                        size={160}
+                        iconSize={160 / 4}
+                        value="To Do: stringify the vc document and pass it here"
+                        icon="/logo-icon.svg"
+                    />
                 </Flex>
                 <Card className="flex-col mb-4">
                     <Flex className="mb-3 justify-between">

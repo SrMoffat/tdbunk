@@ -35,17 +35,6 @@ const ImportCredential = () => {
             centered
             items={[
                 {
-                    label: 'Scan QR Code',
-                    key: 'scan',
-                    children: <QRCode
-                        errorLevel="H"
-                        size={240}
-                        iconSize={240 / 4}
-                        value="https://ant.design/"
-                        icon="/logo-icon.svg"
-                    />
-                },
-                {
                     label: 'Upload Document',
                     key: 'upload',
                     children: <Dragger {...props}>

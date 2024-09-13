@@ -5,7 +5,7 @@ import { parseJwtToVc, resolveDid } from "@/app/lib/web5";
 import countries from '@/public/countries.json';
 import { VerifiableCredential } from "@web5/credentials";
 import { DidResolutionResult } from "@web5/dids";
-import { Card, Drawer, Flex, Tag, Typography } from "antd";
+import { Card, Drawer, Flex, Tag, Typography, QRCode } from "antd";
 import { formatDistanceToNow } from 'date-fns';
 import Image from "next/image";
 import Link from "next/link";
@@ -91,7 +91,7 @@ export const CredentialCard: React.FC<CredentialCardProps> = ({
             expiration
         }
 
-        console.log("Details", details)
+    console.log("Details", details)
     return (
         <Flex className="h-[200px]">
             <Flex onClick={handleCardClicked} className="absolute hover:opacity-70 rounded-md transition-all cursor-pointer">
@@ -271,7 +271,18 @@ const FinancialInstitutionCredential = (props: any) => {
     return (
         <Flex>
             <Drawer title={<DrawerHeader type={vcMetadata?.type} />} onClose={onClose} open={open} width={600}>
-                <CredentialCard {...commonCardProps} />
+                <Flex>
+                    <CredentialCard {...commonCardProps} />
+                </Flex>
+                <Flex className="mb-4">
+                    <QRCode
+                        errorLevel="H"
+                        size={160}
+                        iconSize={160 / 4}
+                        value="To Do: stringify the vc document and pass it here"
+                        icon="/logo-icon.svg"
+                    />
+                </Flex>
                 <Card className="flex-col mb-4">
                     <Flex className="mb-3 justify-between">
                         <Flex className="flex-col">

@@ -1,5 +1,6 @@
 import { Card1, TBDVCLogoYellow } from "@/app/components/atoms/Icon";
 import { extractVcDocumentDetails } from "@/app/components/molecules/cards/FinancialCredential";
+import { TDBUNK_ISSUER_NAME } from "@/app/lib/constants";
 import { parseJwtToVc } from "@/app/lib/web5";
 import countries from '@/public/countries.json';
 import { CheckCircleFilled, CheckCircleOutlined } from "@ant-design/icons";
@@ -49,7 +50,7 @@ const CredentialOption: React.FC<any> = ({
     setSelectedCard
 }) => {
     // issuer name as per docs here: https://www.tbdex.io/hackathon
-    const issuerName = 'Ultimate Identity'
+    const issuerName = TDBUNK_ISSUER_NAME
 
     const [country, setCountry] = useState<any>()
     const [issuance, setIssuance] = useState<string | undefined>()
@@ -88,7 +89,6 @@ const CredentialOption: React.FC<any> = ({
     }, [])
 
     const handleCardClicked = () => {
-        console.log("Selected Offering")
         if (selectedCard) {
             setSelectedCard('')
         } else {

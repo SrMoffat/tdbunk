@@ -55,26 +55,6 @@ export const SearchOffers = (props: any) => {
 
     const lastUpdate = localStorage.getItem(OFFERINGS_LAST_UPDATED)
 
-    console.log("Last Updated", lastUpdate)
-    // const destinationCountry = countries.filter(entry => entry.currencyCode === selectedDestinationCurrency)[0]?.flag
-
-    // campaignAmount is amount the campaign will receive in selectedCurrency
-    // default: convert campaignAmount to USD and set as defaultValue
-    // changed: convert campaignAmount to selectedCurrency and set as defaultValue
-
-    // const outsideLocalStorageRate = localStorage.getItem(MARKET_CONVERSION_RATE_LOCAL_STORAGE_KEY)
-
-    // useEffect(() => {
-    //     console.log("[DEBUG]: outsideLocalStorageRate", {
-    //         outsideLocalStorageRate,
-    //         from: selectedDestinationCurrency,
-    //         to: selectedCurrency,
-    //         currentMarketRate
-    //     })
-
-    // }, [outsideLocalStorageRate])
-
-
     useEffect(() => {
         let result = 0
 
@@ -82,32 +62,17 @@ export const SearchOffers = (props: any) => {
 
         if (localStorageRate) {
             result = (campaignAmount as number) / parseFloat(localStorageRate)
-            console.log("[DEBUG]: Using local storage", result)
 
         } else {
             result = (campaignAmount as number) / (currentMarketRate as number)
-            console.log("[DEBUG]: Using state storage", result)
         }
 
         setConvertedCampaignAmount(result)
 
         setIsLoadingConvertedValue(false)
-        console.log("[DEBUG]: Market Rate Changed Values", {
-            result,
-            localStorageRate,
-            campaignAmount,
-            from: selectedDestinationCurrency,
-            to: selectedCurrency,
-            currentMarketRate
-        })
-
     }, [currentMarketRate])
 
-
-    console.log("convertedCampaignAmount", convertedCampaignAmount)
-
     const convertedAmount = Math.floor(convertedCampaignAmount)
-
     return (
         <Space.Compact block >
             <Select style={{ width: 130 }} defaultValue={selectedCurrency || 'USD'} onChange={(value) => {

@@ -6,7 +6,6 @@ import { Flex, Layout, Steps, theme } from 'antd';
 import React, { useState, useEffect } from 'react';
 import { CampaignStepProps } from './StepOne';
 
-
 const StepTwo: React.FC<CampaignStepProps> = ({
     setNextButtonDisabled: disableNextButton
 }) => {
@@ -50,7 +49,6 @@ const StepTwo: React.FC<CampaignStepProps> = ({
     ];
 
     const onChange = (value: number) => {
-        console.log('onChange:', value);
         setCurrent(value);
     };
 
@@ -66,10 +64,6 @@ const StepTwo: React.FC<CampaignStepProps> = ({
         const result = Boolean(stepOne)
             || Boolean(stepTwo)
             || Boolean(stepThree)
-
-        console.log("Button Next Step 2", {
-            result
-        })
 
         disableNextButton(result)
     }, [nextButtonDisabled])

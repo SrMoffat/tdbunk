@@ -52,14 +52,12 @@ const MarketRate = (props: any) => {
                     })
                     const dataPaid = await responsePaid.json()
 
-                    console.log("Use PAID API", dataPaid)
                     const rate = dataPaid?.conversion_rate
 
                     setConvertedAmount(rate)
                     setCurrentMarketRate(rate)
                     localStorage.setItem(MARKET_CONVERSION_RATE_LOCAL_STORAGE_KEY, rate)
                 } else {
-                    console.log("Use Free API", data)
                     const rate = data?.rate
 
                     setConvertedAmount(rate)

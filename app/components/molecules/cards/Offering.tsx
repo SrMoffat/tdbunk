@@ -3,14 +3,14 @@ import AssetExchangePFIDetails from "@/app/components/molecules/cards/OfferingPF
 import CredentialsForm from '@/app/components/molecules/forms/Credentials';
 import MakePayment from "@/app/components/molecules/forms/MakePayment";
 import { Credentials } from "@/app/components/organisms/Credentials";
-import { INTERVALS_LOCAL_STORAGE_KEY, MARKET_CONVERSION_RATE_LOCAL_STORAGE_KEY, PFIs, SETTLED_TRANSFER_AT_LOCAL_STORAGE_KEY, STARTED_TRANSFER_AT_LOCAL_STORAGE_KEY, TBDEX_MESSAGE_TYPES_TO_STATUS, TDBUNK_CANCEL_REASON } from "@/app/lib/constants";
+import { INTERVALS_LOCAL_STORAGE_KEY, MARKET_CONVERSION_RATE_LOCAL_STORAGE_KEY, PFIs, STARTED_TRANSFER_AT_LOCAL_STORAGE_KEY, TBDEX_MESSAGE_TYPES_TO_STATUS, TDBUNK_CANCEL_REASON } from "@/app/lib/constants";
 import { pollExchanges, sendCloseMessage, sendOrderMessage } from "@/app/lib/tbdex";
 import { displayTimeWithLabel, getCurrencyFlag, getEstimatedSettlementTime, getPlatformFees } from "@/app/lib/utils";
 import { createOfferingReviewCredential } from "@/app/lib/web5";
 import { useNotificationContext } from "@/app/providers/NotificationProvider";
 import { Offering } from "@tbdex/http-client";
-import { Button, List, Modal, Rate, Flex, Typography, Input, Tag, Card, Spin } from "antd";
-import { formatDistanceToNow, differenceInSeconds } from 'date-fns';
+import { Button, Card, Flex, Input, List, Modal, Rate, Spin, Tag, Typography } from "antd";
+import { differenceInSeconds } from 'date-fns';
 import { SetStateAction, useEffect, useState } from "react";
 
 const ReviewOffering = (props: any) => {
@@ -136,7 +136,6 @@ const OfferingDetails = (props: any) => {
     const {
         web5,
         money,
-        isOnlyResult,
         isCancelled,
         isSelected,
         credentials,
@@ -180,21 +179,9 @@ const OfferingDetails = (props: any) => {
     const offeringRequiredClaims = offering?.requiredClaims
     const offeringFromCurrency = offering?.pair[0]
     const offeringToCurrency = offering?.pair[1]
-    const offeringFromCurrencyMethods = offeringFromCurrency?.methods
     const offeringToCurrencyMethods = offeringToCurrency?.methods
-    const offeringCreatedTime = formatDistanceToNow(new Date(offeringCreatedAt), { addSuffix: true });
 
     const isCheaperThanMarketRate = offeringToCurrency?.unit > Number(currentMarketRate) // || isOnlyResult
-
-    console.log("[Offer]: handle this", {
-        item: values,
-        isCheaperThanMarketRate,
-        currentMarketRate
-    })
-
-    console.log("<OfferingDetails />", {
-        selectedOffering
-    })
 
     const pfiName = PFIs.filter(pfi => pfi?.did === pfiDid)[0]?.name
 
@@ -204,20 +191,12 @@ const OfferingDetails = (props: any) => {
     const rawOfferingDetails = rawOfferins.filter(({ metadata: { id } }) => id === offeringId)
     const rawOffering = rawOfferingDetails[0]
 
-    const offerRequiredClaims = rawOffering?.data?.requiredClaims
-
     const isRequestQuote = paymentStage === PaymentStage.REQUEST_QUOTE
 
     const payinData = rawOffering?.data?.payin
-    const payoutData = rawOffering?.data?.payout
-
     const payinMethod = payinData?.methods?.[0]
-    const payoutMethod = payinData?.methods?.[0]
 
     const payinFee = payinMethod?.fee
-    const payoutFee = payoutMethod?.fee
-
-    const payinCode = payinData?.currencyCode
 
     const exchangeRate = rawOffering?.data?.payoutUnitsPerPayinUnit
 
@@ -227,8 +206,6 @@ const OfferingDetails = (props: any) => {
         ? Number(payinFee + totalFee).toFixed(2)
         : Number(totalFee).toFixed(2)
 
-    const transactionFee = `${payinCode} ${payinFee}`
-    const platformFee = `${currencyCode} ${totalFee}`
     const allFee = `${currencyCode} ${overallFee}`
 
     const clearAllPollingTimers = () => {
@@ -277,8 +254,6 @@ const OfferingDetails = (props: any) => {
             setShowModal(false)
         } else if (isRequestQuote) {
             const convertedCampaignAmount = Math.floor(campaignAmount / parseFloat(exchangeRate))
-
-            console.log("Adviser", convertedCampaignAmount)
 
             createExchange({
                 requiredPaymentDetails,
@@ -427,20 +402,6 @@ const OfferingDetails = (props: any) => {
     const isPaymentStep = hasRequiredCredentials && isSelected
 
     const sourceCurrencyCode = rawOffering?.data?.payin.currencyCode
-    const destinationCurrencyCode = rawOffering?.data?.payout?.currencyCode
-
-    console.log("get offering details", {
-        rawOffering
-
-    })
-
-
-
-    console.log("Details For Fees", {
-        transactionFee,
-        platformFee,
-        allFee
-    })
 
     const cancelText = isRequestQuote
         ? 'Cancel'
@@ -489,7 +450,6 @@ const OfferingDetails = (props: any) => {
                 setIsCompleted(true)
                 setIsLoading(false)
                 // setShowModal(false)
-                console.log("Transfer complete")
             }
 
             const quoteMessage = relevantExchange?.mostRecentMessage
@@ -502,12 +462,10 @@ const OfferingDetails = (props: any) => {
             getPlatformFees([quotePayin, quotePayout]).then((feeDetails) => {
                 // Get fee details in the source currency
                 setFeeDetails(feeDetails)
-                console.log("tdbunkPlatformFees", feeDetails)
             })
 
         }
 
-        console.log("received message", relevantExchange)
     }, [relevantExchange])
 
 
@@ -518,46 +476,14 @@ const OfferingDetails = (props: any) => {
 
         if (isUsingWlletBalance) {
             const currentBalance = money?.amount
-            const sameCurrency = money?.currency === offeringFromCurrency
 
             const totalAmount = !isRequestQuote
                 ? parseFloat(overallFee) + parseFloat(campaignAmount)
                 : parseFloat(campaignAmount)
 
             const hasSufficientBalance = currentBalance > totalAmount
-
-            // if (!hasSufficientBalance && sameCurrency) {
-            //     // Set error and disable button
-            //     console.log("Set error and disable button", {
-            //         hasSufficientBalance,
-            //         sameCurrency
-            //     })
-            // }
-
-            console.log("||||currentBalance|||||", {
-                isRequestQuote,
-                overallFee,
-                currentBalance,
-                campaignAmount,
-                sameCurrency,
-                totalAmount,
-                hasSufficientBalance
-            })
         }
-
-        console.log("Payment Details or Fees Changes", {
-            isUsingWlletBalance,
-            requiredPaymentDetails,
-            feeDetails
-        })
-
     }, [requiredPaymentDetails, feeDetails])
-
-    console.log("Required Claims Exists", offering?.requiredClaimsExist)
-
-
-    console.log("Check that conversion rate is lower than market rate then check rating after")
-
 
     return (
         <List.Item className="flex flex-row gap-2">

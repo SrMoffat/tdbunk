@@ -58,12 +58,6 @@ export const getVcJwtDetails = (jwt: string) => {
         expiration
     }
 
-    console.log("getVcJwtDetails ==>", {
-        details,
-        hasParts,
-        nameParts
-    })
-
     return details
 }
 
@@ -91,7 +85,6 @@ export const CredentialCard: React.FC<CredentialCardProps> = ({
             expiration
         }
 
-    console.log("Details", details)
     return (
         <Flex className="h-[200px]">
             <Flex onClick={handleCardClicked} className="absolute hover:opacity-70 rounded-md transition-all cursor-pointer">
@@ -196,11 +189,6 @@ const FinancialInstitutionCredential = (props: any) => {
     const getDidDdocument = async (didUri: string) => {
         const did = await resolveDid?.(didUri)
         setVcIssuerDidDocument(did)
-
-        console.log("getDidDdocument", {
-            didUri,
-            did
-        })
         return did
     }
 
@@ -235,19 +223,9 @@ const FinancialInstitutionCredential = (props: any) => {
         if (localStorageCredentials) {
             const localCredentials = Object.values(localStorageCredentials)
             jwtCredentials = localCredentials.flat()
-            console.log("Local Storage State", {
-                stateCredentials,
-                localStorageCredentials
-            })
-
         } else if (stateCredentials) {
             const contextCredentials = Object.values(stateCredentials)
             jwtCredentials = contextCredentials.flat()
-            console.log("Context State Storage State", {
-                stateCredentials,
-                localStorageCredentials
-            })
-
         }
 
         for (const jwt of jwtCredentials) {

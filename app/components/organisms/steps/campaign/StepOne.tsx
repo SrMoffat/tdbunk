@@ -113,16 +113,6 @@ const StepOne: React.FC<CampaignStepProps> = ({
             const isKcc = localCredentialType === CREDENTIAL_TYPES.KNOWN_CUSTOMER_CREDENTIAL
 
             setHasRequiredCredentials(isKcc)
-
-            console.log("Something needs to be updated and local has?/", {
-                isKcc,
-                noCredentials,
-                allCredentials,
-                localCredentials,
-                existingStateCreds,
-                existingLocalStorageCreds
-            })
-
         } else if (existingStateCreds) {
             // Check that state object is not empty
             if (Object.keys(existingStateCreds).length) {
@@ -140,15 +130,6 @@ const StepOne: React.FC<CampaignStepProps> = ({
                 const isKcc = stateCredentialType === CREDENTIAL_TYPES.KNOWN_CUSTOMER_CREDENTIAL
 
                 setHasRequiredCredentials(isKcc)
-
-                console.log("Something needs to be updated and state has?/", {
-                    isKcc,
-                    noCredentials,
-                    allCredentials,
-                    stateCredentials,
-                    existingStateCreds,
-                    existingLocalStorageCreds
-                })
             }
         }
 
@@ -158,14 +139,9 @@ const StepOne: React.FC<CampaignStepProps> = ({
         const noCredentialsFound = !existingLocalStorageCreds && !existingStateCreds?.length
 
         if (noCredentialsFound) {
-            console.log("No credentials found")
             setNoCredentials(noCredentialsFound)
         } else {
             setNoCredentials(false)
-            console.log("Credentials found pick?", {
-                existingLocalStorageCreds,
-                existingStateCreds
-            })
         }
     }, [])
 

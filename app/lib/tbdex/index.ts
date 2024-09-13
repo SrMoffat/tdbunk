@@ -381,7 +381,6 @@ export const pollExchanges = (bearer: any, callback: any) => {
 
     // Set up the interval to run the function periodically
     const pollingIntervalId = setInterval(fetchAllExchanges, EXCHANGES_POLLING_INTERVAL_MS);
-    console.log("Setting interval ID", pollingIntervalId)
     return pollingIntervalId
 };
 

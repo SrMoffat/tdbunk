@@ -1,4 +1,4 @@
-import { Community, Evidence, FactCheckers, Sponsor, Sponsorships } from "@/app/components/atoms/Icon";
+import { Community, Sponsor } from "@/app/components/atoms/Icon";
 import { DEBUNK_CAMPAIGN_TYPE } from "@/app/lib/constants";
 import { getCurrencyFlag } from "@/app/lib/utils";
 import { useCreateCampaignContext } from "@/app/providers/CreateCampaignProvider";
@@ -78,10 +78,8 @@ const CampaignDetails: React.FC<any> = ({
                         setMode(value)
                         setCampaignType?.(value)
 
-                        console.log("Changed Type", value)
                         if (isSponsored) {
                             setCampaignAmount?.(0)
-                            // 
                         }
                     }}
                     options={options}

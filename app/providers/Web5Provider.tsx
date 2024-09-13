@@ -3,7 +3,7 @@ import { DebunkProps } from '@/app/components/organisms/Debunks';
 import { BearerIdentity } from '@web5/agent';
 import { type Web5 } from "@web5/api";
 import { BearerDid, DidResolutionResult } from '@web5/dids';
-import { PropsWithChildren, createContext, useContext, useEffect, useState } from 'react';
+import { PropsWithChildren, createContext, useContext, useState } from 'react';
 
 export interface Web5ContextType {
     web5: Web5 | null;
@@ -38,58 +38,6 @@ const Web5ContextProvider = ({ children }: PropsWithChildren) => {
     const [web5Instance, setWeb5Instance] = useState<Web5 | null>(null);
     const [recoveryPhrase, setRecoveryPhrase] = useState<string | null | undefined>(null);
     const [userBearerDid, setUserBearerDid] = useState<BearerDid | BearerIdentity | null | undefined>(null);
-
-    useEffect(() => {
-        (async () => {
-            try {
-                console.log("Do nothing for now")
-                // let recovery
-                // let diduri = ''
-                // let web5Client = null
-
-                // const didExists = false
-
-                // if (didExists) {
-                //     // Check if DID exists in storage, if so, import it
-                //     console.log("Handle Did exists")
-                // } else {
-                //     // If not, create one and set it in storage
-                //     const { web5, did: walletDid, recoveryPhrase } = await Web5Api.connect({
-                //         // password: process.env.WEB5_PASSWORD ?? '5PC{*?e|ix48',
-                //         sync: '5s'
-                //     });
-
-                //     diduri = walletDid
-                //     web5Client = web5
-                //     recovery = recoveryPhrase
-                // }
-
-
-                // console.log("Details", {
-                //     web5Client,
-                //     diduri,
-                //     recovery
-                // })
-
-                // setWalletDid(diduri)
-                // setWeb5Instance(web5Client)
-                // setRecoveryPhrase(recoveryPhrase)
-
-                // await setupTdbunkProtocol(web5Client, diduri)
-                // await createDwnCampaign(web5Client)
-
-                // const campaigns = await fetchCampaigns(web5Client, diduri)
-
-                // console.log('campaigns array', campaigns);
-
-                // setCampaigns(campaigns)
-
-            } catch (error: any) {
-                console.log("UseEffect mounted error", error)
-            }
-        })()
-    }, [])
-
 
     return <Web5Context.Provider value={{
         userDid,

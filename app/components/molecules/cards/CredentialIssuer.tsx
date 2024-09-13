@@ -20,11 +20,6 @@ const CredentialIssuerCard = (props: any) => {
         card,
         logo,
         issuerName,
-        noCredentialsFound,
-        stateCredentials,
-        nextButtonDisabled,
-        localStorageCredentials,
-
         setUserDid,
         setCredentials,
         setWeb5Instance,
@@ -33,9 +28,10 @@ const CredentialIssuerCard = (props: any) => {
         setNextButtonDisabled,
         setCreatedCredentialType
     } = props
+
     const { notify } = useNotificationContext()
 
-    const [localStorageData, setLocalCredentials] = useBrowserStorage<CredentialStorage>(
+    const [_, setLocalCredentials] = useBrowserStorage<CredentialStorage>(
         CREDENTIALS_LOCAL_STORAGE_KEY,
         LOCAL_STORAGE_KEY
     )
@@ -72,35 +68,77 @@ const CredentialIssuerCard = (props: any) => {
         })
     }
 
+    const setUserDataToState = (result: any) => {
+        const {
+            did,
+            web5,
+            storedVc,
+            bearerDid,
+            recoveryPhrase
+        } = result
+
+        let resultingCredentials = {}
+
+        const localCredentials = localStorage.getItem(CREDENTIALS_LOCAL_STORAGE_KEY)
+
+
+        if (localCredentials) {
+            const details = JSON.parse(localCredentials)
+
+            resultingCredentials = {
+                ...details
+            }
+
+            console.log("Yes Local Credentials", {
+                result,
+                details,
+                localCredentials,
+                resultingCredentials,
+            })
+        } else {
+            resultingCredentials = {
+                ...storedVc
+            }
+
+            console.log("No Local Credentials", {
+                result,
+                localCredentials,
+                resultingCredentials,
+            })
+        }
+
+
+        console.log("Combined Credentials", {
+            resultingCredentials,
+        })
+
+
+        setUserDid?.(did)
+        setWeb5Instance?.(web5)
+        setUserBearerDid?.(bearerDid)
+        setRecoveryPhrase?.(recoveryPhrase)
+        setCredentials?.(resultingCredentials)
+        // setCredentials?.(storedVc)
+        setLocalCredentials({
+            did,
+            credentials: resultingCredentials,
+            // credentials: storedVc,
+            // defaultCurrency: defaultCurrencyFromCredential,
+        })
+        setNextButtonDisabled(false)
+        successMessage()
+        onClose()
+
+    }
+
     const { isPending: financialIsPending, mutateAsync: createFinancialCredentialMutation } = useMutation({
         mutationFn: createFinancialCredential,
         onSuccess: (result: any) => {
-            const {
-                did,
-                web5,
-                storedVc,
-                bearerDid,
-                recoveryPhrase
-            } = result
-            // const defaultCurrencyFromCredential = getCurrencyFromCountry(countries, details?.country?.value)
-
-            console.log("Result", result)
-            setUserDid?.(did)
-            setWeb5Instance?.(web5)
-            setUserBearerDid?.(bearerDid)
-            setRecoveryPhrase?.(recoveryPhrase)
-            setCredentials?.(storedVc)
-            setLocalCredentials({
-                did,
-                credentials: storedVc,
-                // defaultCurrency: defaultCurrencyFromCredential,
-            })
-            setNextButtonDisabled(false)
-            successMessage()
-            onClose()
+            console.log("Result:createFinancialCredentialMutation", result)
+            setUserDataToState(result)
         },
         onError: (error: any) => {
-            console.log("Errpr", error)
+            console.log("Error", error)
 
             // setNextButtonDisabled(true)
             // notify?.('error', {
@@ -113,31 +151,11 @@ const CredentialIssuerCard = (props: any) => {
     const { isPending: governmentIsPending, mutateAsync: createGovernmentCredentialMutation } = useMutation({
         mutationFn: createGovernmentCredential,
         onSuccess: (result: any) => {
-            const {
-                did,
-                web5,
-                storedVc,
-                bearerDid,
-                recoveryPhrase
-            } = result as any
-            console.log("Result:governement", result)
-            // const defaultCurrencyFromCredential = getCurrencyFromCountry(countries, details?.country?.value)
-
-            setUserDid?.(did)
-            setWeb5Instance?.(web5)
-            setUserBearerDid?.(bearerDid)
-            setRecoveryPhrase?.(recoveryPhrase)
-            setCredentials?.(storedVc)
-            setLocalCredentials({
-                did,
-                credentials: storedVc,
-                // defaultCurrency: defaultCurrencyFromCredential,
-            })
-            // setNextButtonDisabled(false)
-            successMessage()
-            onClose()
+            console.log("Result:createGovernmentCredentialMutation", result)
+            setUserDataToState(result)
         },
-        onError: () => {
+        onError: (error: any) => {
+            console.log("Error", error)
             // setNextButtonDisabled(true)
             // notify?.('error', {
             //     message: 'Credential Creation Failed!',
@@ -149,31 +167,11 @@ const CredentialIssuerCard = (props: any) => {
     const { isPending: professionalIsPending, mutateAsync: createProfessionalCredentialMutation } = useMutation({
         mutationFn: createProfessionalCredential,
         onSuccess: (result: any) => {
-            const {
-                did,
-                web5,
-                storedVc,
-                bearerDid,
-                recoveryPhrase
-            } = result as any
             console.log("Result:professional", result)
-            // const defaultCurrencyFromCredential = getCurrencyFromCountry(countries, details?.country?.value)
-
-            setUserDid?.(did)
-            setWeb5Instance?.(web5)
-            setUserBearerDid?.(bearerDid)
-            setRecoveryPhrase?.(recoveryPhrase)
-            setCredentials?.(storedVc)
-            setLocalCredentials({
-                did,
-                credentials: storedVc,
-                // defaultCurrency: defaultCurrencyFromCredential,
-            })
-            // setNextButtonDisabled(false)
-            successMessage()
-            onClose()
+            setUserDataToState(result)
         },
-        onError: () => {
+        onError: (error: any) => {
+            console.log("Error", error)
             // setNextButtonDisabled(true)
             // notify?.('error', {
             //     message: 'Credential Creation Failed!',
@@ -185,31 +183,11 @@ const CredentialIssuerCard = (props: any) => {
     const { isPending: educationalIsPending, mutateAsync: createEducationalCredentialMutation } = useMutation({
         mutationFn: createEducationalCredential,
         onSuccess: (result: any) => {
-            const {
-                did,
-                web5,
-                storedVc,
-                bearerDid,
-                recoveryPhrase
-            } = result as any
             console.log("Result:educational", result)
-            // const defaultCurrencyFromCredential = getCurrencyFromCountry(countries, details?.country?.value)
-
-            setUserDid?.(did)
-            setWeb5Instance?.(web5)
-            setUserBearerDid?.(bearerDid)
-            setRecoveryPhrase?.(recoveryPhrase)
-            setCredentials?.(storedVc)
-            setLocalCredentials({
-                did,
-                credentials: storedVc,
-                // defaultCurrency: defaultCurrencyFromCredential,
-            })
-            // setNextButtonDisabled(false)
-            successMessage()
-            onClose()
+            setUserDataToState(result)
         },
-        onError: () => {
+        onError: (error: any) => {
+            console.log("Error", error)
             // setNextButtonDisabled(true)
             // notify?.('error', {
             //     message: 'Credential Creation Failed!',
@@ -264,7 +242,7 @@ const CredentialIssuerCard = (props: any) => {
                 }
             }
         }
-        
+
         setShowModal(false);
         setIsCreatingCredential(false)
     };
@@ -294,8 +272,8 @@ const CredentialIssuerCard = (props: any) => {
                     </Button>
                 ]}
             >
-                <Flex className="m-4">
-                    <Spin spinning={isLoading}>
+                <Flex className="m-4 w-full">
+                    <Spin className="w-full" spinning={isLoading}>
                         {flow}
                     </Spin>
                 </Flex>

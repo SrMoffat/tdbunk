@@ -37,16 +37,6 @@ const isNextButtonDisabledForStepOne = (localStorageData: any, credentials: any[
     const contextCredentials = stateCredentials.flat()
     const hasStateCreds = contextCredentials.length > 0
 
-    console.log("Activate for Step One", {
-        hasLocalCreds,
-        hasStateCreds,
-
-        localCredentials,
-        contextCredentials,
-
-        isDisabled: !(hasStateCreds || hasLocalCreds)
-    })
-
     return !(hasStateCreds || hasLocalCreds)
 }
 
@@ -102,7 +92,6 @@ export default function StartCampaignPage() {
     const items = steps.map(({ title }) => ({ key: title, title }));
 
     useEffect(() => {
-        // TODO: Clean this up
         const isStepOne = current === 0
 
         const isDisabled = isStepOne
@@ -113,7 +102,6 @@ export default function StartCampaignPage() {
             : nextButtonDisabled
 
         setNextButtonDisabled(isDisabled)
-        console.log("isDisabled", isDisabled)
     }, [current])
 
     return (

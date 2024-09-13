@@ -183,6 +183,7 @@ const RequestCredential = (props: any) => {
 
         const combinedCreds = {
             ...stateCredentials,
+            ...localStorageCredentials,
             ...storedVc
         }
 
@@ -211,10 +212,6 @@ const RequestCredential = (props: any) => {
     const governmentCredential = createdCredentialType === CREDENTIAL_TYPES.GOVERNMENT_CREDENTIAL
     const professionalCredential = createdCredentialType === CREDENTIAL_TYPES.PROFESSIONAL_CREDENTIAL
     const educationalCredential = createdCredentialType === CREDENTIAL_TYPES.EDUCATIONAL_CREDENTIAL
-
-    console.log("Hapa Ndipo", {
-
-    })
 
     // TO DO: Clean this up 🤢
     const credentialCard = financialCredential
@@ -253,8 +250,56 @@ const RequestCredential = (props: any) => {
         isFinancialCred,
         financialCredType,
         credentialTypes,
+        hasCredentials,
+        localStorageCredentials,
         showCombinedCredentials
     })
+
+    const checkIfUserHasCredentialInLocal = (credentials: any) => {
+        let result = false
+
+        if (credentials) {
+            const storedCredentials = Object.keys(credentials)
+            const hasRequiredCredInLocalStorage = storedCredentials.find((entry: any) => {
+                const credentialType = entry?.split(":")[1]
+                return credentialType === CREDENTIAL_TYPES.KNOWN_CUSTOMER_CREDENTIAL
+            })
+
+
+            result = Boolean(hasRequiredCredInLocalStorage)
+
+            console.log("Result hasRequiredCredInLocalStorage", {
+                hasRequiredCredInLocalStorage,
+                storedCredentials,
+                credentials,
+                result
+            })
+
+        }
+
+
+        console.log("Result ====> hasRequiredCredInLocalStorage", {
+            credentials,
+            result
+        })
+
+        return result
+    }
+
+    const hasRequiredCredInLocalStorage = checkIfUserHasCredentialInLocal(localStorageCredentials)
+
+    console.log("Result ====> hasRequiredCredInLocalStorage", {
+        hasRequiredCredInLocalStorage,
+    })
+
+
+
+
+
+    // ['VerifiableCredential:KnownCustomerCredential', 'VerifiableCredential:TDBunkProfessionalCredential']
+
+    // showCombinedCredentials
+
     return (
         <Flex className="flex-col">
             <Modal
@@ -276,7 +321,7 @@ const RequestCredential = (props: any) => {
             {!hasCredentials && <Typography.Text className="font-bold mb-4">Verifiable Credential Issuers</Typography.Text>}
             {
                 hasCredentials
-                    ? showCombinedCredentials
+                    ? showCombinedCredentials || hasRequiredCredInLocalStorage
                         ? <Flex className="w-1/2 self-center items-center justify-center gap-4">
                             <Flex className="w-1/2 items-end">
                                 <FinancialInstitutionCredential

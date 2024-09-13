@@ -20,21 +20,23 @@ const EducationalInstitutionCredential = (props: any) => {
     const [issuerServiceUrl, setIssuerServiceUrl] = useState<string | undefined>()
     const [vcSubject, setVcSubject] = useState<CredentialParsedMetadata>()
 
-    const types = Object.keys(stateCredentials)[0]
-    const [_, type] = types.split(":")
-
-    const isEducationalCred = type === CREDENTIAL_TYPES.EDUCATIONAL_CREDENTIAL
 
     useEffect(() => {
         (async () => {
-            console.log("EducationCredentials", {
-                stateCredentials,
-                isEducationalCred,
-                type
-            })
+            const isState = Object.keys(stateCredentials)?.length
+
+            const credentialTypes = isState
+                ? Object.keys(stateCredentials)[0]
+                : Object.keys(localStorageCredentials)[0]
+
+            const credentialType = credentialTypes?.split(":")[1]
+
+            const isEducationalCred = credentialType === CREDENTIAL_TYPES.EDUCATIONAL_CREDENTIAL
 
             if (isEducationalCred) {
-                const vcJwt = stateCredentials[types][0];
+                const vcJwt = isState
+                    ? stateCredentials[credentialTypes][0]
+                    : localStorageCredentials[credentialTypes][0]
 
                 // Parse VC to get metadata
                 const parsedVc = parseJwtToVc(vcJwt);
@@ -70,7 +72,7 @@ const EducationalInstitutionCredential = (props: any) => {
     const endedDate = new Date(vcSubject?.endedDate as string).toLocaleString('default', {
         dateStyle: 'short'
     })
-    return isEducationalCred && (
+    return (
         <Flex className="h-[200px]">
             <Flex onClick={() => showDrawer()} className="absolute hover:opacity-70 rounded-md transition-all cursor-pointer">
                 <Image alt="Card4" src={Card4} width={300} height={300} />

@@ -20,21 +20,23 @@ const GovernmentInstitutionCredential = (props: any) => {
     const [issuerServiceUrl, setIssuerServiceUrl] = useState<string | undefined>()
     const [vcSubject, setVcSubject] = useState<CredentialParsedMetadata>()
 
-    const types = Object.keys(stateCredentials)[0]
-    const [_, type] = types.split(":")
 
-    const isGovernmentCred = type === CREDENTIAL_TYPES.GOVERNMENT_CREDENTIAL
     useEffect(() => {
         (async () => {
+            const isState = Object.keys(stateCredentials)?.length
+            
+            const credentialTypes = isState
+                ? Object.keys(stateCredentials)[0]
+                : Object.keys(localStorageCredentials)[0]
 
-            console.log("EducationCredentials", {
-                stateCredentials,
-                isGovernmentCred,
-                type
-            })
+            const credentialType = credentialTypes?.split(":")[1]
+
+            const isGovernmentCred = credentialType === CREDENTIAL_TYPES.GOVERNMENT_CREDENTIAL
 
             if (isGovernmentCred) {
-                const vcJwt = stateCredentials[types][0];
+                const vcJwt = isState
+                    ? stateCredentials[credentialTypes][0]
+                    : localStorageCredentials[credentialTypes][0]
 
                 // Parse VC to get metadata
                 const parsedVc = parseJwtToVc(vcJwt);

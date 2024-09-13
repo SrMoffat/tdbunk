@@ -20,21 +20,22 @@ const ProfessionalInstitutionCredential = (props: any) => {
     const [issuerServiceUrl, setIssuerServiceUrl] = useState<string | undefined>()
     const [vcSubject, setVcSubject] = useState<CredentialParsedMetadata>()
 
-    const types = Object.keys(stateCredentials)[0]
-    const [_, type] = types?.split(":")
-
-    const isProfessionalCred = type === CREDENTIAL_TYPES.PROFESSIONAL_CREDENTIAL
-
     useEffect(() => {
         (async () => {
-            console.log("ProfessionalCredentials", {
-                stateCredentials,
-                isProfessionalCred,
-                type
-            })
+            const isState = Object.keys(stateCredentials)?.length
+
+            const credentialTypes = isState
+                ? Object.keys(stateCredentials)[0]
+                : Object.keys(localStorageCredentials)[0]
+
+            const credentialType = credentialTypes?.split(":")[1]
+
+            const isProfessionalCred = credentialType === CREDENTIAL_TYPES.PROFESSIONAL_CREDENTIAL
 
             if (isProfessionalCred) {
-                const vcJwt = stateCredentials[types][0];
+                const vcJwt = isState
+                    ? stateCredentials[credentialTypes][0]
+                    : localStorageCredentials[credentialTypes][0]
 
                 // Parse VC to get metadata
                 const parsedVc = parseJwtToVc(vcJwt);
@@ -78,7 +79,7 @@ const ProfessionalInstitutionCredential = (props: any) => {
     })
 
     console.log("ProfessionalCredentials ==>", {
-       vcSubject
+        vcSubject
     })
     return (
         <Flex className="h-[200px]">

@@ -19,7 +19,15 @@ const localKeyManager = new LocalKeyManager();
 
 export const checkIfProtocolIsInstalled = async (web5: Web5Api | null) => {
     try {
-        const { protocols, status } = await web5!.dwn.protocols.query({
+        let web5Instance = web5
+
+        if (!web5Instance) {
+            const { web5: returnedWeb5 } = await Web5Api.connect()
+            web5Instance = returnedWeb5
+        }
+
+
+        const { protocols, status } = await web5Instance!.dwn.protocols.query({
             message: {
                 filter: {
                     protocol: TdbunkProtocol.protocol,
@@ -56,7 +64,14 @@ export const createDwnCampaign = async (web5: Web5Api | null) => {
     }
 
     try {
-        const { record } = await web5!.dwn.records.create({
+        let web5Instance = web5
+
+        if (!web5Instance) {
+            const { web5: returnedWeb5 } = await Web5Api.connect()
+            web5Instance = returnedWeb5
+        }
+
+        const { record } = await web5Instance!.dwn.records.create({
             data: campaignDetails,
             message: {
                 protocol: TdbunkProtocol.protocol,
@@ -91,7 +106,14 @@ export const createDwnCampaign = async (web5: Web5Api | null) => {
 
 export const fetchCampaigns = async (web5: Web5Api | null, did: string): Promise<any> => {
     try {
-        const { records: campaigns } = await web5!.dwn.records.query({
+        let web5Instance = web5
+
+        if (!web5Instance) {
+            const { web5: returnedWeb5 } = await Web5Api.connect()
+            web5Instance = returnedWeb5
+        }
+
+        const { records: campaigns } = await web5Instance!.dwn.records.query({
             message: {
                 filter: {
                     schema: TdbunkProtocol.types.campaign.schema,
@@ -117,14 +139,21 @@ export const fetchCampaigns = async (web5: Web5Api | null, did: string): Promise
 
 export const setupTdbunkProtocol = async (web5: Web5Api | null, did: string) => {
     try {
+        let web5Instance = web5
 
-        const isInstalled = await checkIfProtocolIsInstalled(web5)
+        if (!web5Instance) {
+            const { web5: returnedWeb5 } = await Web5Api.connect()
+            web5Instance = returnedWeb5
+        }
+
+
+        const isInstalled = await checkIfProtocolIsInstalled(web5Instance)
 
         if (!isInstalled) {
             console.log('!isInstalled', !isInstalled);
 
             // configure protocol on local DWN
-            const { status: configureStatus, protocol } = await web5!.dwn.protocols.configure({
+            const { status: configureStatus, protocol } = await web5Instance!.dwn.protocols.configure({
                 message: {
                     definition: TdbunkProtocol,
                 }
@@ -236,7 +265,14 @@ export const getUserBearerDid = async (web5?: Web5Api, did?: string) => {
 }
 
 export const storeVcJwtInDwn = async (web5: Web5Api, vcJwt: string, did: string) => {
-    const { record } = await web5.dwn.records.create({
+    let web5Instance = web5
+
+    if (!web5Instance) {
+        const { web5: returnedWeb5 } = await Web5Api.connect()
+        web5Instance = returnedWeb5
+    }
+
+    const { record } = await web5Instance!.dwn.records.create({
         data: vcJwt,
         message: {
             schema: CREDENTIAL_TYPES.KNOWN_CUSTOMER_CREDENTIAL,
@@ -248,7 +284,14 @@ export const storeVcJwtInDwn = async (web5: Web5Api, vcJwt: string, did: string)
 }
 
 export const fetchVcJwtFromDwn = async (web5: Web5Api, did: string) => {
-    const response = await web5.dwn.records.query({
+    let web5Instance = web5
+
+    if (!web5Instance) {
+        const { web5: returnedWeb5 } = await Web5Api.connect()
+        web5Instance = returnedWeb5
+    }
+
+    const response = await web5Instance!.dwn.records.query({
         from: did,
         message: {
             filter: {
@@ -276,7 +319,14 @@ export const createRequiredCredential = async (web5: Web5Api, did: string, detai
     // Parse VC to get metadata
     const parsedVc = parseJwtToVc(vc)
 
-    const status = await storeVcJwtInDwn(web5, vc, did)
+    let web5Instance = web5
+
+    if (!web5Instance) {
+        const { web5: returnedWeb5 } = await Web5Api.connect()
+        web5Instance = returnedWeb5
+    }
+
+    const status = await storeVcJwtInDwn(web5Instance, vc, did)
 
 
     const vcGranularTypes = parsedVc?.vcDataModel?.type
@@ -288,7 +338,7 @@ export const createRequiredCredential = async (web5: Web5Api, did: string, detai
 
     const result = {
         did,
-        web5,
+        web5: web5Instance,
         status,
         storedVc,
     }
@@ -508,8 +558,16 @@ export const createOfferingReviewCredential = async (web5: Web5Api, userBearerDi
         // Sign VC
         const vc = await credential.sign({ did: userBearerDid?.did as BearerDid });
 
+        let web5Instance = web5
+
+        if (!web5Instance) {
+            const { web5: returnedWeb5 } = await Web5Api.connect()
+            web5Instance = returnedWeb5
+        }
+
+
         // Store VC in DWN
-        const status = await storeVcJwtInDwn(web5, vc, userBearerDid?.did.uri)
+        const status = await storeVcJwtInDwn(web5Instance, vc, userBearerDid?.did.uri)
 
         console.log("Created Credential", {
             credential,

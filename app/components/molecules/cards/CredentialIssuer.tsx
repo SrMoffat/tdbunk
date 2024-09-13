@@ -109,6 +109,7 @@ const CredentialIssuerCard = (props: any) => {
             // })
         }
     })
+
     const { isPending: governmentIsPending, mutateAsync: createGovernmentCredentialMutation } = useMutation({
         mutationFn: createGovernmentCredential,
         onSuccess: (result: any) => {
@@ -263,6 +264,7 @@ const CredentialIssuerCard = (props: any) => {
                 }
             }
         }
+        
         setShowModal(false);
         setIsCreatingCredential(false)
     };

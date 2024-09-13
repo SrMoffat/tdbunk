@@ -4,13 +4,13 @@ import FinancialCredentialForm from "@/app/components/molecules/forms/FinancialC
 import GovernmentCredentialForm from "@/app/components/molecules/forms/GovernmentCredential";
 import ProfessionalCredentialForm from "@/app/components/molecules/forms/ProfessionalCredential";
 import useBrowserStorage from "@/app/hooks/useLocalStorage";
-import { CREDENTIAL_TYPES, CREDENTIALS_LOCAL_STORAGE_KEY, LOCAL_STORAGE_KEY } from "@/app/lib/constants";
+import { CREDENTIAL_TYPES, CREDENTIALS_LOCAL_STORAGE_KEY, CREDENTIALS_TYPE_LOCAL_STORAGE_KEY, LOCAL_STORAGE_KEY } from "@/app/lib/constants";
 import { getCurrencyFromCountry, toCapitalizedWords } from "@/app/lib/utils";
 import { createEducationalCredential, createFinancialCredential, createGovernmentCredential, createProfessionalCredential } from "@/app/lib/web5";
 import { useNotificationContext } from "@/app/providers/NotificationProvider";
 import countries from '@/public/countries.json';
 import { useMutation } from '@tanstack/react-query';
-import { Button, Card, Flex, Modal, Tag, Typography } from "antd";
+import { Button, Card, Flex, Modal, Spin, Tag, Typography } from "antd";
 import Image from "next/image";
 import { useState } from "react";
 
@@ -41,6 +41,7 @@ const CredentialIssuerCard = (props: any) => {
     )
 
     const [showModal, setShowModal] = useState(false)
+    const [isCreatingCredential, setIsCreatingCredential] = useState(false)
     const [formData, setFormData] = useState({
         [CREDENTIAL_TYPES.KNOWN_CUSTOMER_CREDENTIAL]: {},
         [CREDENTIAL_TYPES.GOVERNMENT_CREDENTIAL]: {},
@@ -216,9 +217,11 @@ const CredentialIssuerCard = (props: any) => {
         }
     })
 
-    const isLoading = financialIsPending || governmentIsPending || professionalIsPending || educationalIsPending
+    const isLoading = financialIsPending || governmentIsPending || professionalIsPending || educationalIsPending || isCreatingCredential
 
     const handleOk = async () => {
+        setIsCreatingCredential(true)
+
         const keys = Object.keys(formData)
 
         for (const key of keys) {
@@ -230,21 +233,38 @@ const CredentialIssuerCard = (props: any) => {
 
                 // TO DO: Clean this up 🤢
                 if (financialCredential) {
-                    setCreatedCredentialType(CREDENTIAL_TYPES.KNOWN_CUSTOMER_CREDENTIAL)
+                    const type = CREDENTIAL_TYPES.KNOWN_CUSTOMER_CREDENTIAL
+
+                    setCreatedCredentialType(type)
+                    localStorage.setItem(CREDENTIALS_TYPE_LOCAL_STORAGE_KEY, type)
+
                     await createFinancialCredentialMutation(details)
                 } else if (governmentCredential) {
-                    setCreatedCredentialType(CREDENTIAL_TYPES.GOVERNMENT_CREDENTIAL)
+                    const type = CREDENTIAL_TYPES.GOVERNMENT_CREDENTIAL
+
+                    setCreatedCredentialType(type)
+                    localStorage.setItem(CREDENTIALS_TYPE_LOCAL_STORAGE_KEY, type)
+
                     await createGovernmentCredentialMutation(details)
                 } else if (professionalCredential) {
-                    setCreatedCredentialType(CREDENTIAL_TYPES.PROFESSIONAL_CREDENTIAL)
+                    const type = CREDENTIAL_TYPES.PROFESSIONAL_CREDENTIAL
+
+                    setCreatedCredentialType(type)
+                    localStorage.setItem(CREDENTIALS_TYPE_LOCAL_STORAGE_KEY, type)
+
                     await createProfessionalCredentialMutation(details)
                 } else if (educationalCredential) {
-                    setCreatedCredentialType(CREDENTIAL_TYPES.EDUCATIONAL_CREDENTIAL)
+                    const type = CREDENTIAL_TYPES.EDUCATIONAL_CREDENTIAL
+
+                    setCreatedCredentialType(type)
+                    localStorage.setItem(CREDENTIALS_TYPE_LOCAL_STORAGE_KEY, type)
+
                     await createEducationalCredentialMutation(details)
                 }
             }
         }
         setShowModal(false);
+        setIsCreatingCredential(false)
     };
 
     const handleCancel = () => {
@@ -267,13 +287,15 @@ const CredentialIssuerCard = (props: any) => {
                     <Button danger key="back" onClick={handleCancel}>
                         Cancel
                     </Button>,
-                    <Button key="submit" type="primary" onClick={handleOk}>
+                    <Button loading={isLoading} key="submit" type="primary" onClick={handleOk}>
                         Request Credential
                     </Button>
                 ]}
             >
                 <Flex className="m-4">
-                    {flow}
+                    <Spin spinning={isLoading}>
+                        {flow}
+                    </Spin>
                 </Flex>
             </Modal>
             <Card className="w-1/2">

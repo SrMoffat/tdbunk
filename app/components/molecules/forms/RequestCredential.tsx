@@ -11,12 +11,32 @@ import FinancialInstitutionCredential from '@/app/components/molecules/cards/Fin
 import { CredentialStorage } from '@/app/components/molecules/forms/Credentials';
 import FinancialCredentialForm from "@/app/components/molecules/forms/FinancialCredential";
 import useBrowserStorage from '@/app/hooks/useLocalStorage';
-import { CREDENTIAL_TYPES, CREDENTIALS_LOCAL_STORAGE_KEY, LOCAL_STORAGE_KEY } from '@/app/lib/constants';
+import { CREDENTIAL_TYPES, CREDENTIALS_LOCAL_STORAGE_KEY, CREDENTIALS_TYPE_LOCAL_STORAGE_KEY, LOCAL_STORAGE_KEY } from '@/app/lib/constants';
 import { getCurrencyFromCountry } from '@/app/lib/utils';
 import { createRequiredCredential } from '@/app/lib/web5';
 import countries from '@/public/countries.json';
 import { Alert, Button, Collapse, CollapseProps, Flex, Modal, Typography } from 'antd';
 import { useState } from 'react';
+
+const getSelectedCredentialType = () => {
+    const storedValue = localStorage.getItem(CREDENTIALS_TYPE_LOCAL_STORAGE_KEY)
+
+    const financialCredential = storedValue === CREDENTIAL_TYPES.KNOWN_CUSTOMER_CREDENTIAL
+    const governmentCredential = storedValue === CREDENTIAL_TYPES.GOVERNMENT_CREDENTIAL
+    const professionalCredential = storedValue === CREDENTIAL_TYPES.PROFESSIONAL_CREDENTIAL
+    const educationalCredential = storedValue === CREDENTIAL_TYPES.EDUCATIONAL_CREDENTIAL
+
+    return financialCredential
+        ? CREDENTIAL_TYPES.KNOWN_CUSTOMER_CREDENTIAL
+        : governmentCredential
+            ? CREDENTIAL_TYPES.GOVERNMENT_CREDENTIAL
+            : professionalCredential
+                ? CREDENTIAL_TYPES.PROFESSIONAL_CREDENTIAL
+                : educationalCredential
+                    ? CREDENTIAL_TYPES.EDUCATIONAL_CREDENTIAL
+                    : CREDENTIAL_TYPES.KNOWN_CUSTOMER_CREDENTIAL
+
+}
 
 const RequestCredential = (props: any) => {
     const {
@@ -39,7 +59,7 @@ const RequestCredential = (props: any) => {
     } = props
 
     const [showModal, setShowModal] = useState(false)
-    const [createdCredentialType, setCreatedCredentialType] = useState<CREDENTIAL_TYPES>()
+    const [createdCredentialType, setCreatedCredentialType] = useState<CREDENTIAL_TYPES>(getSelectedCredentialType())
 
 
     const commonProps = {
@@ -191,6 +211,10 @@ const RequestCredential = (props: any) => {
     const governmentCredential = createdCredentialType === CREDENTIAL_TYPES.GOVERNMENT_CREDENTIAL
     const professionalCredential = createdCredentialType === CREDENTIAL_TYPES.PROFESSIONAL_CREDENTIAL
     const educationalCredential = createdCredentialType === CREDENTIAL_TYPES.EDUCATIONAL_CREDENTIAL
+
+    console.log("Hapa Ndipo", {
+
+    })
 
     // TO DO: Clean this up 🤢
     const credentialCard = financialCredential

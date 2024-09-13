@@ -48,6 +48,22 @@ export const STEP_ONE_TAB_OPTIONS = [
     }
 ]
 
+const getDefaultSelectedMode = () => {
+    const storedValue = localStorage.getItem(CREDENTIALS_STAREGY_LOCAL_STORAGE_KEY)
+
+    const isCreate = storedValue === CredentialMode.CREATE
+    const isRequest = storedValue === CredentialMode.REQUEST
+    const isImport = storedValue === CredentialMode.IMPORT
+
+    return isCreate
+        ? CredentialMode.CREATE
+        : isRequest
+            ? CredentialMode.REQUEST
+            : isImport
+                ? CredentialMode.IMPORT
+                : CredentialMode.CREATE
+}
+
 const StepOne: React.FC<CampaignStepProps> = ({
     nextButtonDisabled,
 
@@ -63,7 +79,7 @@ const StepOne: React.FC<CampaignStepProps> = ({
     const [noCredentials, setNoCredentials] = useState<boolean>(true);
     const [isCreatingCredential, setIsCreatingCredential] = useState<boolean>(false);
     const [hasRequiredCredentials, setHasRequiredCredentials] = useState<boolean>(false);
-    const [mode, setMode] = useState<CredentialMode>(CredentialMode.CREATE);
+    const [mode, setMode] = useState<CredentialMode>(getDefaultSelectedMode());
 
     const { credentials: existingStateCreds, web5, userDid } = useWeb5Context()
     const [localStorageData] = useBrowserStorage<UserStorage>(
@@ -193,22 +209,6 @@ const StepOne: React.FC<CampaignStepProps> = ({
         setRecoveryPhrase,
         setNextButtonDisabled,
         setIsCreatingCredential
-    }
-
-    const getDefaultSelectedMode = () => {
-        const storedValue = localStorage.getItem(CREDENTIALS_STAREGY_LOCAL_STORAGE_KEY)
-
-        const isCreate = storedValue === CredentialMode.CREATE
-        const isRequest = storedValue === CredentialMode.REQUEST
-        const isImport = storedValue === CredentialMode.IMPORT
-
-        return isCreate
-            ? CredentialMode.CREATE
-            : isRequest
-                ? CredentialMode.REQUEST
-                : isImport
-                    ? CredentialMode.IMPORT
-                    : CredentialMode.CREATE
     }
     return (
         <Layout style={{ backgroundColor: colorBgContainer }}>

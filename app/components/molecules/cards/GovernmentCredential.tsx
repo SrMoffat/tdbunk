@@ -135,32 +135,34 @@ const GovernmentInstitutionCredential = (props: any) => {
                 <Flex className="h-[200px]">
                     <GovernmentCredentialCard {...commonProps} />
                 </Flex>
-                <Flex className="mb-4">
-                    <QRCode
-                        errorLevel="H"
-                        size={160}
-                        iconSize={160 / 4}
-                        value="To Do: stringify the vc document and pass it here"
-                        icon="/logo-icon.svg"
-                    />
-                </Flex>
-                <Card className="flex-col mb-4">
-                    <Flex className="mb-3 justify-between">
-                        <Flex className="flex-col">
-                            <Typography.Text style={{ fontSize: 18 }}>Issuer Name:</Typography.Text>
-                            <Typography.Text style={{ fontSize: 14 }}>{TDBUNK_ISSUER_NAME}</Typography.Text>
+                <Flex className="mb-4 gap-2">
+                    <Flex className="w-[200px]">
+                        <QRCode
+                            errorLevel="H"
+                            size={160}
+                            iconSize={160 / 4}
+                            value="To Do: stringify the vc document and pass it here"
+                            icon="/logo-icon.svg"
+                        />
+                    </Flex>
+                    <Card className="flex-col mb-4">
+                        <Flex className="mb-3 justify-between">
+                            <Flex className="flex-col">
+                                <Typography.Text style={{ fontSize: 18 }}>Issuer Name:</Typography.Text>
+                                <Typography.Text style={{ fontSize: 14 }}>{TDBUNK_ISSUER_NAME}</Typography.Text>
+                            </Flex>
+                            <Image src={ValidCredential} width={50} height={50} alt="valid" />
                         </Flex>
-                        <Image src={ValidCredential} width={50} height={50} alt="valid" />
-                    </Flex>
-                    <Flex className="flex-col mb-3">
-                        <Typography.Text style={{ fontSize: 18 }}>Service Endpoint:</Typography.Text>
-                        {/* <Typography.Text style={{ fontSize: 14 }} copyable>{vcServiceUrl}</Typography.Text> */}
-                    </Flex>
-                    <Flex className="flex-col mb-3">
-                        <Typography.Text style={{ fontSize: 18 }}>Issuer DID:</Typography.Text>
-                        {/* <Typography.Text style={{ fontSize: 14 }} copyable>{vcMetadata?.issuerDidUri}</Typography.Text> */}
-                    </Flex>
-                </Card>
+                        <Flex className="flex-col mb-3">
+                            <Typography.Text style={{ fontSize: 18 }}>Service Endpoint:</Typography.Text>
+                            {/* <Typography.Text style={{ fontSize: 14 }} copyable>{vcServiceUrl}</Typography.Text> */}
+                        </Flex>
+                        <Flex className="flex-col mb-3">
+                            <Typography.Text style={{ fontSize: 18 }}>Issuer DID:</Typography.Text>
+                            {/* <Typography.Text style={{ fontSize: 14 }} copyable>{vcMetadata?.issuerDidUri}</Typography.Text> */}
+                        </Flex>
+                    </Card>
+                </Flex>
                 <Card className="flex-col mb-4">
                     <Flex className="mb-3 justify-between">
                         <Flex className="flex-col">

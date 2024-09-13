@@ -28,6 +28,9 @@ export enum CREDENTIAL_TYPES {
     OFFERING_REVIEW_CREDENTIAL = 'TDBunkOfferingReviewCredential',
 }
 
+export const TDBUNK_ISSUER_NAME = 'TDBunk Identity'
+export const ULTIMATE_IDENTITY_ISSUER_NAME = 'Ultimate Identity'
+
 export const VC_JWT_MIME_TYPE = 'application/vc+jwt'
 
 export const SPECIAL_PFI = {

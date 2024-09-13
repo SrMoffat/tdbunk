@@ -90,6 +90,8 @@ export const CredentialCard: React.FC<CredentialCardProps> = ({
             issuance,
             expiration
         }
+
+        console.log("Details", details)
     return (
         <Flex className="h-[200px]">
             <Flex onClick={handleCardClicked} className="absolute hover:opacity-70 rounded-md transition-all cursor-pointer">
@@ -99,7 +101,7 @@ export const CredentialCard: React.FC<CredentialCardProps> = ({
                     <Link target="_blank" href={vcServiceUrl} style={{ fontSize: 10, marginTop: 8 }}>Ultimate Identity</Link>
                 </Flex>
                 <Flex className="absolute left-4 top-20 flex-col">
-                    <Typography.Text style={{ fontSize: 12 }}>{`${details?.name}`}</Typography.Text>
+                    <Typography.Text style={{ fontSize: 12 }}>{`${details?.name?.replace('undefined', '')}`}</Typography.Text>
                     <Typography.Text style={{ fontSize: 12 }}>{`${details?.country}`}</Typography.Text>
                     <Typography.Text style={{ fontSize: 9, marginTop: 10 }}>{`Issued: ${details?.issuance}`}</Typography.Text>
                     <Typography.Text style={{ fontSize: 9 }}>{`Expires: ${details?.expiration}`}</Typography.Text>

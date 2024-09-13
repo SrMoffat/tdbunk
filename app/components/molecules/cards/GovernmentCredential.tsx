@@ -1,6 +1,6 @@
 import { Card5, Evidence, LogoIcon2, ValidCredential } from "@/app/components/atoms/Icon";
 import { CredentialParsedMetadata, DrawerHeader, extractVcDocumentDetails } from "@/app/components/molecules/cards/FinancialCredential";
-import { CREDENTIAL_TYPES } from "@/app/lib/constants";
+import { CREDENTIAL_TYPES, TDBUNK_ISSUER_NAME } from "@/app/lib/constants";
 import { parseJwtToVc } from "@/app/lib/web5";
 import { resolveDid } from "@tbdex/http-client";
 import { Flex, Typography, Drawer, Card } from "antd";
@@ -139,7 +139,7 @@ const GovernmentInstitutionCredential = (props: any) => {
                     <Flex className="mb-3 justify-between">
                         <Flex className="flex-col">
                             <Typography.Text style={{ fontSize: 18 }}>Issuer Name:</Typography.Text>
-                            <Typography.Text style={{ fontSize: 14 }}>Ultimate Identity</Typography.Text>
+                            <Typography.Text style={{ fontSize: 14 }}>{TDBUNK_ISSUER_NAME}</Typography.Text>
                         </Flex>
                         <Image src={ValidCredential} width={50} height={50} alt="valid" />
                     </Flex>

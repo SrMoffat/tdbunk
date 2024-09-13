@@ -11,7 +11,7 @@ import FinancialInstitutionCredential from '@/app/components/molecules/cards/Fin
 import { CredentialStorage } from '@/app/components/molecules/forms/Credentials';
 import FinancialCredentialForm from "@/app/components/molecules/forms/FinancialCredential";
 import useBrowserStorage from '@/app/hooks/useLocalStorage';
-import { CREDENTIAL_TYPES, CREDENTIALS_LOCAL_STORAGE_KEY, CREDENTIALS_TYPE_LOCAL_STORAGE_KEY, LOCAL_STORAGE_KEY } from '@/app/lib/constants';
+import { CREDENTIAL_TYPES, CREDENTIALS_LOCAL_STORAGE_KEY, CREDENTIALS_TYPE_LOCAL_STORAGE_KEY, LOCAL_STORAGE_KEY, TDBUNK_ISSUER_NAME, ULTIMATE_IDENTITY_ISSUER_NAME } from '@/app/lib/constants';
 import { getCurrencyFromCountry } from '@/app/lib/utils';
 import { createRequiredCredential } from '@/app/lib/web5';
 import countries from '@/public/countries.json';
@@ -80,25 +80,25 @@ const RequestCredential = (props: any) => {
     const credentialsTypes = [
         {
             type: CREDENTIAL_TYPES.KNOWN_CUSTOMER_CREDENTIAL,
-            issuerName: "Ultimate Identity",
+            issuerName: ULTIMATE_IDENTITY_ISSUER_NAME,
             logo: TBDVCLogoYellow,
             card: Card1
         },
         {
             type: CREDENTIAL_TYPES.GOVERNMENT_CREDENTIAL,
-            issuerName: "TDBunk Identity",
+            issuerName: TDBUNK_ISSUER_NAME,
             logo: LogoIcon2,
             card: Card5
         },
         {
             type: CREDENTIAL_TYPES.PROFESSIONAL_CREDENTIAL,
-            issuerName: "TDBunk Identity",
+            issuerName: TDBUNK_ISSUER_NAME,
             logo: LogoIcon2,
             card: Card3
         },
         {
             type: CREDENTIAL_TYPES.EDUCATIONAL_CREDENTIAL,
-            issuerName: "TDBunk Identity",
+            issuerName: TDBUNK_ISSUER_NAME,
             logo: LogoIcon2,
             card: Card4
         },

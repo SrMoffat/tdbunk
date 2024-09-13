@@ -1,7 +1,6 @@
-import { Rfq, TbdexHttpClient, Close, Quote, Order, OrderStatus } from '@tbdex/http-client';
+import { PFIs, TBDEX_MESSAGE_TYPES, TBDEX_MESSAGE_TYPES_TO_STATUS, TDBUNK_CANCEL_REASON } from "@/app/lib/constants";
+import { Close, Order, OrderStatus, Quote, Rfq, TbdexHttpClient } from '@tbdex/http-client';
 import { BearerDid } from '@web5/dids';
-import { BEARER_DID_LOCAL_STORAGE_KEY, PFIs, TBDEX_MESSAGE_TYPES, TBDEX_MESSAGE_TYPES_TO_STATUS, TDBUNK_CANCEL_REASON } from "@/app/lib/constants";
-import { parse, stringify, toJSON, fromJSON } from 'flatted';
 
 // Poll every 10 seconds
 const EXCHANGES_POLLING_INTERVAL_MS = 10000;

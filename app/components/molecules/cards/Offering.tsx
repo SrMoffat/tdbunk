@@ -3,105 +3,15 @@ import AssetExchangePFIDetails from "@/app/components/molecules/cards/OfferingPF
 import CredentialsForm from '@/app/components/molecules/forms/Credentials';
 import MakePayment from "@/app/components/molecules/forms/MakePayment";
 import { Credentials } from "@/app/components/organisms/Credentials";
-import { INTERVALS_LOCAL_STORAGE_KEY, MARKET_CONVERSION_RATE_LOCAL_STORAGE_KEY, PFIs, STARTED_TRANSFER_AT_LOCAL_STORAGE_KEY, TBDEX_MESSAGE_TYPES_TO_STATUS, TDBUNK_CANCEL_REASON } from "@/app/lib/constants";
+import { INTERVALS_LOCAL_STORAGE_KEY, PFIs, STARTED_TRANSFER_AT_LOCAL_STORAGE_KEY, TBDEX_MESSAGE_TYPES_TO_STATUS, TDBUNK_CANCEL_REASON } from "@/app/lib/constants";
 import { pollExchanges, sendCloseMessage, sendOrderMessage } from "@/app/lib/tbdex";
-import { displayTimeWithLabel, getCurrencyFlag, getEstimatedSettlementTime, getPlatformFees } from "@/app/lib/utils";
+import { getCurrencyFlag, getPlatformFees } from "@/app/lib/utils";
 import { createOfferingReviewCredential } from "@/app/lib/web5";
 import { useNotificationContext } from "@/app/providers/NotificationProvider";
 import { Offering } from "@tbdex/http-client";
-import { Button, Card, Flex, Input, List, Modal, Rate, Spin, Tag, Typography } from "antd";
-import { differenceInSeconds } from 'date-fns';
+import { List } from "antd";
 import { SetStateAction, useEffect, useState } from "react";
-
-const ReviewOffering = (props: any) => {
-    const { offering, setOfferingReview } = props
-
-    const { 1: toMethods } = offering.pair
-
-    console.log("Offering ", offering)
-
-    const { timeWithLabel: estimatedTime, timeInSeconds } = getEstimatedSettlementTime(toMethods.methods, true);
-
-    const [value, setValue] = useState(0);
-    const [comment, setComment] = useState('');
-    const desc = ['terrible', 'bad', 'normal', 'good', 'wonderful'];
-
-    const startTime = new Date() // localStorage?.getItem(STARTED_TRANSFER_AT_LOCAL_STORAGE_KEY)
-    const end = new Date()
-    const endTime = end.setHours(end.getHours() + 1) // localStorage?.getItem(SETTLED_TRANSFER_AT_LOCAL_STORAGE_KEY)
-
-    const txnTime = differenceInSeconds(endTime, startTime)
-    const txnTimeWithLabel = displayTimeWithLabel(txnTime)
-
-    const marketRate = localStorage.getItem(MARKET_CONVERSION_RATE_LOCAL_STORAGE_KEY)
-
-    useEffect(() => {
-        const reviewSubmission = {
-            offeringId: offering?.id,
-            estimatedSettlement: timeInSeconds,
-            actualSettlement: txnTime,
-            marketRate,
-            offeringRate: toMethods.unit,
-            stars: value,
-            comment
-        };
-        console.log("Review Subnission", reviewSubmission)
-        setOfferingReview(reviewSubmission)
-
-    }, [value, comment])
-
-    return (
-        <Flex gap="middle" vertical>
-            <Flex className="gap-4">
-                <Card>
-                    <Flex className="flex-col gap-1 flex">
-                        <Typography.Text className="font-extrabold">Settlement Time</Typography.Text>
-                        <Flex className="gap-1">
-                            <Typography.Text>Estimated:</Typography.Text>
-                            <Tag>{estimatedTime}</Tag>
-                        </Flex>
-                        <Flex className="gap-1">
-                            <Typography.Text>Actual:</Typography.Text>
-                            <Tag>{txnTimeWithLabel}</Tag>
-                        </Flex>
-                    </Flex>
-                </Card>
-                <Card>
-                    <Flex className="flex-col gap-1 flex">
-                        <Typography.Text className="font-extrabold">Exchange Rate</Typography.Text>
-                        <Flex className="gap-1">
-                            <Typography.Text>Market Rate:</Typography.Text>
-                            <Tag>{parseFloat(marketRate as string).toFixed(2)}</Tag>
-                        </Flex>
-                        <Flex className="gap-1">
-                            <Typography.Text>Offering Rate:</Typography.Text>
-                            <Tag>{parseFloat(toMethods.unit).toFixed(2)}</Tag>
-                        </Flex>
-                    </Flex>
-                </Card>
-            </Flex>
-            <Typography.Text>How would you rate the experience with the transfer?</Typography.Text>
-            <Flex>
-                <Tag className="items-center p-2">
-                    <Rate tooltips={desc} onChange={setValue} value={value} style={{ color: '#CC9933' }} />
-                </Tag>
-            </Flex>
-            {
-                value
-                    ? (
-                        <Input.TextArea
-                            value={comment}
-                            onChange={(e) => setComment(e?.target?.value)}
-                            placeholder="Comment on the experience with the transfer."
-                            autoSize={{ minRows: 3, maxRows: 5 }}
-                        />
-                    )
-                    : null
-            }
-
-        </Flex>
-    )
-}
+import PaymentFlowModal from "../modals/PaymentFlow";
 
 export interface AssetExchangePFIDetailsProps {
     cta: string;
@@ -200,13 +110,11 @@ const OfferingDetails = (props: any) => {
 
     const exchangeRate = rawOffering?.data?.payoutUnitsPerPayinUnit
 
-    const currencyCode = feeDetails?.currencyCode
     const totalFee = Number(feeDetails?.totalFee)?.toFixed(2)
     const overallFee = payinFee
         ? Number(payinFee + totalFee).toFixed(2)
         : Number(totalFee).toFixed(2)
 
-    const allFee = `${currencyCode} ${overallFee}`
 
     const clearAllPollingTimers = () => {
         const storedIntervals = localStorage.getItem(INTERVALS_LOCAL_STORAGE_KEY)
@@ -227,193 +135,13 @@ const OfferingDetails = (props: any) => {
         setShowModal(true)
     }
 
-    const handleOk = async () => {
-        setIsLoading(true)
-
-        if (isCancelled) return
-
-        if (isCompleted) {
-            // Create review VC
-            const status = await createOfferingReviewCredential(
-                web5,
-                userBearerDid,
-                {
-                    ...offeringReview,
-                    pfiDid
-                }
-            )
-
-            if (status?.status.code === 202) {
-                setIsLoading(false)
-                notify?.('success', {
-                    message: 'Review Submitted!',
-                    description: 'Your review of  the transaction has submitted!'
-                })
-            }
-
-            setShowModal(false)
-        } else if (isRequestQuote) {
-            const convertedCampaignAmount = Math.floor(campaignAmount / parseFloat(exchangeRate))
-
-            createExchange({
-                requiredPaymentDetails,
-                credentials,
-                userBearerDid,
-                amount: convertedCampaignAmount,
-                offering: rawOffering,
-                stateCredentials
-            })
-        } else {
-            // Start timer for the transfer
-            localStorage?.setItem(STARTED_TRANSFER_AT_LOCAL_STORAGE_KEY, JSON.stringify(new Date()))
-
-            const isUsingWlletBalance = !Object.keys(requiredPaymentDetails?.payin).length
-
-            if (isUsingWlletBalance) {
-                const currentBalance = money?.amount
-                const sameCurrency = money?.currency === offeringFromCurrency
-
-                const totalAmount = overallFee + campaignAmount
-
-                const hasSufficientBalance = currentBalance > totalAmount
-
-                if (!hasSufficientBalance && sameCurrency) {
-                    // Set error and disable button
-                    console.log("Set error and disable button", {
-                        hasSufficientBalance,
-                        sameCurrency
-                    })
-                }
-            }
-
-            // To Do: Check if the offering allows cancellations also aler user after they request quote
-            const orderMessage = await sendOrderMessage({
-                pfiDid,
-                userBearerDid,
-                exchangeId: relevantExchange?.mostRecentMessage?.metadata?.exchangeId,
-            })
-
-            //   To Do: Since we are assuming the user of wallet balance here
-            //     we should also check for insufficient balance and send
-            //         Close message
-
-            if (orderMessage) {
-                console.log("Close modal and toast success txn complete", orderMessage)
-                // setShowModal(false);
-                // setIsCompleted(true)
-            }
-
-            clearAllPollingTimers()
-        }
-    };
-
-    const handleCancel = async () => {
-        if (isCompleted) {
-            // Create a VC without user review?
-            console.log("Canelled out of a review of PFI", offeringReview)
-        } else if (isRequestQuote || isCancelled) {
-            setShowModal(false);
-        } else {
-            setIsCancelling(true)
-            // Start Timer for Cancelling
-
-            // To Do: Check if the offering allows cancellations also aler user after they request quote
-            const closeMessage = await sendCloseMessage({
-                pfiDid,
-                userBearerDid,
-                reason: TDBUNK_CANCEL_REASON,
-                exchangeId: relevantExchange?.mostRecentMessage?.metadata?.exchangeId,
-            })
-
-            if (closeMessage) {
-                console.log("Cancel Message returned", closeMessage)
-                // End Timer for Cancelling
-
-                // To Do: Reset form and all relevant state
-
-            }
-
-            clearAllPollingTimers()
-        }
-    };
-
     const cta = isSelected
         ? 'Start Transfer'
         : 'Request Credentials'
 
-    const modalTitle = hasRequiredCredentials
-        ? isSelected
-            ? isRequestQuote
-                ? 'Request for Quote'
-                : 'Make Transfer'
-            : 'Select Credential'
-        : 'Request Credentials'
-
-    const flow = hasRequiredCredentials
-        ? isSelected
-            ? <MakePayment
-                money={money}
-                pfiDid={pfiDid}
-                pfiName={pfiName}
-                monopolyMoney={money}
-                offering={rawOffering}
-                feeDetails={feeDetails}
-                userBearerDid={userBearerDid}
-                isRequestQuote={isRequestQuote}
-                campaignAmount={campaignAmount}
-                createExchange={createExchange}
-                currentMarketRate={currentMarketRate}
-                relevantExchange={relevantExchange}
-                isLoading={isLoading || isCancelling}
-                setActivateButton={setActivateButton}
-                setCampaignAmount={setCampaignAmount}
-                offeringCreatedAt={offeringCreatedAt}
-                requiredPaymentDetails={requiredPaymentDetails}
-                setPaymentDetails={setRequiredPaymentDetails}
-                offeringToCurrencyMethods={offeringToCurrencyMethods}
-            />
-            : <Credentials
-                offering={values}
-                isSelected={isSelected}
-                credentials={credentials}
-                selectedCard={selectedCard}
-                setIsSelected={setIsSelected}
-                setSelectedCard={setSelectedCard}
-            />
-        : <CredentialsForm
-            nextButtonDisabled={false}
-            noCredentialsFound={false}
-            localStorageCredentials={[]}
-            stateCredentials={undefined}
-            setNextButtonDisabled={function (value: SetStateAction<boolean>): void {
-                throw new Error("Function not implemented.");
-            }}
-            setUserDid={undefined}
-            setWeb5Instance={undefined}
-            setCredentials={undefined}
-            setRecoveryPhrase={undefined}
-            setUserBearerDid={undefined} setIsCreatingCredential={function (value: SetStateAction<boolean>): void {
-                throw new Error("Function not implemented.");
-            }} isCreatingCredential={false} />
 
     const issuerDid = offeringRequiredClaims?.['vc.issuer'] || offeringRequiredClaims?.['issuer']
     const issuerVcSchema = offeringRequiredClaims?.['vc.credentialSchema.id'] || offeringRequiredClaims?.['credentialSchem[*].id']
-
-    const isPaymentStep = hasRequiredCredentials && isSelected
-
-    const sourceCurrencyCode = rawOffering?.data?.payin.currencyCode
-
-    const cancelText = isRequestQuote
-        ? 'Cancel'
-        : `${isCancelled ? 'Close' : 'Cancel Transfer'}`
-
-    const finalPayoutValue = campaignAmount + parseFloat(allFee?.split(" ")[1])
-
-    const submitText = isRequestQuote
-        ? 'Request for Quote'
-        : isCompleted
-            ? 'Review Transfer'
-            : `Transfer ${sourceCurrencyCode} ${Number(finalPayoutValue).toFixed(2)}`
 
     useEffect(() => {
         const intervalId = pollExchanges(userBearerDid, setRelevantExchanges)
@@ -468,9 +196,6 @@ const OfferingDetails = (props: any) => {
 
     }, [relevantExchange])
 
-
-    const isButtonDisabled = !activateButton
-
     useEffect(() => {
         const isUsingWlletBalance = !Object.keys(requiredPaymentDetails?.payin).length
 
@@ -487,27 +212,25 @@ const OfferingDetails = (props: any) => {
 
     return (
         <List.Item className="flex flex-row gap-2">
-            <Modal
-                width={800}
-                open={showModal}
-                title={isCompleted ? 'Review Offering' : modalTitle}
-                footer={isPaymentStep || isCompleted ? [
-                    <Button danger key="back" onClick={handleCancel} loading={isCancelling}>
-                        {cancelText}
-                    </Button>,
-                    <Button loading={isLoading} key="submit" type="primary" onClick={handleOk} disabled={isCompleted ? false : isButtonDisabled || isCancelling}>
-                        {submitText}
-                    </Button>
-                ] : []}
-            >
-                <Spin spinning={isCancelling || isLoading}>
-                    {
-                        isCompleted
-                            ? <ReviewOffering offering={offering} setOfferingReview={setOfferingReview} />
-                            : flow
-                    }
-                </Spin>
-            </Modal>
+            <PaymentFlowModal
+                offering={offering}
+                isLoading={isLoading}
+                showModal={showModal}
+                overallFee={overallFee}
+                isSelected={isSelected}
+                feeDetails={feeDetails}
+                isCancelled={isCancelled}
+                rawOffering={rawOffering}
+                isCompleted={isCompleted}
+                isCancelling={isCancelling}
+                setShowModal={setShowModal}
+                activateButton={activateButton}
+                campaignAmount={campaignAmount}
+                isRequestQuote={isRequestQuote}
+                setOfferingReview={setOfferingReview}
+                hasRequiredCredentials={hasRequiredCredentials}
+
+            />
             <AssetExchangePFIDetails
                 cta={cta}
                 fromUnit="1.0"
@@ -542,3 +265,6 @@ const OfferingDetails = (props: any) => {
 
 
 export default OfferingDetails
+
+
+

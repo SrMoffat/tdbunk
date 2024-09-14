@@ -3,8 +3,8 @@ import { createEdgeRouter } from "next-connect";
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 
-// const EXCHANGE_RATE_API_KEY = process.env.EXCHANGE_RATE_API_KEY || '65d8d437e971f9ab656f086e'
-const EXCHANGE_RATE_API_KEY = process.env.EXCHANGE_RATE_API_KEY || '17caec0b37b62a0b986d745e' // Exhausted
+const EXCHANGE_RATE_API_KEY = process.env.EXCHANGE_RATE_API_KEY || '65d8d437e971f9ab656f086e'
+// const EXCHANGE_RATE_API_KEY = process.env.EXCHANGE_RATE_API_KEY || '17caec0b37b62a0b986d745e' // Exhausted
 // const EXCHANGE_RATE_API_KEY = process.env.EXCHANGE_RATE_API_KEY || '58faa419858f91e90f7ab302' // Exhausted
 const EXCHANGE_RATE_API_URL = 'https://v6.exchangerate-api.com/v6'
 
@@ -27,7 +27,7 @@ handlePost
         const conversion = await response.json();
 
 
-        console.log("Use PAID API Handler:url", {
+        console.log("Use PAID API Hafndler:url", {
             url,
             source,
             destination,

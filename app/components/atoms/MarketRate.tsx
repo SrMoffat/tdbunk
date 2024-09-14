@@ -36,57 +36,42 @@ const MarketRate = (props: any) => {
     const { source, destination, setCurrentMarketRate, marketConversionApiQuotaExceeded } = props
 
     const [isLoading, setIsLoading] = useState(false)
-    const [showBanner, setShowBanner] = useState(true)
+    const [showBanner, setShowBanner] = useState(false)
     const [convertedAmount, setConvertedAmount] = useState(1)
 
-    useMemo(() => {
+    useEffect(() => {
         setIsLoading(true)
 
         const fetchRates = async () => {
             try {
-                // const response = await fetch(`/api/rates?source=${source}&destination=${destination}`)
-                // const data = await response.json()
-
                 // @ts-ignore
-                const { success, rate: marketRate, amount: convertedAmount } = await fetchMarketExchangeRates({
+                const response = await fetchMarketExchangeRates({
                     source,
                     amount: 1,
                     destination
                 })
 
-                if (success) {
-                    console.log("Fetch Rates Market Rate Succeded", {
-                        marketRate,
-                        convertedAmount,
+                if (response?.success) {
+                    console.log("✅ Fetch Rates Market Rate Succeded", {
+                        marketRate: response?.rate,
+                        convertedAmount: response?.amount,
                     })
+                    const rate = response?.rate
+                    setConvertedAmount(rate)
+                    setCurrentMarketRate(rate)
+                    localStorage.setItem(MARKET_CONVERSION_RATE_LOCAL_STORAGE_KEY, rate)
+                    setIsLoading(false)
                 } else {
-                    console.log("Fetch Rates Market Rate Failed", {
-                        marketRate,
-                        convertedAmount,
+                    localStorage?.setItem(MARKET_CONVERSION_API_EXCEEDED_QOUTA_LOCAL_STORAGE_KEY, JSON.stringify({
+                        time: new Date(),
+                        message: response?.message
+                    }))
+                    setShowBanner(true)
+                    console.log("❌ Fetch Rates Market Rate Failed", {
+                        marketRate: response?.rate,
+                        convertedAmount: response?.amount,
                     })
                 }
-
-
-                // if (!data.rate) {
-                // const responsePaid = await fetch(`/api/conversions`, {
-                //     method: 'POST',
-                //     body: JSON.stringify({ source, destination })
-                // })
-                // const dataPaid = await responsePaid.json()
-
-                //     const rate = dataPaid?.conversion_rate
-
-                //     setConvertedAmount(rate)
-                //     setCurrentMarketRate(rate)
-                //     localStorage.setItem(MARKET_CONVERSION_RATE_LOCAL_STORAGE_KEY, rate)
-                // } else {
-                //     const rate = data?.rate
-
-                //     setConvertedAmount(rate)
-                //     setCurrentMarketRate(rate)
-                //     localStorage.setItem(MARKET_CONVERSION_RATE_LOCAL_STORAGE_KEY, rate)
-                // }
-                // setIsLoading(false)
             } catch (error: any) {
                 console.log("Fetching rates errored", error)
             }

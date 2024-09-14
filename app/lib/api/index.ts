@@ -102,8 +102,8 @@ export const fetchMarketExchangeRates = async (details: any) => {
             if (hasError) {
                 const isPaymentError = dataPaid?.['error-type']?.includes('quota-reached')
 
-                if (isPaymentError){
-                    console.log("💸 Use Paid API 💸 but you are broke 😿", {
+                if (isPaymentError) {
+                    console.log("❌ 💸 Use Paid API 💸 but you are broke 😿", {
                         isPaymentError,
                         source,
                         amount,
@@ -115,29 +115,28 @@ export const fetchMarketExchangeRates = async (details: any) => {
                         message: 'Paid API Exceeded Quota'
                     }
                 }
+
                 return {
                     success: !hasError,
                     message: dataPaid?.['error-type']
                 }
             } else {
-                console.log("💸 Use Paid API 💸", {
+                console.log("✅ 💸 Use Paid API 💸", {
                     source,
                     amount,
                     dataPaid,
                     destination
                 })
+                const rate = dataPaid?.conversion_rate
+                return {
+                    success: true,
+                    rate,
+                    amount: amount * rate
+                }
             }
-
-
-            // const rate = 1
-            // return {
-            //     success: true,
-            //     rate: 1,
-            //     amount: amount * rate
-            // }
         } else {
             const rate = data?.rate
-            console.log("🙏 Use Free API 🙏", {
+            console.log("✅ 🙏 Use Free API 🙏", {
                 rate,
                 amount: amount * rate
             })

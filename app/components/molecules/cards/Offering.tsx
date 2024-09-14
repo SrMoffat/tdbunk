@@ -128,19 +128,19 @@ const OfferingDetails = (props: any) => {
     const issuerVcSchema = offeringRequiredClaims?.['vc.credentialSchema.id'] || offeringRequiredClaims?.['credentialSchem[*].id']
 
     useEffect(() => {
-        const intervalId = pollExchanges(userBearerDid, {
-            latest: setRelevantExchange,
-            all: setAllExchanges
-        })
-        const storedIntervals = localStorage.getItem(INTERVALS_LOCAL_STORAGE_KEY)
+        // const intervalId = pollExchanges(userBearerDid, {
+        //     latest: setRelevantExchange,
+        //     all: setAllExchanges
+        // })
+        // const storedIntervals = localStorage.getItem(INTERVALS_LOCAL_STORAGE_KEY)
 
-        if (storedIntervals) {
-            const existingIntervals = JSON.parse(storedIntervals)
-            const newIntervals = [...existingIntervals, intervalId]
-            localStorage.setItem(INTERVALS_LOCAL_STORAGE_KEY, JSON.stringify(newIntervals))
-        } else {
-            localStorage.setItem(INTERVALS_LOCAL_STORAGE_KEY, JSON.stringify([intervalId]))
-        }
+        // if (storedIntervals) {
+        //     const existingIntervals = JSON.parse(storedIntervals)
+        //     const newIntervals = [...existingIntervals, intervalId]
+        //     localStorage.setItem(INTERVALS_LOCAL_STORAGE_KEY, JSON.stringify(newIntervals))
+        // } else {
+        //     localStorage.setItem(INTERVALS_LOCAL_STORAGE_KEY, JSON.stringify([intervalId]))
+        // }
     }, [])
 
     useEffect(() => {

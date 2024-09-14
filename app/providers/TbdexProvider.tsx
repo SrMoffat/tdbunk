@@ -139,36 +139,36 @@ const TbdexContextProvider = ({ children }: PropsWithChildren) => {
                 //     : selectedCurrency as string
 
                 // @ts-ignore
-                const { success, message, rate: marketRate, amount: convertedAmount } = await fetchMarketExchangeRates({
+                const response = await fetchMarketExchangeRates({
                     source,
                     amount,
                     destination
                 })
 
-                if (success) {
+                if (response?.success) {
                     const moneyDetails = {
-                        amount: convertedAmount,
+                        amount: response?.amount as number,
                         currency: destination
                     }
 
                     setMonopolyMoney(moneyDetails)
                     localStorage.setItem(TDBUNK_WALLET_BALANCE_LOCAL_STORAGE_KEY, JSON.stringify(moneyDetails))
-                    console.log("Fetch Rates TbdexProvider Succeded", {
-                        marketRate,
-                        convertedAmount,
+                    console.log("✅ Fetch Rates TbdexProvider Succeded", {
+                        marketRate: response?.rate,
+                        convertedAmount: response?.amount,
                     })
                     return
                 } else {
-                    const isBrokeMessage = message?.includes('Exceeded Quota')
+                    const isBrokeMessage = response?.message?.includes('Exceeded Quota')
                     setMarketConversionApiQuotaExceeded(isBrokeMessage)
                     localStorage?.setItem(MARKET_CONVERSION_API_EXCEEDED_QOUTA_LOCAL_STORAGE_KEY, JSON.stringify({
                         time: new Date(),
-                        message
+                        message: response?.message
                     }))
-                    console.log("Fetch Rates TbdexProvider Failed", {
-                        message,
-                        marketRate,
-                        convertedAmount,
+                    console.log("❌ Fetch Rates TbdexProvider Failed", {
+                        message: response?.message,
+                        marketRate: response?.rate,
+                        convertedAmount: response?.amount,
                     })
                 }
             } catch (error: any) {

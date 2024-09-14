@@ -77,3 +77,78 @@ export const getFixedRateConversion = async ({
         console.error("getFixedRateConversion: Conversion failed", error)
     }
 }
+
+export const fetchMarketExchangeRates = async (details: any) => {
+    const {
+        source,
+        amount,
+        destination,
+    } = details
+
+    try {
+        const response = await fetch(`/api/rates?source=${source}&destination=${destination}`)
+        const data = await response.json()
+
+        if (!data?.rate) {
+            const responsePaid = await fetch(`/api/conversions`, {
+                method: 'POST',
+                body: JSON.stringify({ source, destination })
+            })
+
+            const dataPaid = await responsePaid.json()
+
+            const hasError = dataPaid?.result?.includes('error')
+
+            if (hasError) {
+                const isPaymentError = dataPaid?.['error-type']?.includes('quota-reached')
+
+                if (isPaymentError){
+                    console.log("💸 Use Paid API 💸 but you are broke 😿", {
+                        isPaymentError,
+                        source,
+                        amount,
+                        dataPaid,
+                        destination
+                    })
+                    return {
+                        success: !hasError,
+                        message: 'Paid API Exceeded Quota'
+                    }
+                }
+                return {
+                    success: !hasError,
+                    message: dataPaid?.['error-type']
+                }
+            } else {
+                console.log("💸 Use Paid API 💸", {
+                    source,
+                    amount,
+                    dataPaid,
+                    destination
+                })
+            }
+
+
+            // const rate = 1
+            // return {
+            //     success: true,
+            //     rate: 1,
+            //     amount: amount * rate
+            // }
+        } else {
+            const rate = data?.rate
+            console.log("🙏 Use Free API 🙏", {
+                rate,
+                amount: amount * rate
+            })
+            return {
+                success: true,
+                rate,
+                amount: amount * rate
+            }
+        }
+    } catch (error: any) {
+        console.log("Error fetching exchange conversion rates", error)
+    }
+}
+

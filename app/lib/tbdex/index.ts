@@ -1,4 +1,4 @@
-import { PFIs, TBDEX_MESSAGE_TYPES, TBDEX_MESSAGE_TYPES_TO_STATUS, TDBUNK_CANCEL_REASON } from "@/app/lib/constants";
+import { IN_PROGRESS, PFIs, TBDEX_MESSAGE_TYPES, TBDEX_MESSAGE_TYPES_TO_STATUS, TDBUNK_CANCEL_REASON, TDBUNK_SUCCESS_REASON, TRANSFERING_FUNDS } from "@/app/lib/constants";
 import { Close, Order, OrderStatus, Quote, Rfq, TbdexHttpClient } from '@tbdex/http-client';
 import { BearerDid } from '@web5/dids';
 
@@ -190,6 +190,9 @@ export const generateExchangeStatusValues = (exchangeMessage: any) => {
     const ORDER_STATUS_STATUS_NAME = TBDEX_MESSAGE_TYPES_TO_STATUS.ORDER_STATUS
     const CLOSE_STATUS_NAME = TBDEX_MESSAGE_TYPES_TO_STATUS.CLOSE
     const CLOSE_SUCCESS_STATUS_NAME = TBDEX_MESSAGE_TYPES_TO_STATUS.CLOSE_SUCCESS
+    const ORDER_STATUS_STATUS_IN_PROGRESS = TBDEX_MESSAGE_TYPES_TO_STATUS.IN_PROGRESS
+    const ORDER_STATUS_STATUS_TRANSFERING_FUNDS = TBDEX_MESSAGE_TYPES_TO_STATUS.TRANSFERING_FUNDS
+    const ORDER_STATUS_STATUS_SUCCESS = TBDEX_MESSAGE_TYPES_TO_STATUS.SUCCESS
 
     switch (true) {
         case rfq: {
@@ -210,8 +213,19 @@ export const generateExchangeStatusValues = (exchangeMessage: any) => {
             break
         }
         case orderStatus: {
-            status = ORDER_STATUS_STATUS_NAME
-            // const orderStatusData = exchangeMessage?.data
+            const orderStatusData = exchangeMessage?.data?.orderStatus
+
+            const isProcessing = orderStatusData === IN_PROGRESS
+            const isTransfering = orderStatusData === TRANSFERING_FUNDS
+            const isSuccessful = orderStatusData === TDBUNK_SUCCESS_REASON
+
+            status = isProcessing
+                ? ORDER_STATUS_STATUS_IN_PROGRESS
+                : isTransfering
+                    ? ORDER_STATUS_STATUS_TRANSFERING_FUNDS
+                    : isSuccessful
+                        ? ORDER_STATUS_STATUS_SUCCESS
+                        : ORDER_STATUS_STATUS_NAME
             break
         }
         case close: {
@@ -220,7 +234,7 @@ export const generateExchangeStatusValues = (exchangeMessage: any) => {
             const closeSuccess = closeData?.success
 
             const isCancellation = closeReason.includes(TDBUNK_CANCEL_REASON)
-            const isCompletion = closeReason.includes('SUCCESS')
+            const isCompletion = closeReason.includes(TDBUNK_SUCCESS_REASON)
 
             if (isCancellation) {
                 status = CLOSE_STATUS_NAME
@@ -233,11 +247,6 @@ export const generateExchangeStatusValues = (exchangeMessage: any) => {
             break
         }
     }
-
-    console.log("Check Message Status", {
-        status,
-        exchangeMessage
-    })
 
     return status
 }
@@ -333,12 +342,15 @@ export const pollExchanges = (bearer: any, callback: any) => {
             for (const exchange of exchangesResults) {
                 const mostRecentMessage = exchange[exchange.length - 1]
                 const status = generateExchangeStatusValues(mostRecentMessage)
-                callback({
+                callback?.latest?.({
                     status,
                     mostRecentMessage,
                 })
             }
 
+            callback?.all?.({
+                allMessages: exchangesResults
+            })
         } catch (error) {
             console.error("Failed to fetch exchanges:", error);
         }

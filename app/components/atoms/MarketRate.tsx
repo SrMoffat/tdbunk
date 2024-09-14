@@ -1,6 +1,7 @@
-import { MARKET_CONVERSION_RATE_LOCAL_STORAGE_KEY } from '@/app/lib/constants';
-import { Flex, Steps, Typography } from 'antd';
-import { useEffect, useState } from "react";
+import { fetchMarketExchangeRates } from '@/app/lib/api';
+import { MARKET_CONVERSION_API_EXCEEDED_QOUTA_LOCAL_STORAGE_KEY, MARKET_CONVERSION_RATE_LOCAL_STORAGE_KEY } from '@/app/lib/constants';
+import { Flex, Steps, Typography, Alert } from 'antd';
+import { useEffect, useState, useMemo } from "react";
 
 export const SourceCurrency = (props: any) => {
     const { currency } = props
@@ -32,39 +33,60 @@ export const DestinationCurrency = (props: any) => {
 
 
 const MarketRate = (props: any) => {
-    const { source, destination, setCurrentMarketRate } = props
+    const { source, destination, setCurrentMarketRate, marketConversionApiQuotaExceeded } = props
 
     const [isLoading, setIsLoading] = useState(false)
+    const [showBanner, setShowBanner] = useState(true)
     const [convertedAmount, setConvertedAmount] = useState(1)
 
-    useEffect(() => {
+    useMemo(() => {
         setIsLoading(true)
 
         const fetchRates = async () => {
             try {
-                const response = await fetch(`/api/rates?source=${source}&destination=${destination}`)
-                const data = await response.json()
+                // const response = await fetch(`/api/rates?source=${source}&destination=${destination}`)
+                // const data = await response.json()
 
-                if (!data.rate) {
-                    const responsePaid = await fetch(`/api/conversions`, {
-                        method: 'POST',
-                        body: JSON.stringify({ source, destination })
+                // @ts-ignore
+                const { success, rate: marketRate, amount: convertedAmount } = await fetchMarketExchangeRates({
+                    source,
+                    amount: 1,
+                    destination
+                })
+
+                if (success) {
+                    console.log("Fetch Rates Market Rate Succeded", {
+                        marketRate,
+                        convertedAmount,
                     })
-                    const dataPaid = await responsePaid.json()
-
-                    const rate = dataPaid?.conversion_rate
-
-                    setConvertedAmount(rate)
-                    setCurrentMarketRate(rate)
-                    localStorage.setItem(MARKET_CONVERSION_RATE_LOCAL_STORAGE_KEY, rate)
                 } else {
-                    const rate = data?.rate
-
-                    setConvertedAmount(rate)
-                    setCurrentMarketRate(rate)
-                    localStorage.setItem(MARKET_CONVERSION_RATE_LOCAL_STORAGE_KEY, rate)
+                    console.log("Fetch Rates Market Rate Failed", {
+                        marketRate,
+                        convertedAmount,
+                    })
                 }
-                setIsLoading(false)
+
+
+                // if (!data.rate) {
+                // const responsePaid = await fetch(`/api/conversions`, {
+                //     method: 'POST',
+                //     body: JSON.stringify({ source, destination })
+                // })
+                // const dataPaid = await responsePaid.json()
+
+                //     const rate = dataPaid?.conversion_rate
+
+                //     setConvertedAmount(rate)
+                //     setCurrentMarketRate(rate)
+                //     localStorage.setItem(MARKET_CONVERSION_RATE_LOCAL_STORAGE_KEY, rate)
+                // } else {
+                //     const rate = data?.rate
+
+                //     setConvertedAmount(rate)
+                //     setCurrentMarketRate(rate)
+                //     localStorage.setItem(MARKET_CONVERSION_RATE_LOCAL_STORAGE_KEY, rate)
+                // }
+                // setIsLoading(false)
             } catch (error: any) {
                 console.log("Fetching rates errored", error)
             }
@@ -73,8 +95,29 @@ const MarketRate = (props: any) => {
         fetchRates()
     }, [source, destination])
 
+    const exhuasted = localStorage?.getItem(MARKET_CONVERSION_API_EXCEEDED_QOUTA_LOCAL_STORAGE_KEY)
+
+    console.log("Local Exchuated", exhuasted)
+
+
+    useEffect(() => {
+        const showBanner = marketConversionApiQuotaExceeded || exhuasted
+        setShowBanner(showBanner)
+    }, [exhuasted, marketConversionApiQuotaExceeded])
+
+
     return (
-        <Flex className="flex-col items-center w-1/3">
+        <Flex className="flex-col items-center w-full">
+            {showBanner && (
+                <Flex className="w-full bordder">
+                    <Alert
+                        showIcon
+                        message="Exhausted Paid Conversion Service."
+                        type="warning"
+                        className="mb-6 text-xs w-full"
+                    />
+                </Flex>
+            )}
             <Typography.Text style={{ fontSize: 12 }}>Market Rate</Typography.Text>
             <Steps
                 type="inline"

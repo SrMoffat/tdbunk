@@ -1,5 +1,5 @@
 import { Community, Sponsor } from "@/app/components/atoms/Icon";
-import { DEBUNK_CAMPAIGN_TYPE } from "@/app/lib/constants";
+import { DEBUNK_CAMPAIGN_TYPE, DEFAULT_BASE_CURRENCY } from "@/app/lib/constants";
 import { getCurrencyFlag } from "@/app/lib/utils";
 import { useCreateCampaignContext } from "@/app/providers/CreateCampaignProvider";
 import { useTbdexContext } from "@/app/providers/TbdexProvider";
@@ -130,7 +130,7 @@ const CampaignDetails: React.FC<any> = ({
                             rules={[{ required: true, message: 'Please input the sponsorship amount!' }]}
                         >
                             <InputNumber min={1} size='large' addonBefore={(
-                                <Select style={{ width: 130 }} defaultValue={'USD'} onChange={(value) => {
+                                <Select style={{ width: 130 }} defaultValue={DEFAULT_BASE_CURRENCY} onChange={(value) => {
                                     setSelectedDestinationCurrency?.(value)
                                 }}>
                                     {destinationCurrencies?.map(entry => {

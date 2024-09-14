@@ -141,6 +141,7 @@ const StepFour = () => {
         setCurrentMarketRate,
         unformattedOfferings,
         selectedDestinationCurrency,
+        marketConversionApiQuotaExceeded,
     } = useTbdexContext()
     const { web5, userBearerDid } = useWeb5Context()
 
@@ -310,8 +311,9 @@ const StepFour = () => {
                         <MarketRate
                             source={selectedCurrency}
                             currentMarketRate={currentMarketRate}
-                            setCurrentMarketRate={setCurrentMarketRate}
                             destination={selectedDestinationCurrency}
+                            setCurrentMarketRate={setCurrentMarketRate}
+                            marketConversionApiQuotaExceeded={marketConversionApiQuotaExceeded}
                         />
                     </Flex>
                     <List

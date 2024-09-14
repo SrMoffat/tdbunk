@@ -1,3 +1,6 @@
+export const DEFAULT_BASE_CURRENCY = 'USD'
+export const DEFAULT_BASE_CURRENCY_STABLE_COIN = 'USDC'
+
 export enum LANDING_PAGE_TABS {
     DEBUNKS = 'Debunks',
     CAMPAIGNS = 'Campaigns',
@@ -44,40 +47,40 @@ export const PFIs = [
         name: "AquaFinance Capital",
         did: "did:dht:3fkz5ssfxbriwks3iy5nwys3q5kyx64ettp9wfn1yfekfkiguj1y",
         currencyPairs: [
-            ["GHS", "USDC"],
-            ["NGN", "KES"],
-            ["KES", "USD"],
-            ["USD", "KES"],
+            ["GHS", "USDC"], // No
+            ["NGN", "KES"], // No
+            ["KES", "USD"], // No
+            ["USD", "KES"], // No
         ]
     },
     {
         name: "Flowback Financial",
         did: "did:dht:zkp5gbsqgzn69b3y5dtt5nnpjtdq6sxyukpzo68npsf79bmtb9zy",
         currencyPairs: [
-            ["USD", "EUR"],
-            ["EUR", "USD"],
-            ["USD", "GBP"],
-            ["USD", "BTC"],
+            ["USD", "EUR"], // Yes
+            ["EUR", "USD"], // yes
+            ["USD", "GBP"], // Yes
+            ["USD", "BTC"], // Yes
         ]
     },
     {
         name: "Vertex Liquid Assets",
         did: "did:dht:enwguxo8uzqexq14xupe4o9ymxw3nzeb9uug5ijkj9rhfbf1oy5y",
         currencyPairs: [
-            ["EUR", "USD"],
-            ["EUR", "USDC"],
-            ["USD", "EUR"],
-            ["EUR", "GBP"],
+            ["EUR", "USD"], // Yes
+            ["EUR", "USDC"], // Yes
+            ["USD", "EUR"], // Yes
+            ["EUR", "GBP"], // Yes
         ]
     },
     {
         name: "Titanium Trust",
         did: "did:dht:ozn5c51ruo7z63u1h748ug7rw5p1mq3853ytrd5gatu9a8mm8f1o",
         currencyPairs: [
-            ["USD", "AUD"],
-            ["USD", "GBP"],
-            ["USD", "KES"],
-            ["USD", "MXN"],
+            ["USD", "AUD"], // Yes
+            ["USD", "GBP"], // Yes
+            ["USD", "KES"], // No
+            ["USD", "MXN"], // Yes
         ]
     }
 ]
@@ -86,9 +89,13 @@ export enum TBDEX_MESSAGE_TYPES_TO_STATUS {
     RFQ = 'Quote Requested',
     QUOTE = 'Quote Received',
     ORDER = 'Transfer Started',
-    ORDER_STATUS = 'Transfer Processing',
+    ORDER_STATUS = 'Transaction Processing',
     CLOSE = 'Transfer Cancelled',
+
     CLOSE_SUCCESS = 'Transfer Complete',
+    IN_PROGRESS = 'Transfer Processing',
+    TRANSFERING_FUNDS = 'Transfering Funds',
+    SUCCESS = 'Transfering Complete',
 }
 
 export enum TBDEX_MESSAGE_TYPES {
@@ -99,7 +106,9 @@ export enum TBDEX_MESSAGE_TYPES {
     CLOSE = 'close',
 }
 
+export const IN_PROGRESS = 'IN_PROGRESS'
 export const TDBUNK_SUCCESS_REASON = 'SUCCESS'
+export const TRANSFERING_FUNDS = 'TRANSFERING_FUNDS'
 export const TDBUNK_CANCEL_REASON = 'User cancelled transaction.'
 export const TDBUNK_SUCCESS_TEXT = 'Transaction completed successfully.'
 
@@ -114,10 +123,12 @@ export const CREDENTIALS_LOCAL_STORAGE_KEY = 'TDBunk:Credentials'
 export const OFFERINGS_LAST_UPDATED = 'TDBunk:OfferingsLastUpdatedAt'
 export const CREDENTIALS_TYPE_LOCAL_STORAGE_KEY = 'TDBunk:CredentialsType'
 export const SPECIAL_OFFERINGS_LOCAL_STORAGE_KEY = 'TDBunk:SpecialOfferings'
+export const TDBUNK_WALLET_BALANCE_LOCAL_STORAGE_KEY = 'TDBunk:WalletBalance'
 export const STARTED_TRANSFER_AT_LOCAL_STORAGE_KEY = 'TDBunk:StartedTransferAt'
 export const SETTLED_TRANSFER_AT_LOCAL_STORAGE_KEY = 'TDBunk:SettledTransferAt'
 export const CREDENTIALS_STAREGY_LOCAL_STORAGE_KEY = 'TDBunk:CredentialsStrategy'
 export const MARKET_CONVERSION_RATE_LOCAL_STORAGE_KEY = 'TDBunk:MarketConversionRate'
+export const MARKET_CONVERSION_API_EXCEEDED_QOUTA_LOCAL_STORAGE_KEY = 'TDBunk:MarketConversionAPIDeleted'
 
 export const FEATURE_FLAG_USE_PAID_EXCHAGE_RATE_API = false
 
@@ -125,7 +136,7 @@ export const TDBUNK_PLATFORM_FEE_STRATEGY = {
     displayText: '2.9% + $0.50',
     percentage: 0.029, // 2.9%
     fixed: {
-        currency: 'USD',
+        currency: DEFAULT_BASE_CURRENCY,
         value: 0.50 // $0.50
     }
 }

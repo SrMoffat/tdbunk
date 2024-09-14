@@ -60,6 +60,7 @@ const PaymentFlowModal = (props: any) => {
         currentMarketRate,
         setOfferingReview,
         offeringCreatedAt,
+        offeringFromCurrency,
         hasRequiredCredentials,
         requiredPaymentDetails,
         setRequiredPaymentDetails,
@@ -146,47 +147,56 @@ const PaymentFlowModal = (props: any) => {
 
         } else {
             console.log("IS Make Transfer")
+            // Extract t
 
             // Start timer for the transfer
-            // localStorage?.setItem(STARTED_TRANSFER_AT_LOCAL_STORAGE_KEY, JSON.stringify(new Date()))
+            localStorage?.setItem(STARTED_TRANSFER_AT_LOCAL_STORAGE_KEY, JSON.stringify(new Date()))
 
-            // const isUsingWlletBalance = !Object.keys(requiredPaymentDetails?.payin).length
+            const isUsingWlletBalance = !Object.keys(requiredPaymentDetails?.payin).length
 
-            // if (isUsingWlletBalance) {
-            //     const currentBalance = money?.amount
-            //     const sameCurrency = money?.currency === offeringFromCurrency
+            if (isUsingWlletBalance) {
+                const currentBalance = money?.amount
+                const sameCurrency = money?.currency === offeringFromCurrency?.currencyCode
 
-            //     const totalAmount = overallFee + campaignAmount
+                const totalAmount = overallFee + campaignAmount
 
-            //     const hasSufficientBalance = currentBalance > totalAmount
+                const hasSufficientBalance = currentBalance > totalAmount
 
-            //     if (!hasSufficientBalance && sameCurrency) {
-            //         // Set error and disable button
-            //         console.log("Set error and disable button", {
-            //             hasSufficientBalance,
-            //             sameCurrency
-            //         })
-            //     }
-            // }
+                if (!hasSufficientBalance && sameCurrency) {
+                    // Set error and disable button, insufficient balance
+                    console.log("Set error and disable button", {
+                        hasSufficientBalance,
+                        sameCurrency
+                    })
+                } else {
+                    // Make deduction of amount from wallet
+                    // Update state value with new amount
+                    // Update wallet balance in local storage
+                    console.log("make wallet deduction and store new value")
+                }
+            }
 
-            // // To Do: Check if the offering allows cancellations also aler user after they request quote
-            // const orderMessage = await sendOrderMessage({
-            //     pfiDid,
-            //     userBearerDid,
-            //     exchangeId: relevantExchange?.mostRecentMessage?.metadata?.exchangeId,
-            // })
+            // To Do: Check if the offering allows cancellations also aler user after they request quote
+            const orderMessage = await sendOrderMessage({
+                pfiDid,
+                userBearerDid,
+                exchangeId: relevantExchange?.mostRecentMessage?.metadata?.exchangeId,
+            })
 
-            // //   To Do: Since we are assuming the user of wallet balance here
-            // //     we should also check for insufficient balance and send
-            // //         Close message
+            //   To Do: Since we are assuming the user of wallet balance here
+            //     we should also check for insufficient balance and send
+            //         Close message
 
-            // if (orderMessage) {
-            //     console.log("Close modal and toast success txn complete", orderMessage)
-            //     // setShowModal(false);
-            //     // setIsCompleted(true)
-            // }
+            if (orderMessage) {
+                // To Do: Create and store completed transaction in state and local storage
 
-            // clearAllPollingTimers()
+
+
+                console.log("Close modal and toast success txn complete", orderMessage)
+                // setShowModal(false);
+                // setIsCompleted(true)
+                clearAllPollingTimers()
+            }
         }
     };
 
@@ -219,6 +229,8 @@ const PaymentFlowModal = (props: any) => {
 
 
             if (closeMessage) {
+                // To Do: Create and store cancelled transaction in state and local storage
+
                 console.log("Cancel Message returned", closeMessage)
                 // End Timer for Cancelling
 

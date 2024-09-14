@@ -63,7 +63,8 @@ const OfferingDetails = (props: any) => {
     const [activateButton, setActivateButton] = useState(false)
     const [offeringReview, setOfferingReview] = useState({})
     const [feeDetails, setFeeDetails] = useState<any>({})
-    const [relevantExchange, setRelevantExchanges] = useState<any>()
+    const [relevantExchange, setRelevantExchange] = useState<any>()
+    const [allExchanges, setAllExchanges] = useState<any>()
     const [requiredPaymentDetails, setRequiredPaymentDetails] = useState<any>({
         payin: {},
         payout: {}
@@ -127,7 +128,10 @@ const OfferingDetails = (props: any) => {
     const issuerVcSchema = offeringRequiredClaims?.['vc.credentialSchema.id'] || offeringRequiredClaims?.['credentialSchem[*].id']
 
     useEffect(() => {
-        const intervalId = pollExchanges(userBearerDid, setRelevantExchanges)
+        const intervalId = pollExchanges(userBearerDid, {
+            latest: setRelevantExchange,
+            all: setAllExchanges
+        })
         const storedIntervals = localStorage.getItem(INTERVALS_LOCAL_STORAGE_KEY)
 
         if (storedIntervals) {
@@ -141,6 +145,7 @@ const OfferingDetails = (props: any) => {
 
     useEffect(() => {
         if (relevantExchange) {
+            console.log("relevantExchange Here In", relevantExchange?.status)
             const paymentState = paymentStage === PaymentStage.MAKE_TRANSFER
             const receivedQuote = relevantExchange.status === TBDEX_MESSAGE_TYPES_TO_STATUS.QUOTE
             const cancelledTransfer = relevantExchange.status === TBDEX_MESSAGE_TYPES_TO_STATUS.CLOSE
@@ -174,10 +179,17 @@ const OfferingDetails = (props: any) => {
                 // Get fee details in the source currency
                 setFeeDetails(feeDetails)
             })
-
         }
-
     }, [relevantExchange])
+
+
+    useEffect(() => {
+        if (allExchanges?.length) {
+            console.log("All Exchanges Here", allExchanges)
+        } else {
+            console.log("All Exchanges Has Nothing Here Out", allExchanges)
+        }
+    }, [allExchanges])
 
     useEffect(() => {
         const isUsingWlletBalance = !Object.keys(requiredPaymentDetails?.payin).length
@@ -232,6 +244,7 @@ const OfferingDetails = (props: any) => {
                 setActivateButton={setActivateButton}
                 setCampaignAmount={setCampaignAmount}
                 offeringCreatedAt={offeringCreatedAt}
+                offeringFromCurrency={offeringFromCurrency}
                 requiredPaymentDetails={requiredPaymentDetails}
                 hasRequiredCredentials={hasRequiredCredentials}
                 offeringToCurrencyMethods={offeringToCurrencyMethods}

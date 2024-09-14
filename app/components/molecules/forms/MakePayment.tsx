@@ -6,7 +6,7 @@ import { TBDEX_MESSAGE_TYPES_TO_STATUS } from "@/app/lib/constants";
 import { arraysEqual, getEstimatedSettlementTime, getPlatformFees, msToDays, percentageDifference } from "@/app/lib/utils";
 import { PRIMARY_GOLD_HEX } from "@/app/providers/ThemeProvider";
 import { ClockCircleFilled, CloseCircleFilled } from "@ant-design/icons";
-import { Card, Flex, Progress, Statistic, Steps, Tag, Typography } from "antd";
+import { Card, Flex, theme, Statistic, Steps, Tag, Typography } from "antd";
 import { formatDistanceToNow } from "date-fns";
 import { useEffect, useState, } from "react";
 
@@ -32,6 +32,8 @@ const MakePayment = (props: any) => {
         requiredPaymentDetails: stateDetails,
         offeringToCurrencyMethods
     } = props
+
+    const { token: { colorError, colorSuccess } } = theme.useToken()
 
     const [quoteExpired, setQuoteExpired] = useState(false)
     const [requiredPaymentDetails, setRequiredPaymentDetails] = useState<any>({
@@ -151,8 +153,8 @@ const MakePayment = (props: any) => {
                                 <Typography.Text style={{
                                     fontSize: 12,
                                     color: currentMarketRate > parseFloat(exchangeRate)
-                                        ? 'red'
-                                        : 'green'
+                                        ? colorError
+                                        : colorSuccess
                                 }}
                                 >
                                     {`${diff}%`}

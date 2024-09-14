@@ -1,4 +1,4 @@
-import { MARKET_CONVERSION_RATE_LOCAL_STORAGE_KEY, OFFERINGS_LAST_UPDATED } from "@/app/lib/constants"
+import { DEFAULT_BASE_CURRENCY, MARKET_CONVERSION_RATE_LOCAL_STORAGE_KEY, OFFERINGS_LAST_UPDATED } from "@/app/lib/constants"
 import { getCurrencyFlag } from "@/app/lib/utils"
 import { useCreateCampaignContext } from "@/app/providers/CreateCampaignProvider"
 import { useTbdexContext } from "@/app/providers/TbdexProvider"
@@ -75,7 +75,7 @@ export const SearchOffers = (props: any) => {
     const convertedAmount = Math.floor(convertedCampaignAmount)
     return (
         <Space.Compact block >
-            <Select style={{ width: 130 }} defaultValue={selectedCurrency || 'USD'} onChange={(value) => {
+            <Select style={{ width: 130 }} defaultValue={selectedCurrency || DEFAULT_BASE_CURRENCY} onChange={(value) => {
                 setSelectedCurrency?.(value)
             }}>
                 {mergedSourceCurrencies?.map(entry => <Option key={entry} value={entry}>{`${entry} ${getCurrencyFlag(entry)}`}</Option>)}
@@ -98,24 +98,24 @@ export const SearchOffers = (props: any) => {
                     }
                     onChange={async (value) => {
                         debounce(async () => {
-                            const response = await fetch('/api/conversions', {
-                                method: 'POST',
-                                body: JSON.stringify({
-                                    source: selectedCurrency,
-                                    destination: selectedDestinationCurrency,
-                                    amount: value
-                                })
-                            })
+                            // const response = await fetch('/api/conversions', {
+                            //     method: 'POST',
+                            //     body: JSON.stringify({
+                            //         source: selectedCurrency,
+                            //         destination: selectedDestinationCurrency,
+                            //         amount: value
+                            //     })
+                            // })
 
-                            const newAmount = await response.json()
+                            // const newAmount = await response.json()
                             console.log("Amount Here Debounced ==>", {
                                 value,
-                                newAmount,
+                                // newAmount,
                                 source: selectedCurrency,
                                 destination: selectedDestinationCurrency,
                             })
 
-                            setCampaignAmount?.(Math.floor(newAmount?.conversion_result))
+                            // setCampaignAmount?.(Math.floor(newAmount?.conversion_result))
                         }, 1000)()
                         setLocalCampaignAmount(value as number)
                     }} />
@@ -129,15 +129,16 @@ export const SearchOffers = (props: any) => {
                     const data = await response.json()
 
                     if (!data.rate) {
-                        const responsePaid = await fetch(`/api/conversions`, {
-                            method: 'POST',
-                            body: JSON.stringify({ source: selectedDestinationCurrency, destination: value })
-                        })
+                        console.log("Data Here", data)
+                        // const responsePaid = await fetch(`/api/conversions`, {
+                        //     method: 'POST',
+                        //     body: JSON.stringify({ source: selectedDestinationCurrency, destination: value })
+                        // })
 
-                        const dataPaid = await responsePaid.json()
-                        const rate = dataPaid?.conversion_rate
+                        // const dataPaid = await responsePaid.json()
+                        // const rate = dataPaid?.conversion_rate
 
-                        setCampaignAmount?.(Math.floor(rate * Number(campaignAmount)))
+                        // setCampaignAmount?.(Math.floor(rate * Number(campaignAmount)))
                     } else {
                         const rate = data?.rate
                         setCampaignAmount?.(Math.floor(rate * Number(campaignAmount)))

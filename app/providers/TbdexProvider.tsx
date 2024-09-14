@@ -1,12 +1,13 @@
 "use client"
 import useBrowserStorage from '@/app/hooks/useLocalStorage';
-import { LOCAL_STORAGE_KEY, OFFERINGS_LAST_UPDATED, OFFERINGS_LOCAL_STORAGE_KEY, PFIs, SPECIAL_OFFERINGS_LOCAL_STORAGE_KEY, SPECIAL_PFI } from "@/app/lib/constants";
+import { DEFAULT_BASE_CURRENCY, DEFAULT_BASE_CURRENCY_STABLE_COIN, LOCAL_STORAGE_KEY, MARKET_CONVERSION_API_EXCEEDED_QOUTA_LOCAL_STORAGE_KEY, OFFERINGS_LAST_UPDATED, OFFERINGS_LOCAL_STORAGE_KEY, PFIs, SPECIAL_OFFERINGS_LOCAL_STORAGE_KEY, SPECIAL_PFI, TDBUNK_WALLET_BALANCE_LOCAL_STORAGE_KEY } from "@/app/lib/constants";
 import { createRfQ } from '@/app/lib/tbdex';
 import { getOfferingPairs } from '@/app/lib/utils';
 import { useWeb5Context } from '@/app/providers/Web5Provider';
 import { Offering, Rfq, TbdexHttpClient } from '@tbdex/http-client';
 import { PresentationDefinitionV2, PresentationExchange } from '@web5/credentials';
 import { createContext, PropsWithChildren, useContext, useEffect, useState } from "react";
+import { fetchMarketExchangeRates } from '../lib/api';
 
 export interface CredentialProp {
     [key: string]: string[]
@@ -36,6 +37,7 @@ export interface TbdexContextProps {
     unformattedSpecialOfferings: any[];
     specialDestinationCurrencies: any[];
     selectedDestinationCurrency: string;
+    marketConversionApiQuotaExceeded: boolean;
     setOfferings: React.Dispatch<React.SetStateAction<any[]>>;
     createExchange: (args: CreateExchangeArgs) => Promise<void>;
     setSourceCurrencies: React.Dispatch<React.SetStateAction<any[]>>;
@@ -50,6 +52,7 @@ export interface TbdexContextProps {
     setSpecialDestinationCurrencies: React.Dispatch<React.SetStateAction<any[]>>;
     setSelectedDestinationCurrency: React.Dispatch<React.SetStateAction<string>>;
     setCredentials: React.Dispatch<React.SetStateAction<CredentialProp | undefined>>;
+    setMarketConversionApiQuotaExceeded: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 export type OfferingStorage = {} | null
@@ -72,9 +75,9 @@ const TbdexContextProvider = ({ children }: PropsWithChildren) => {
     const [specialOfferings, setSpecialOfferings] = useState<any[]>([])
     const [unformattedOfferings, setUnformattedOfferings] = useState<any[]>([])
     const [unformattedSpecialOfferings, setUnformattedSpecialOfferings] = useState<any[]>([])
-    const [selectedCurrency, setSelectedCurrency] = useState<string>('USD')
+    const [selectedCurrency, setSelectedCurrency] = useState<string>(DEFAULT_BASE_CURRENCY)
     const [monopolyMoney, setMonopolyMoney] = useState<MonopolyMoney>({
-        currency: 'USD',
+        currency: DEFAULT_BASE_CURRENCY,
         amount: 1000
     })
     const [credentials, setCredentials] = useState<CredentialProp>()
@@ -82,7 +85,8 @@ const TbdexContextProvider = ({ children }: PropsWithChildren) => {
     const [specialSourceCurrencies, setSpecialSourceCurrencies] = useState<any[]>([])
     const [destinationCurrencies, setDestinationCurrencies] = useState<any[]>([])
     const [specialDestinationCurrencies, setSpecialDestinationCurrencies] = useState<any[]>([])
-    const [selectedDestinationCurrency, setSelectedDestinationCurrency] = useState<string>('USD')
+    const [marketConversionApiQuotaExceeded, setMarketConversionApiQuotaExceeded] = useState<boolean>(false)
+    const [selectedDestinationCurrency, setSelectedDestinationCurrency] = useState<string>(DEFAULT_BASE_CURRENCY)
 
     const [_, setLocalOfferings] = useBrowserStorage<OfferingStorage>(
         OFFERINGS_LOCAL_STORAGE_KEY,
@@ -119,29 +123,54 @@ const TbdexContextProvider = ({ children }: PropsWithChildren) => {
         }
     }
 
+
     useEffect(() => {
         (async () => {
             try {
+                // Convert wallet balance when source currency is changed
+                // Hence wallet retains equivalent value in balance for each currency
                 const amount = monopolyMoney?.amount
                 const source = monopolyMoney?.currency
                 const destination = selectedCurrency as string
 
-                const response = await fetch('/api/conversions', {
-                    method: 'POST',
-                    body: JSON.stringify({
-                        source,
-                        destination,
-                        amount
+                // const isUSDC = selectedCurrency === DEFAULT_BASE_CURRENCY_STABLE_COIN
+                // const destination = isUSDC
+                //     ? DEFAULT_BASE_CURRENCY
+                //     : selectedCurrency as string
+
+                // @ts-ignore
+                const { success, message, rate: marketRate, amount: convertedAmount } = await fetchMarketExchangeRates({
+                    source,
+                    amount,
+                    destination
+                })
+
+                if (success) {
+                    const moneyDetails = {
+                        amount: convertedAmount,
+                        currency: destination
+                    }
+
+                    setMonopolyMoney(moneyDetails)
+                    localStorage.setItem(TDBUNK_WALLET_BALANCE_LOCAL_STORAGE_KEY, JSON.stringify(moneyDetails))
+                    console.log("Fetch Rates TbdexProvider Succeded", {
+                        marketRate,
+                        convertedAmount,
                     })
-                })
-
-                const newAmount = await response.json()
-
-                setMonopolyMoney({
-                    amount: newAmount?.conversion_result,
-                    // amount: monopolyMoney?.amount,
-                    currency: destination
-                })
+                    return
+                } else {
+                    const isBrokeMessage = message?.includes('Exceeded Quota')
+                    setMarketConversionApiQuotaExceeded(isBrokeMessage)
+                    localStorage?.setItem(MARKET_CONVERSION_API_EXCEEDED_QOUTA_LOCAL_STORAGE_KEY, JSON.stringify({
+                        time: new Date(),
+                        message
+                    }))
+                    console.log("Fetch Rates TbdexProvider Failed", {
+                        message,
+                        marketRate,
+                        convertedAmount,
+                    })
+                }
             } catch (error: any) {
                 console.log("Error in wallet conversion", error)
             }
@@ -223,6 +252,7 @@ const TbdexContextProvider = ({ children }: PropsWithChildren) => {
         unformattedSpecialOfferings,
         selectedDestinationCurrency,
         specialDestinationCurrencies,
+        marketConversionApiQuotaExceeded,
 
         setOfferings,
         setCredentials,
@@ -238,6 +268,7 @@ const TbdexContextProvider = ({ children }: PropsWithChildren) => {
         setSelectedDestinationCurrency,
         setUnformattedSpecialOfferings,
         setSpecialDestinationCurrencies,
+        setMarketConversionApiQuotaExceeded
     }}>
         {children}
     </TbdexContext.Provider>

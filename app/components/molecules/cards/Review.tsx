@@ -51,7 +51,9 @@ const ReviewOffering = (props: any) => {
         setOfferingReview(reviewSubmission)
     }, [value, comment])
 
-    const pfiDetails = PFIs[0]
+    const pfiDetails = PFIs.find(
+        (entry) => entry.did === offering?.offeringFrom
+    );
 
     const { diff } = percentageDifference(parseFloat(`${marketRate}`), parseFloat(toMethods.unit));
 
@@ -103,7 +105,7 @@ const ReviewOffering = (props: any) => {
                             <Flex className="flex flex-col justify-center items-center">
                                 <Flex className="text-white flex-col">
                                     <Typography.Text style={{ fontSize: 11 }} className="opacity-40">Market Rate</Typography.Text>
-                                    <Typography.Text className="text-white text-xs">{`KES ${getCurrencyFlag('KES')}`}</Typography.Text>
+                                    <Typography.Text className="text-white text-xs">{`${toCurrency} ${getCurrencyFlag(toCurrency)}`}</Typography.Text>
                                     <Typography.Text className="text-white text-xs">{`${parseFloat(marketRate as string).toFixed(2) }`}</Typography.Text>
                                 </Flex>
                             </Flex>
@@ -125,7 +127,7 @@ const ReviewOffering = (props: any) => {
                             <Flex className="flex flex-col justify-center items-center">
                                 <Flex className="text-white flex-col">
                                     <Typography.Text style={{ fontSize: 11 }} className="opacity-40">Offering Rate</Typography.Text>
-                                    <Typography.Text className="text-white text-xs">{`KES ${getCurrencyFlag('KES')}`}</Typography.Text>
+                                    <Typography.Text className="text-white text-xs">{`${toCurrency} ${getCurrencyFlag(toCurrency)}`}</Typography.Text>
                                     <Typography.Text className="text-white text-xs">{`${parseFloat(toMethods.unit).toFixed(2) }`}</Typography.Text>
                                 </Flex>
                             </Flex>

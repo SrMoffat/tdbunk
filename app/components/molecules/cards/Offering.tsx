@@ -107,9 +107,6 @@ const OfferingDetails = (props: any) => {
         ? Number(payinFee + totalFee).toFixed(2)
         : Number(totalFee).toFixed(2)
 
-
-
-
     const showPaymentModal = () => {
         const isReadyForQuote = hasRequiredCredentials && isSelected
 
@@ -123,7 +120,6 @@ const OfferingDetails = (props: any) => {
     const cta = isSelected
         ? 'Start Transfer'
         : 'Request Credentials'
-
 
     const issuerDid = offeringRequiredClaims?.['vc.issuer'] || offeringRequiredClaims?.['issuer']
     const issuerVcSchema = offeringRequiredClaims?.['vc.credentialSchema.id'] || offeringRequiredClaims?.['credentialSchem[*].id']
@@ -164,12 +160,12 @@ const OfferingDetails = (props: any) => {
                 console.log("Create Cancel Transaction", {
                     txn,
                 })
+                setShowModal(false)
             }
 
             if (completedTransfer) {
                 setIsCompleted(true)
                 setIsLoading(false)
-                // setShowModal(false)
 
                 // Create and store completed transaction
                 const txn = createTransaction({

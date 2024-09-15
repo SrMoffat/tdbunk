@@ -22,7 +22,7 @@ const PaymentFlowModal = (props: any) => {
         credentials,
         rawOffering,
         isCancelled,
-        isCompleted,
+        // isCompleted,
         setShowModal,
         isCancelling,
         selectedCard,
@@ -53,6 +53,8 @@ const PaymentFlowModal = (props: any) => {
         offeringToCurrencyMethods,
     } = props
 
+    const isCompleted = true
+
     const [hasInsufficientBalance, setHasInsufficientBalance] = useState(false)
     const [startPollingForMessages, setStartPollingForMessages] = useState(false)
 
@@ -68,7 +70,7 @@ const PaymentFlowModal = (props: any) => {
 
     const cancelText = isRequestQuote
         ? 'Cancel'
-        : `${isCancelled ? 'Close' : 'Cancel Transfer'}`
+        : `${isCancelled || isCompleted ? 'Close' : 'Cancel Transfer'}`
 
     const finalPayoutValue = campaignAmount + parseFloat(allFee?.split(" ")[1])
 
@@ -82,7 +84,9 @@ const PaymentFlowModal = (props: any) => {
         ? isSelected
             ? isRequestQuote
                 ? 'Request for Quote'
-                : 'Make Transfer'
+                : isCompleted
+                    ? 'Review Transfer'
+                    : 'Make Transfer'
             : 'Select Credential'
         : 'Request Credentials'
 
@@ -92,7 +96,11 @@ const PaymentFlowModal = (props: any) => {
         if (isCancelled) return
 
         if (isCompleted) {
-            console.log("IS Completed")
+            console.log("IS Completed submit review", {
+                offeringReview,
+                // campaignDetails
+                // transactionDetails
+            })
             // Create review VC
             // const status = await createOfferingReviewCredential(
             //     web5,
@@ -192,11 +200,9 @@ const PaymentFlowModal = (props: any) => {
     };
 
     const handleCancel = async () => {
-        if (isCompleted) {
+        if (isCompleted || isRequestQuote || isCancelled) {
             // Create a VC without user review?
             console.log("Canelled out of a review of PFI", offeringReview)
-        } else if (isRequestQuote || isCancelled) {
-            console.log("Canelled out of isRequestQuote || isCancelled", offeringReview)
             setShowModal(false);
         } else {
             setIsCancelling(true)
@@ -326,7 +332,7 @@ const PaymentFlowModal = (props: any) => {
         >
             <Spin spinning={isCancelling || isLoading}>
                 {
-                    isCompleted
+                        isCompleted
                         ? <ReviewOffering offering={offering} setOfferingReview={setOfferingReview} />
                         : flow
                 }

@@ -607,3 +607,24 @@ export const checkIfUserHasRequiredClaims = (credentials: any[], requiredClaims:
 
     return doesNotNeedClaims || hasRequiredCreds
 }
+
+export const installTransactionProtocol = () => {
+    console.log("To Do: Install Transaction Protocol")
+}
+
+export const storeTbdexTransactionInDwn = async (transaction: any) => {
+    // web5: Web5Api, 
+    // Only stores exchanges of type Close i.e cancelled and completed transactions
+    // let web5Instance = web5
+
+    // if (!web5Instance) {
+    //     const { web5: returnedWeb5 } = await Web5Api.connect()
+    //     web5Instance = returnedWeb5
+    // }
+
+    // const { record } = await web5Instance!.dwn.records.create({
+    //     data: transaction
+    // });
+
+    console.log("To Do: storeTbdexTransaction", transaction)
+}

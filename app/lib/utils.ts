@@ -337,12 +337,7 @@ export const extractMessageDetailsFromExchange = (item: any) => {
         (entry: any) => entry?.did === toDidUri
     );
 
-    console.log("❓createdAt ❓", {
-        metadata,
-        createdAt
-    })
-
-    const exchangeTime = formatDistanceToNow(new Date(), { addSuffix: true })
+    const exchangeTime = formatDistanceToNow(new Date(createdAt), { addSuffix: true })
 
     const payin = data?.payin
     const payout = data?.payout
@@ -382,7 +377,7 @@ export const extractMessageDetailsFromExchange = (item: any) => {
     }
 }
 
-export const addTransaction = ({ offering, exchange: relevantExchange, campaignAmount }: { offering: any; exchange: any, campaignAmount: any }) => {
+export const createTransaction = ({ offering, exchange: relevantExchange, campaignAmount }: { offering: any; exchange: any, campaignAmount: any }) => {
     const [payinData, payoutData] = offering?.pair
 
     const offeringRate = payoutData?.unit

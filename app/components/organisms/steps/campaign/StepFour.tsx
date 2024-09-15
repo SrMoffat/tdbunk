@@ -131,6 +131,7 @@ const StepFour = () => {
     // const [notifiedCompletion, setNotifiedCompletion] = useState(false)
     const [selectedOffering, setSelectedOffering] = useState<any>()
     const [offerings, setOfferings] = useState<any[]>([])
+    const [transactions, setTransactions] = useState<any[]>([])
 
     const {
         credentials,
@@ -218,45 +219,16 @@ const StepFour = () => {
     // @ts-ignore
     const existingCreds = localStorageCredentials?.credentials ?? {}
     const existingCredentials = Object.values(existingCreds).flat()
-
-    // console.log("Bearere DID <StepFour />", {
-    //     userBearerDid,
-    //     isSelected,
-    //     selectedCard,
-    //     existingCredentials,
-    //     credentials
-    // })
-
     const hasCancelledTransactions = true
 
-
     useEffect(() => {
-        const getCloseMessageExchanges = async () => {
-            try {
-                if (userBearerDid) {
-                    const exchangesResults = await getAllPfiExchanges(userBearerDid)
-                    console.log("Fetch Cancelled Transactions", exchangesResults)
-                    return exchangesResults
-                } else {
-                    const bearerDid = getUserBearerDid()
-                    const exchangesResults = await getAllPfiExchanges(bearerDid)
-                    console.log("Fetch Cancelled No Bearer", {
-                        bearerDid,
-                        exchangesResults
-                    })
-                    return exchangesResults
-                }
-            } catch (error: any) {
-                console.error("Fetch Cancelled Transactions Error", error)
-            }
-        }
         if (isCancelled) {
             notify?.('error', {
                 message: 'Transaction Cancelled!',
                 description: 'Your transaction has been cancelled!'
             })
             // setIsCancelled(false)
-            getCloseMessageExchanges()
+            // getCloseMessageExchanges()
         }
     }, [isCancelled])
 
@@ -310,7 +282,7 @@ const StepFour = () => {
                                     />
                                 </Flex>
                                 {hasCancelledTransactions && (
-                                    <Transactions userBearerDid={theBearerDid} exchanges={dummyExchanges} />
+                                    <Transactions exchanges={transactions} />
                                 )}
                                 <MarketRate
                                     source={selectedCurrency}
@@ -350,6 +322,7 @@ const StepFour = () => {
                                             setIsCompleted={setIsCompleted}
                                             setIsCancelled={setIsCancelled}
                                             createExchange={createExchange}
+                                            setTransactions={setTransactions}
                                             setSelectedCard={setSelectedCard}
                                             setCampaignAmount={setCampaignAmount}
                                             setSelectedOffering={setSelectedOffering}

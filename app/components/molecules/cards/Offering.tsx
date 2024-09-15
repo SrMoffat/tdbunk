@@ -1,12 +1,13 @@
 import AssetExchangeOffer from "@/app/components/atoms/OfferDetails";
 import AssetExchangePFIDetails from "@/app/components/molecules/cards/OfferingPFIDetails";
-import { INTERVALS_LOCAL_STORAGE_KEY, PFIs, TBDEX_MESSAGE_TYPES_TO_STATUS } from "@/app/lib/constants";
-import { addTransaction, getCurrencyFlag, getPlatformFees } from "@/app/lib/utils";
+import { INTERVALS_LOCAL_STORAGE_KEY, PFIs, TBDEX_MESSAGE_TYPES_TO_STATUS, TDBUNK_TRANSACTIONS_LOCAL_STORAGE_KEY } from "@/app/lib/constants";
+import { createTransaction, getCurrencyFlag, getPlatformFees } from "@/app/lib/utils";
 import { useNotificationContext } from "@/app/providers/NotificationProvider";
 import { Offering } from "@tbdex/http-client";
 import { List } from "antd";
 import { useEffect, useState } from "react";
 import PaymentFlowModal from "../modals/PaymentFlow";
+import { storeTbdexTransactionInDwn } from "@/app/lib/web5";
 
 export interface AssetExchangePFIDetailsProps {
     cta: string;
@@ -47,6 +48,7 @@ const OfferingDetails = (props: any) => {
         setIsCancelled,
         campaignAmount,
         setSelectedCard,
+        setTransactions,
         offering: values,
         stateCredentials,
         selectedOffering,
@@ -143,28 +145,48 @@ const OfferingDetails = (props: any) => {
                 setIsCancelling(false)
                 setActivateButton(false)
                 setIsCancelled(true)
-                const txn = addTransaction({
+
+                // Create and store cancelled transaction
+                const txn = createTransaction({
                     offering,
                     campaignAmount,
                     exchange: relevantExchange,
                 })
 
+                setTransactions((prev: any) => {
+                    const results = [...prev, txn]
+                    localStorage?.setItem(TDBUNK_TRANSACTIONS_LOCAL_STORAGE_KEY, JSON.stringify(results))
+                    return results
+                })
+                storeTbdexTransactionInDwn(txn)
+
                 console.log("Create Cancel Transaction", {
                     txn,
-                    offering,
-                    rawOffering,
-                    campaignAmount,
-                    relevantExchange
                 })
-
-                // Create and store cancelled transaction
-
             }
 
             if (completedTransfer) {
                 setIsCompleted(true)
                 setIsLoading(false)
                 // setShowModal(false)
+
+                // Create and store completed transaction
+                const txn = createTransaction({
+                    offering,
+                    campaignAmount,
+                    exchange: relevantExchange,
+                })
+
+                console.log("Create Completed Transaction", {
+                    txn,
+                })
+
+                setTransactions((prev: any) => {
+                    const results = [...prev, txn]
+                    localStorage?.setItem(TDBUNK_TRANSACTIONS_LOCAL_STORAGE_KEY, JSON.stringify(results))
+                    return results
+                })
+                storeTbdexTransactionInDwn(txn)
             }
 
             const quoteMessage = relevantExchange?.mostRecentMessage

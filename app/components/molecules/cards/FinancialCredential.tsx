@@ -1,11 +1,11 @@
 "use client"
-import { Card1, Evidence, TBDVCLogoYellow, ValidCredential } from "@/app/components/atoms/Icon";
+import { Card1, Evidence, TBDVCLogoWhite, TBDVCLogoYellow, ValidCredential } from "@/app/components/atoms/Icon";
 import { CREDENTIAL_TYPES } from "@/app/lib/constants";
 import { parseJwtToVc, resolveDid } from "@/app/lib/web5";
 import countries from '@/public/countries.json';
 import { VerifiableCredential } from "@web5/credentials";
 import { DidResolutionResult } from "@web5/dids";
-import { Card, Drawer, Flex, Tag, Typography, QRCode } from "antd";
+import { Card, Drawer, Flex, QRCode, Tag, Typography } from "antd";
 import { formatDistanceToNow } from 'date-fns';
 import Image from "next/image";
 import Link from "next/link";
@@ -85,12 +85,14 @@ export const CredentialCard: React.FC<CredentialCardProps> = ({
             expiration
         }
 
+    const isTestMessedCred = !details?.name?.includes('undefined')
+
     return (
         <Flex className="h-[200px]">
             <Flex onClick={handleCardClicked} className="absolute hover:opacity-70 rounded-md transition-all cursor-pointer">
                 <Image alt="card" src={Card1} width={300} height={300} />
                 <Flex className="absolute left-4 top-4 flex-col">
-                    <Image alt="LogoIcon" src={TBDVCLogoYellow} width={40} height={40} />
+                    <Image alt="LogoIcon" src={isTestMessedCred ? TBDVCLogoWhite: TBDVCLogoYellow} width={40} height={40} />
                     <Link target="_blank" href={vcServiceUrl} style={{ fontSize: 10, marginTop: 8 }}>Ultimate Identity</Link>
                 </Flex>
                 <Flex className="absolute left-4 top-20 flex-col">

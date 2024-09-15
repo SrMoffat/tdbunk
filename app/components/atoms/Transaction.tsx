@@ -153,33 +153,19 @@ export const generateExchangesComponents = (exchanges: any[]) => {
     const txns = []
 
     for (let item of exchanges) {
-        const fromCurrency = 'USD'
-        const fromAmount = '4756'
-        
-        const toAmount = '618280'
-        const toCurrency = 'KES'
-
-        const payin = {
-            currency: fromCurrency,
-            amount: fromAmount
-        }
-
-        const payout = {
-            currency: toCurrency,
-            amount: toAmount
-        }
-
         const {
             tag,
-            createdAt,
-            isCancel,
-            finalTag,
-            isSuccess,
+            payin,
+            payout,
             protocol,
-            exchangeId,
+            finalTag,
+            isCancel,
+            isSuccess,
+            createdAt,
             pfiDetails,
+            exchangeId,
             exchangeTime,
-        } = extractMessageDetailsFromExchange(item)
+        } = item
 
         txns.push({
             key: Math.random(),

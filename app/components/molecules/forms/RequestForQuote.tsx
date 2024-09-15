@@ -9,7 +9,15 @@ import CountUp from "react-countup";
 const RequestForQuote = (props: any) => {
     const [form] = Form.useForm();
 
-    const { offering, campaignAmount, setRequiredPaymentDetails, money, isLoading, setCampaignAmount } = props
+    const {
+        money,
+        offering,
+        isLoading,
+        campaignAmount,
+        setCampaignAmount,
+        setHasInsufficientBalance,
+        setRequiredPaymentDetails,
+    } = props
 
     const offeringData = offering?.data
 
@@ -185,6 +193,30 @@ const RequestForQuote = (props: any) => {
     }, [toValue])
 
     const insufficientBalance = Math.floor(campaignAmount / exchangeRate) > money?.amount
+
+    useEffect(() => {
+        payinMethods.forEach((entry: any) => {
+            const requiredPaymentDetails = entry.requiredPaymentDetails
+            const requiredPaymentDetailsTitle = requiredPaymentDetails.title
+
+            const results = getRequiredDetails(entry)
+
+            const isAssumedStoredBalance = !requiredPaymentDetailsTitle && !results.length
+
+            console.log("👽 Has Insufficient Balance", {
+                results,
+                insufficientBalance,
+                isAssumedStoredBalance,
+                requiredPaymentDetailsTitle,
+            })
+
+            if (isAssumedStoredBalance){
+                setHasInsufficientBalance(insufficientBalance)
+                return
+            }
+            return
+        })
+    }, [payinMethods, insufficientBalance])
     return (
         <Flex className="gap-3">
             <Card className="w-full">

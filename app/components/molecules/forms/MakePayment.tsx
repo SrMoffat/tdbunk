@@ -29,8 +29,9 @@ const MakePayment = (props: any) => {
         setPaymentDetails,
         setActivateButton,
         setCampaignAmount,
+        offeringToCurrencyMethods,
+        setHasInsufficientBalance,
         requiredPaymentDetails: stateDetails,
-        offeringToCurrencyMethods
     } = props
 
     const { token: { colorError, colorSuccess } } = theme.useToken()
@@ -268,6 +269,7 @@ const MakePayment = (props: any) => {
                         campaignAmount={campaignAmount}
                         setCampaignAmount={setCampaignAmount}
                         currentMarketRate={currentMarketRate}
+                        setHasInsufficientBalance={setHasInsufficientBalance}
                         setRequiredPaymentDetails={setRequiredPaymentDetails}
                     />
                     : <MakeTransfer

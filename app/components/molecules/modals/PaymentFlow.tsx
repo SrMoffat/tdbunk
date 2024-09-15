@@ -5,6 +5,7 @@ import { sendCloseMessage, sendOrderMessage } from "@/app/lib/tbdex";
 import { Button, Modal, Spin } from "antd";
 import ReviewOffering from "../cards/Review";
 import { createOfferingReviewCredential } from "@/app/lib/web5";
+import { useState } from "react"
 
 const clearAllIntervals = (intervalIds: string[]) => {
     for (const interval of intervalIds) {
@@ -67,6 +68,8 @@ const PaymentFlowModal = (props: any) => {
         offeringToCurrencyMethods,
     } = props
 
+    const [hasInsufficientBalance, setHasInsufficientBalance] = useState(false)
+
     const isButtonDisabled = !activateButton
 
     const currencyCode = feeDetails?.currencyCode
@@ -103,7 +106,7 @@ const PaymentFlowModal = (props: any) => {
         if (isCancelled) return
 
         if (isCompleted) {
-        console.log("IS Completed")
+            console.log("IS Completed")
             // Create review VC
             // const status = await createOfferingReviewCredential(
             //     web5,
@@ -263,8 +266,9 @@ const PaymentFlowModal = (props: any) => {
                 setActivateButton={setActivateButton}
                 setCampaignAmount={setCampaignAmount}
                 offeringCreatedAt={offeringCreatedAt}
-                requiredPaymentDetails={requiredPaymentDetails}
                 setPaymentDetails={setRequiredPaymentDetails}
+                requiredPaymentDetails={requiredPaymentDetails}
+                setHasInsufficientBalance={setHasInsufficientBalance}
                 offeringToCurrencyMethods={offeringToCurrencyMethods}
             />
             : <Credentials
@@ -277,6 +281,26 @@ const PaymentFlowModal = (props: any) => {
             />
         : 'Create New Credential Form'
 
+
+    // const insufficientBalance = Math.floor(campaignAmount / exchangeRate) > money?.amount
+
+    // // To Do: Clean this up 🤢
+    // // Maybe const disableActionButton = insufficientBalance || (!isCompleted && (isButtonDisabled || isCancelling));
+
+    // console.log("Disable Action Button?", {
+    //     result: insufficientBalance || (!isCompleted && (isButtonDisabled || isCancelling)),
+    //     insufficientBalance,
+    //     isCompleted,
+    //     isButtonDisabled,
+    //     isCancelling
+    // })
+
+    console.log("👽 Has Insufficient Balance", hasInsufficientBalance)
+
+    const disableActionButton = hasInsufficientBalance
+        ? true
+        : isCompleted ? false : isButtonDisabled || isCancelling
+
     return (
         <Modal
             width={800}
@@ -287,7 +311,7 @@ const PaymentFlowModal = (props: any) => {
                 <Button danger key="back" onClick={handleCancel} loading={isCancelling}>
                     {cancelText}
                 </Button>,
-                <Button loading={isLoading} key="submit" type="primary" onClick={handleOk} disabled={isCompleted ? false : isButtonDisabled || isCancelling}>
+                <Button loading={isLoading} key="submit" type="primary" onClick={handleOk} disabled={disableActionButton}>
                     {submitText}
                 </Button>
             ] : []}

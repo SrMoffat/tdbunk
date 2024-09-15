@@ -39,10 +39,22 @@ handlePost
 
 export async function POST(request: NextRequest, ctx: RequestContext) {
     try {
-        const conversion: any = await handlePost.run(request, ctx);
+        // const conversion: any = await handlePost.run(request, ctx);
 
-        console.log("<=== Conversion Result Handlerrrr==>", conversion)
-        return NextResponse.json(conversion);
+        // console.log("<=== Conversion Result Handlerrrr==>", conversion)
+        return NextResponse.json({
+            result: 'success',
+            documentation: 'https://www.exchangerate-api.com/docs',
+            terms_of_use: 'https://www.exchangerate-api.com/terms',
+            time_last_update_unix: 1726272002,
+            time_last_update_utc: 'Sat, 14 Sep 2024 00:00:02 +0000',
+            time_next_update_unix: 1726358402,
+            time_next_update_utc: 'Sun, 15 Sep 2024 00:00:02 +0000',
+            base_code: 'GHS',
+            target_code: 'EUR',
+            conversion_rate: 0.05605
+        });
+        // return NextResponse.json(conversion);
     } catch (error: any) {
         // TODO: Better error handling
         console.log("<=== Conversion Error Handlerrrr==>", error)

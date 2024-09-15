@@ -155,6 +155,7 @@ export const generateExchangesComponents = (exchanges: any[]) => {
     for (let item of exchanges) {
         const fromCurrency = 'USD'
         const fromAmount = '4756'
+        
         const toAmount = '618280'
         const toCurrency = 'KES'
 

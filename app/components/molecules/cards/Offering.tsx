@@ -1,8 +1,7 @@
 import AssetExchangeOffer from "@/app/components/atoms/OfferDetails";
 import AssetExchangePFIDetails from "@/app/components/molecules/cards/OfferingPFIDetails";
 import { INTERVALS_LOCAL_STORAGE_KEY, PFIs, TBDEX_MESSAGE_TYPES_TO_STATUS } from "@/app/lib/constants";
-import { pollExchanges } from "@/app/lib/tbdex";
-import { getCurrencyFlag, getPlatformFees } from "@/app/lib/utils";
+import { addTransaction, getCurrencyFlag, getPlatformFees } from "@/app/lib/utils";
 import { useNotificationContext } from "@/app/providers/NotificationProvider";
 import { Offering } from "@tbdex/http-client";
 import { List } from "antd";
@@ -128,24 +127,8 @@ const OfferingDetails = (props: any) => {
     const issuerVcSchema = offeringRequiredClaims?.['vc.credentialSchema.id'] || offeringRequiredClaims?.['credentialSchem[*].id']
 
     useEffect(() => {
-        // const intervalId = pollExchanges(userBearerDid, {
-        //     latest: setRelevantExchange,
-        //     all: setAllExchanges
-        // })
-        // const storedIntervals = localStorage.getItem(INTERVALS_LOCAL_STORAGE_KEY)
-
-        // if (storedIntervals) {
-        //     const existingIntervals = JSON.parse(storedIntervals)
-        //     const newIntervals = [...existingIntervals, intervalId]
-        //     localStorage.setItem(INTERVALS_LOCAL_STORAGE_KEY, JSON.stringify(newIntervals))
-        // } else {
-        //     localStorage.setItem(INTERVALS_LOCAL_STORAGE_KEY, JSON.stringify([intervalId]))
-        // }
-    }, [])
-
-    useEffect(() => {
         if (relevantExchange) {
-            console.log("relevantExchange Here In", relevantExchange?.status)
+            console.log("📭 New Message: Status 📭", relevantExchange?.status)
             const paymentState = paymentStage === PaymentStage.MAKE_TRANSFER
             const receivedQuote = relevantExchange.status === TBDEX_MESSAGE_TYPES_TO_STATUS.QUOTE
             const cancelledTransfer = relevantExchange.status === TBDEX_MESSAGE_TYPES_TO_STATUS.CLOSE
@@ -160,6 +143,22 @@ const OfferingDetails = (props: any) => {
                 setIsCancelling(false)
                 setActivateButton(false)
                 setIsCancelled(true)
+                const txn = addTransaction({
+                    offering,
+                    campaignAmount,
+                    exchange: relevantExchange,
+                })
+
+                console.log("Create Cancel Transaction", {
+                    txn,
+                    offering,
+                    rawOffering,
+                    campaignAmount,
+                    relevantExchange
+                })
+
+                // Create and store cancelled transaction
+
             }
 
             if (completedTransfer) {
@@ -235,6 +234,7 @@ const OfferingDetails = (props: any) => {
                 activateButton={activateButton}
                 campaignAmount={campaignAmount}
                 isRequestQuote={isRequestQuote}
+                setAllExchanges={setAllExchanges}
                 setSelectedCard={setSelectedCard}
                 setIsCancelling={setIsCancelling}
                 stateCredentials={stateCredentials}
@@ -244,6 +244,7 @@ const OfferingDetails = (props: any) => {
                 setActivateButton={setActivateButton}
                 setCampaignAmount={setCampaignAmount}
                 offeringCreatedAt={offeringCreatedAt}
+                setRelevantExchange={setRelevantExchange}
                 offeringFromCurrency={offeringFromCurrency}
                 requiredPaymentDetails={requiredPaymentDetails}
                 hasRequiredCredentials={hasRequiredCredentials}

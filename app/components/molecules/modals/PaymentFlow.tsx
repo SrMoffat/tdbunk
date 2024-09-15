@@ -1,28 +1,11 @@
 import MakePayment from "@/app/components/molecules/forms/MakePayment";
 import { Credentials } from "@/app/components/organisms/Credentials";
 import { INTERVALS_LOCAL_STORAGE_KEY, STARTED_TRANSFER_AT_LOCAL_STORAGE_KEY, TDBUNK_CANCEL_REASON } from "@/app/lib/constants";
-import { sendCloseMessage, sendOrderMessage } from "@/app/lib/tbdex";
+import { sendCloseMessage, sendOrderMessage, pollExchanges } from "@/app/lib/tbdex";
 import { Button, Modal, Spin } from "antd";
 import ReviewOffering from "../cards/Review";
 import { createOfferingReviewCredential } from "@/app/lib/web5";
-import { useState } from "react"
-
-const clearAllIntervals = (intervalIds: string[]) => {
-    for (const interval of intervalIds) {
-        console.log("Clearing interval with ID:", interval)
-        window && window.clearInterval(interval);
-    }
-    localStorage && localStorage.removeItem(INTERVALS_LOCAL_STORAGE_KEY)
-}
-
-const clearAllPollingTimers = () => {
-    const storedIntervals = localStorage.getItem(INTERVALS_LOCAL_STORAGE_KEY)
-    if (storedIntervals) {
-        const existingIntervals = JSON.parse(storedIntervals)
-        const newIntervals = [...existingIntervals]
-        clearAllIntervals(newIntervals)
-    }
-}
+import { useState, useEffect } from "react"
 
 const PaymentFlowModal = (props: any) => {
     const {
@@ -53,6 +36,7 @@ const PaymentFlowModal = (props: any) => {
         offeringReview,
         createExchange,
         setSelectedCard,
+        setAllExchanges,
         setIsCancelling,
         stateCredentials,
         relevantExchange,
@@ -61,6 +45,7 @@ const PaymentFlowModal = (props: any) => {
         currentMarketRate,
         setOfferingReview,
         offeringCreatedAt,
+        setRelevantExchange,
         offeringFromCurrency,
         hasRequiredCredentials,
         requiredPaymentDetails,
@@ -69,6 +54,7 @@ const PaymentFlowModal = (props: any) => {
     } = props
 
     const [hasInsufficientBalance, setHasInsufficientBalance] = useState(false)
+    const [startPollingForMessages, setStartPollingForMessages] = useState(false)
 
     const isButtonDisabled = !activateButton
 
@@ -127,6 +113,8 @@ const PaymentFlowModal = (props: any) => {
 
             // setShowModal(false)
         } else if (isRequestQuote) {
+            setStartPollingForMessages(true)
+
             const convertedCampaignAmount = Math.floor(campaignAmount / parseFloat(exchangeRate))
 
             createExchange({
@@ -155,9 +143,9 @@ const PaymentFlowModal = (props: any) => {
             // Start timer for the transfer
             localStorage?.setItem(STARTED_TRANSFER_AT_LOCAL_STORAGE_KEY, JSON.stringify(new Date()))
 
-            const isUsingWlletBalance = !Object.keys(requiredPaymentDetails?.payin).length
+            const isUsingWalletBalance = !Object.keys(requiredPaymentDetails?.payin).length
 
-            if (isUsingWlletBalance) {
+            if (isUsingWalletBalance) {
                 const currentBalance = money?.amount
                 const sameCurrency = money?.currency === offeringFromCurrency?.currencyCode
 
@@ -198,7 +186,7 @@ const PaymentFlowModal = (props: any) => {
                 console.log("Close modal and toast success txn complete", orderMessage)
                 // setShowModal(false);
                 // setIsCompleted(true)
-                clearAllPollingTimers()
+                setStartPollingForMessages(false)
             }
         }
     };
@@ -238,10 +226,9 @@ const PaymentFlowModal = (props: any) => {
                 // End Timer for Cancelling
 
                 // To Do: Reset form and all relevant state
+                setStartPollingForMessages(false)
 
             }
-
-            clearAllPollingTimers()
         }
     };
 
@@ -295,11 +282,32 @@ const PaymentFlowModal = (props: any) => {
     //     isCancelling
     // })
 
-    console.log("👽 Has Insufficient Balance", hasInsufficientBalance)
-
     const disableActionButton = hasInsufficientBalance
         ? true
         : isCompleted ? false : isButtonDisabled || isCancelling
+
+    useEffect(() => {
+        if (startPollingForMessages) {
+            console.log("Start Polling Messages")
+            const intervalId = pollExchanges(userBearerDid, {
+                latest: setRelevantExchange,
+                all: setAllExchanges
+            })
+            const storedIntervals = localStorage.getItem(INTERVALS_LOCAL_STORAGE_KEY)
+
+            if (storedIntervals) {
+                const existingIntervals = JSON.parse(storedIntervals)
+                const newIntervals = [...existingIntervals, intervalId]
+                localStorage.setItem(INTERVALS_LOCAL_STORAGE_KEY, JSON.stringify(newIntervals))
+            } else {
+                localStorage.setItem(INTERVALS_LOCAL_STORAGE_KEY, JSON.stringify([intervalId]))
+            }
+        } else {
+            console.log("🗑️ Stop Polling Messages and Clear all intervals 🗑️")
+            // clearAllPollingTimers()
+        }
+
+    }, [startPollingForMessages])
 
     return (
         <Modal

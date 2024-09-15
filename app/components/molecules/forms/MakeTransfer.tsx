@@ -1,5 +1,5 @@
 import { LogoIcon2 } from "@/app/components/atoms/Icon";
-import { TDBUNK_PLATFORM_FEE_STRATEGY } from "@/app/lib/constants";
+import { TDBUNK_TRANSACTION_FEE_STRATEGY } from "@/app/lib/constants";
 import { getCurrencyFlag, toCapitalizedWords } from "@/app/lib/utils";
 import { RightCircleFilled } from "@ant-design/icons";
 import { Button, Card, Flex, Form, Input, InputNumber, Space, Statistic, StatisticProps, Tag, theme, Typography } from "antd";
@@ -210,7 +210,7 @@ const MakeTransfer = (props: any) => {
                         <Flex className="gap-3">
                             <Flex className="flex-col">
                                 <Typography.Text className="text-bold text-xs">Platform Fee:</Typography.Text>
-                                <Typography.Text style={{ fontSize: 10 }} className="opacity-40">{TDBUNK_PLATFORM_FEE_STRATEGY.displayText}</Typography.Text>
+                                <Typography.Text style={{ fontSize: 10 }} className="opacity-40">{TDBUNK_TRANSACTION_FEE_STRATEGY.displayText}</Typography.Text>
                             </Flex>
                             <Typography.Text className="text-xs">{platformFee}</Typography.Text>
                         </Flex>

@@ -84,11 +84,14 @@ https://mock-idv.tbddev.org/kcc?name=${customerName}&country=${countryCode}&did=
 
 Consider the following when designing your application:
 
-1. Profitability: how might your wallet application make a profit (charging fees per transaction, platform fees when article is debunked and fact checkers are being paid, we get paid too)
+1. Profitability: how might your wallet application make a profit (charging fees per transaction (2.9% + $0.50 borrowed from general case for payment processing platforms), platform fees when article is debunked and fact checkers are being paid, we get paid too (1.5%))
 
-2. Optionality: how will your application handle matching offerings from multiple PFIs (compare settlement time, compare user rating, compare availability status, user discretion, user transaction history, AI?, compare to market rate?)
+2. Optionality: how will your application handle matching offerings from multiple PFIs
+- Compare exchange rate to market rate and recommend whichever is lower
+- To Do: Compare settlement time, compare user rating, compare availability status, user discretion, user transaction history, AI?, compare to market rate?)
 
 3. Customer Management: how will your application manage customers’ decentralized identifiers and verifiable credentials (Bearer Did stored in local storage with key uris and keys in key manager, vcs stored in dwn)
+
 
 4. Customer Satisfaction: how will your application track customer satisfaction with PFIs (5-star rating on, speed of settlement i.e. actual vs estimated, comparison to market rate, )
 A set of Verifiable Credentials issued to the PFI that can be consumed by any interested party in order to assess the reputability of the respective PFI.

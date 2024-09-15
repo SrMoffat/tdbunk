@@ -277,8 +277,10 @@ const StepFour = () => {
 
 
     const theBearerDid = userBearerDid
-    ? userBearerDid
-    : getUserBearerDid()
+        ? userBearerDid
+        : getUserBearerDid()
+
+    const hasMadePayment = false
 
     return <Layout style={{ backgroundColor: colorBgContainer }}>
         <Flex className="flex-col">
@@ -294,66 +296,83 @@ const StepFour = () => {
                 <WalletBalance money={monopolyMoney} />
             </Flex>
             <Flex className="flex-row mt-4 gap-3 justify-between">
-                <Card className="w-full">
-                    <Flex className="items-center w-full">
-                        <Flex className="flex-col">
-                            <Typography.Text style={{ fontSize: 11 }} className="mb-1 opacity-50">
-                                The campaign amount converted at market rate
-                            </Typography.Text>
-                            <SearchOffers
-                                isLoading={isLoading}
-                                setIsLoading={setIsLoading}
-                            />
-                        </Flex>
-                        {hasCancelledTransactions && (
-                            <Transactions userBearerDid={theBearerDid} exchanges={dummyExchanges} />
-                        )}
-                        <MarketRate
-                            source={selectedCurrency}
-                            currentMarketRate={currentMarketRate}
-                            destination={selectedDestinationCurrency}
-                            setCurrentMarketRate={setCurrentMarketRate}
-                            marketConversionApiQuotaExceeded={marketConversionApiQuotaExceeded}
-                        />
-                    </Flex>
-                    <List
-                        pagination={{ position: "bottom", align: "start", pageSize: 4 }}
-                        loading={isLoading}
-                        dataSource={offerings}
-                        className="mt-4"
-                        renderItem={(item, index) => {
-                            const isOnlyResult = offerings?.length === 1
-                            return (
-                                <OfferingDetails
-                                    key={index}
-                                    web5={web5}
-                                    offering={item}
-                                    money={monopolyMoney}
-                                    isSelected={isSelected}
-                                    isCompleted={isCompleted}
-                                    isCancelled={isCancelled}
-                                    selectedCard={selectedCard}
-                                    isOnlyResult={isOnlyResult}
-                                    userBearerDid={theBearerDid}
-                                    stateCredentials={credentials}
-                                    campaignAmount={campaignAmount}
-                                    credentials={existingCredentials}
-                                    selectedOffering={selectedOffering}
+                {
+                    !hasMadePayment ? (
+                        <Card className="w-full">
+                            <Flex className="items-center w-full">
+                                <Flex className="flex-col">
+                                    <Typography.Text style={{ fontSize: 11 }} className="mb-1 opacity-50">
+                                        The campaign amount converted at market rate
+                                    </Typography.Text>
+                                    <SearchOffers
+                                        isLoading={isLoading}
+                                        setIsLoading={setIsLoading}
+                                    />
+                                </Flex>
+                                {hasCancelledTransactions && (
+                                    <Transactions userBearerDid={theBearerDid} exchanges={dummyExchanges} />
+                                )}
+                                <MarketRate
+                                    source={selectedCurrency}
                                     currentMarketRate={currentMarketRate}
-                                    unformattedOfferings={unformattedOfferings}
-
-                                    setIsSelected={setIsSelected}
-                                    setIsCompleted={setIsCompleted}
-                                    setIsCancelled={setIsCancelled}
-                                    createExchange={createExchange}
-                                    setSelectedCard={setSelectedCard}
-                                    setCampaignAmount={setCampaignAmount}
-                                    setSelectedOffering={setSelectedOffering}
+                                    destination={selectedDestinationCurrency}
+                                    setCurrentMarketRate={setCurrentMarketRate}
+                                    marketConversionApiQuotaExceeded={marketConversionApiQuotaExceeded}
                                 />
-                            )
-                        }}
-                    />
-                </Card>
+                            </Flex>
+                            <List
+                                pagination={{ position: "bottom", align: "start", pageSize: 4 }}
+                                loading={isLoading}
+                                dataSource={offerings}
+                                className="mt-4"
+                                renderItem={(item, index) => {
+                                    const isOnlyResult = offerings?.length === 1
+                                    return (
+                                        <OfferingDetails
+                                            key={index}
+                                            web5={web5}
+                                            offering={item}
+                                            money={monopolyMoney}
+                                            isSelected={isSelected}
+                                            isCompleted={isCompleted}
+                                            isCancelled={isCancelled}
+                                            selectedCard={selectedCard}
+                                            isOnlyResult={isOnlyResult}
+                                            userBearerDid={theBearerDid}
+                                            stateCredentials={credentials}
+                                            campaignAmount={campaignAmount}
+                                            credentials={existingCredentials}
+                                            selectedOffering={selectedOffering}
+                                            currentMarketRate={currentMarketRate}
+                                            unformattedOfferings={unformattedOfferings}
+
+                                            setIsSelected={setIsSelected}
+                                            setIsCompleted={setIsCompleted}
+                                            setIsCancelled={setIsCancelled}
+                                            createExchange={createExchange}
+                                            setSelectedCard={setSelectedCard}
+                                            setCampaignAmount={setCampaignAmount}
+                                            setSelectedOffering={setSelectedOffering}
+                                        />
+                                    )
+                                }}
+                            />
+                        </Card>
+                    ) : <Card className="w-full">
+                        <Flex className="items-center w-full">
+                            <Flex className="flex-col">
+                                <Typography.Text style={{ fontSize: 11 }} className="mb-1 opacity-50">
+                                    The campaign amount has been made
+                                </Typography.Text>
+                                <Flex>Something Here</Flex>
+                            </Flex>
+                            <Flex>Something Here</Flex>
+                        </Flex>
+                        <Flex>
+                            Has Made Payment View Campaign Stuff and Start CTA with Confetting and 3D stuff
+                        </Flex>
+                    </Card>
+                }
                 <Flex className="w-1/4 flex flex-row">
                     <Flex className="w-full">
                         <DebunkCampaignStats isFull />

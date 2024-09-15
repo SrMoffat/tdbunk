@@ -132,12 +132,23 @@ export const MARKET_CONVERSION_API_EXCEEDED_QOUTA_LOCAL_STORAGE_KEY = 'TDBunk:Ma
 
 export const FEATURE_FLAG_USE_PAID_EXCHAGE_RATE_API = false
 
-export const TDBUNK_PLATFORM_FEE_STRATEGY = {
+// Transaction: Applied for each transaction when  a sponsor transfers funds to a campaign
+export const TDBUNK_TRANSACTION_FEE_STRATEGY = {
     displayText: '2.9% + $0.50',
     percentage: 0.029, // 2.9%
     fixed: {
         currency: DEFAULT_BASE_CURRENCY,
         value: 0.50 // $0.50
+    }
+}
+
+// Platform: Applied for each campaign after debunking when fact-checkers are being paid
+export const TDBUNK_PLATFORM_FEE_STRATEGY = {
+    displayText: '1.5%',
+    percentage: 0.015, // 1.5%
+    fixed: {
+        currency: DEFAULT_BASE_CURRENCY,
+        value: 0.00 // $0.00
     }
 }
 

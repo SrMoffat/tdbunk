@@ -1,5 +1,5 @@
 import countries from "@/public/countries.json"
-import { LANDING_PAGE_TABS, DEBUNK_SOURCE, DEBUNK_CAMPAIGN_TYPE, TDBUNK_PLATFORM_FEE_STRATEGY, PFIs, TBDEX_MESSAGE_TYPES, TDBUNK_CANCEL_REASON, TDBUNK_SUCCESS_REASON, TBDEX_MESSAGE_TYPES_TO_STATUS } from "@/app/lib/constants";
+import { LANDING_PAGE_TABS, DEBUNK_SOURCE, DEBUNK_CAMPAIGN_TYPE, TDBUNK_PLATFORM_FEE_STRATEGY, PFIs, TBDEX_MESSAGE_TYPES, TDBUNK_CANCEL_REASON, TDBUNK_SUCCESS_REASON, TBDEX_MESSAGE_TYPES_TO_STATUS, INTERVALS_LOCAL_STORAGE_KEY } from "@/app/lib/constants";
 import { formatDistanceToNow, differenceInSeconds, addSeconds } from "date-fns";
 import { getFixedRateConversion } from "./api";
 
@@ -337,7 +337,12 @@ export const extractMessageDetailsFromExchange = (item: any) => {
         (entry: any) => entry?.did === toDidUri
     );
 
-    const exchangeTime = formatDistanceToNow(new Date(createdAt), { addSuffix: true })
+    console.log("❓createdAt ❓", {
+        metadata,
+        createdAt
+    })
+
+    const exchangeTime = formatDistanceToNow(new Date(), { addSuffix: true })
 
     const payin = data?.payin
     const payout = data?.payout
@@ -374,5 +379,73 @@ export const extractMessageDetailsFromExchange = (item: any) => {
         exchangeId,
         pfiDetails,
         exchangeTime,
+    }
+}
+
+export const addTransaction = ({ offering, exchange: relevantExchange, campaignAmount }: { offering: any; exchange: any, campaignAmount: any }) => {
+    const [payinData, payoutData] = offering?.pair
+
+    const offeringRate = payoutData?.unit
+
+    const fromCurrency = payinData?.currencyCode
+    const fromAmount = Math.floor(campaignAmount / offeringRate)
+
+    const toCurrency = payoutData?.currencyCode
+    const toAmount = campaignAmount
+
+
+    const payin = {
+        currency: fromCurrency,
+        amount: fromAmount
+    }
+
+    const payout = {
+        currency: toCurrency,
+        amount: toAmount
+    }
+
+    const {
+        tag,
+        createdAt,
+        isCancel,
+        finalTag,
+        isSuccess,
+        protocol,
+        exchangeId,
+        pfiDetails,
+        exchangeTime,
+    } = extractMessageDetailsFromExchange(relevantExchange?.mostRecentMessage)
+
+    const transaction = {
+        tag,
+        payin,
+        payout,
+        finalTag,
+        protocol,
+        isCancel,
+        createdAt,
+        isSuccess,
+        pfiDetails,
+        exchangeId,
+        exchangeTime,
+    }
+
+    return transaction
+}
+
+export const clearAllIntervals = (intervalIds: string[]) => {
+    for (const interval of intervalIds) {
+        console.log("Clearing interval with ID:", interval)
+        window && window.clearInterval(interval);
+    }
+    localStorage && localStorage.removeItem(INTERVALS_LOCAL_STORAGE_KEY)
+}
+
+export const clearAllPollingTimers = () => {
+    const storedIntervals = localStorage && localStorage.getItem(INTERVALS_LOCAL_STORAGE_KEY)
+    if (storedIntervals) {
+        const existingIntervals = JSON.parse(storedIntervals)
+        const newIntervals = [...existingIntervals]
+        clearAllIntervals(newIntervals)
     }
 }

@@ -334,14 +334,8 @@ export const extractMessageDetailsFromExchange = (item: any) => {
     )}...${toDidUri?.slice(-8)}`;
 
     const pfiDetails = PFIs.find(
-        (entry: any) => entry?.did === toDidUri
+        (entry: any) => entry?.did === fromDidUri
     );
-
-    const exchangeTime = formatDistanceToNow(new Date(createdAt), { addSuffix: true })
-
-    const payin = data?.payin
-    const payout = data?.payout
-
 
     const isRfq = kind === TBDEX_MESSAGE_TYPES.RFQ
     const isQuote = kind === TBDEX_MESSAGE_TYPES.QUOTE
@@ -373,7 +367,6 @@ export const extractMessageDetailsFromExchange = (item: any) => {
         protocol,
         exchangeId,
         pfiDetails,
-        exchangeTime,
     }
 }
 
@@ -408,7 +401,6 @@ export const createTransaction = ({ offering, exchange: relevantExchange, campai
         protocol,
         exchangeId,
         pfiDetails,
-        exchangeTime,
     } = extractMessageDetailsFromExchange(relevantExchange?.mostRecentMessage)
 
     const transaction = {
@@ -422,7 +414,6 @@ export const createTransaction = ({ offering, exchange: relevantExchange, campai
         isSuccess,
         pfiDetails,
         exchangeId,
-        exchangeTime,
     }
 
     return transaction
@@ -443,4 +434,16 @@ export const clearAllPollingTimers = () => {
         const newIntervals = [...existingIntervals]
         clearAllIntervals(newIntervals)
     }
+}
+
+export const getUniqueExchanges = (exchanges: any[]) => {
+    const uniqueItems = exchanges.reduce((acc, current) => {
+        const isDuplicate = acc.some((item: any) => item.exchangeId === current.exchangeId);
+        if (!isDuplicate) {
+            acc.push(current);
+        }
+        return acc;
+    }, []);
+
+    return uniqueItems
 }

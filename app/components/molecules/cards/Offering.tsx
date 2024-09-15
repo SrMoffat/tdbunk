@@ -1,7 +1,7 @@
 import AssetExchangeOffer from "@/app/components/atoms/OfferDetails";
 import AssetExchangePFIDetails from "@/app/components/molecules/cards/OfferingPFIDetails";
 import { INTERVALS_LOCAL_STORAGE_KEY, PFIs, TBDEX_MESSAGE_TYPES_TO_STATUS, TDBUNK_TRANSACTIONS_LOCAL_STORAGE_KEY } from "@/app/lib/constants";
-import { createTransaction, getCurrencyFlag, getPlatformFees } from "@/app/lib/utils";
+import { createTransaction, getCurrencyFlag, getPlatformFees, getUniqueExchanges } from "@/app/lib/utils";
 import { useNotificationContext } from "@/app/providers/NotificationProvider";
 import { Offering } from "@tbdex/http-client";
 import { List } from "antd";
@@ -154,7 +154,8 @@ const OfferingDetails = (props: any) => {
                 })
 
                 setTransactions((prev: any) => {
-                    const results = [...prev, txn]
+                    const results = getUniqueExchanges([...prev, txn])
+
                     localStorage?.setItem(TDBUNK_TRANSACTIONS_LOCAL_STORAGE_KEY, JSON.stringify(results))
                     return results
                 })
@@ -182,7 +183,7 @@ const OfferingDetails = (props: any) => {
                 })
 
                 setTransactions((prev: any) => {
-                    const results = [...prev, txn]
+                    const results = getUniqueExchanges([...prev, txn])
                     localStorage?.setItem(TDBUNK_TRANSACTIONS_LOCAL_STORAGE_KEY, JSON.stringify(results))
                     return results
                 })
@@ -307,6 +308,4 @@ const OfferingDetails = (props: any) => {
 
 
 export default OfferingDetails
-
-
 

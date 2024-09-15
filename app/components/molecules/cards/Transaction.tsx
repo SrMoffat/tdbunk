@@ -1,21 +1,10 @@
 import { Transaction } from "@/app/components/atoms/Icon";
+import { getUniqueExchanges } from "@/app/lib/utils";
 import type { CollapseProps } from 'antd';
 import { Avatar, Badge, Button, Collapse, Flex, Modal, theme, Typography } from "antd";
 import Image from "next/image";
 import { useState } from "react";
 import { generateExchangesComponents } from "../../atoms/Transaction";
-
-const getUniqueExchanges = (exchanges: any[]) => {
-    const uniqueItems = exchanges.reduce((acc, current) => {
-        const isDuplicate = acc.some((item: any) => item.exchangeId === current.exchangeId);
-        if (!isDuplicate) {
-            acc.push(current);
-        }
-        return acc;
-    }, []);
-
-    return uniqueItems
-}
 
 const Transactions = (props: any) => {
     const {
@@ -35,10 +24,7 @@ const Transactions = (props: any) => {
     }
     const toRender = getUniqueExchanges(exchanges)
 
-    console.log("📈 Transactions 📉", toRender)
-
     const transactions: CollapseProps['items'] = generateExchangesComponents(toRender)
-
     return (
         <Flex className="w-full ml-4 items-center mt-5">
             <Modal

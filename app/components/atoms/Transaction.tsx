@@ -4,7 +4,7 @@ import { extractMessageDetailsFromExchange, getCurrencyFlag } from "@/app/lib/ut
 import { PRIMARY_GOLD_HEX } from "@/app/providers/ThemeProvider";
 import { RightCircleFilled } from "@ant-design/icons";
 import { Avatar, Button, Card, Flex, Rate, Space, Tag, Typography } from "antd";
-import { format } from "date-fns";
+import { format, formatDistanceToNow } from "date-fns";
 
 const TransactionSummary = (props: any) => {
     const {
@@ -13,9 +13,10 @@ const TransactionSummary = (props: any) => {
         payout,
         isCancel,
         finalTag,
-        exchangeTime
+        createdAt,
     } = props
 
+    const exchangeTime = formatDistanceToNow(new Date(createdAt), { addSuffix: true })
 
     return (
         <Flex className="justify-between flex-col items-center gap-2">
@@ -175,6 +176,7 @@ export const generateExchangesComponents = (exchanges: any[]) => {
                 payout={payout}
                 finalTag={finalTag}
                 isCancel={isCancel}
+                createdAt={createdAt}
                 isSuccess={isSuccess}
                 exchangeTime={exchangeTime}
             />,

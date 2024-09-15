@@ -22,7 +22,7 @@ const PaymentFlowModal = (props: any) => {
         credentials,
         rawOffering,
         isCancelled,
-        // isCompleted,
+        isCompleted,
         setShowModal,
         isCancelling,
         selectedCard,
@@ -52,8 +52,6 @@ const PaymentFlowModal = (props: any) => {
         setRequiredPaymentDetails,
         offeringToCurrencyMethods,
     } = props
-
-    const isCompleted = true
 
     const [hasInsufficientBalance, setHasInsufficientBalance] = useState(false)
     const [startPollingForMessages, setStartPollingForMessages] = useState(false)
@@ -332,8 +330,12 @@ const PaymentFlowModal = (props: any) => {
         >
             <Spin spinning={isCancelling || isLoading}>
                 {
-                        isCompleted
-                        ? <ReviewOffering offering={offering} setOfferingReview={setOfferingReview} />
+                    isCompleted
+                        ? <ReviewOffering
+                            offering={offering}
+                            campaignAmount={campaignAmount}
+                            setOfferingReview={setOfferingReview}
+                        />
                         : flow
                 }
             </Spin>

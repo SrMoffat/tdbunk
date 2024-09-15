@@ -1,4 +1,4 @@
-import { MARKET_CONVERSION_RATE_LOCAL_STORAGE_KEY, PFIs } from "@/app/lib/constants";
+import { MARKET_CONVERSION_RATE_LOCAL_STORAGE_KEY, PFIs, SETTLED_TRANSFER_AT_LOCAL_STORAGE_KEY, STARTED_TRANSFER_AT_LOCAL_STORAGE_KEY } from "@/app/lib/constants";
 import { displayTimeWithLabel, getCurrencyFlag, getEstimatedSettlementTime, percentageDifference } from "@/app/lib/utils";
 import { PRIMARY_GOLD_HEX } from "@/app/providers/ThemeProvider";
 import { RightCircleFilled, ClockCircleOutlined } from "@ant-design/icons";
@@ -13,26 +13,24 @@ const ReviewOffering = (props: any) => {
 
     const fromCurrency = fromMethods?.currencyCode
     const fromAmount = Math.floor(campaignAmount / toMethods.unit)
-
-
-
     const toCurrency = toMethods?.currencyCode
 
-    console.log("Offering ", offering)
     const { token: { colorError, colorSuccess } } = theme.useToken()
-
-
     const { timeWithLabel: estimatedTime, timeInSeconds } = getEstimatedSettlementTime(toMethods.methods, true);
 
     const [value, setValue] = useState(0);
     const [comment, setComment] = useState('');
     const desc = ['terrible', 'bad', 'normal', 'good', 'wonderful'];
 
-    const startTime = new Date() // localStorage?.getItem(STARTED_TRANSFER_AT_LOCAL_STORAGE_KEY)
-    const end = new Date()
-    const endTime = end.setHours(end.getHours() + 1) // localStorage?.getItem(SETTLED_TRANSFER_AT_LOCAL_STORAGE_KEY)
+    const startTime = localStorage?.getItem(STARTED_TRANSFER_AT_LOCAL_STORAGE_KEY) as string
+    const endTime = localStorage?.getItem(SETTLED_TRANSFER_AT_LOCAL_STORAGE_KEY) as string
 
-    const txnTime = differenceInSeconds(endTime, startTime)
+    console.log("🚀 Transfer Timestamps 🚀", {
+        startTime,
+        endTime
+    })
+
+    const txnTime = differenceInSeconds(JSON.parse(endTime), JSON.parse(startTime))
     const txnTimeWithLabel = displayTimeWithLabel(txnTime)
 
     const marketRate = localStorage.getItem(MARKET_CONVERSION_RATE_LOCAL_STORAGE_KEY)

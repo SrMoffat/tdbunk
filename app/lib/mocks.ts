@@ -1,4 +1,4 @@
-import { DEBUNK_SOURCE, DEBUNK_CAMPAIGN_TYPE } from "@/app/lib/constants";
+import { DEBUNK_SOURCE, DEBUNK_CAMPAIGN_TYPE, DEFAULT_BASE_CURRENCY } from "@/app/lib/constants";
 import { Card1, Card2, Card3, TBDVCLogoYellow } from "@/app/components/atoms/Icon";
 
 interface RecordType {
@@ -15,9 +15,9 @@ export const campaigns = [
         source: DEBUNK_SOURCE.FACEBOOK,//
         factCheckers: [],
         sponsors: [],
-        type: "Community",//
+        type: DEBUNK_CAMPAIGN_TYPE.COMMUNITY,//
         amount: 3000,//
-        currency: "USD",//
+        currency: DEFAULT_BASE_CURRENCY,//
         evidences: [],
         thumbnail: "",
         status: 'open',
@@ -30,9 +30,9 @@ export const campaigns = [
         source: DEBUNK_SOURCE.TIKTOK,
         factCheckers: [],
         sponsors: [],
-        type: "Sponsored",
+        type: DEBUNK_CAMPAIGN_TYPE.SPONSORED,
         amount: 3000,
-        currency: "USD",
+        currency: DEFAULT_BASE_CURRENCY,
         evidences: [],
         thumbnail: "",
         status: 'open',
@@ -45,9 +45,9 @@ export const campaigns = [
         source: DEBUNK_SOURCE.INSTAGRAM,
         factCheckers: [],
         sponsors: [],
-        type: "Community",
+        type: DEBUNK_CAMPAIGN_TYPE.COMMUNITY,
         amount: 3000,
-        currency: "USD",
+        currency: DEFAULT_BASE_CURRENCY,
         evidences: [],
         thumbnail: "",
         status: 'open',
@@ -60,9 +60,9 @@ export const campaigns = [
         source: DEBUNK_SOURCE.X,
         factCheckers: [],
         sponsors: [],
-        type: "Sponsored",
+        type: DEBUNK_CAMPAIGN_TYPE.SPONSORED,
         amount: 3000,
-        currency: "USD",
+        currency: DEFAULT_BASE_CURRENCY,
         evidences: [],
         thumbnail: "",
         status: 'open',
@@ -75,9 +75,9 @@ export const campaigns = [
         source: DEBUNK_SOURCE.YOUTUBE,
         factCheckers: [],
         sponsors: [],
-        type: "Community",
+        type: DEBUNK_CAMPAIGN_TYPE.COMMUNITY,
         amount: 3000,
-        currency: "USD",
+        currency: DEFAULT_BASE_CURRENCY,
         evidences: [],
         thumbnail: "",
         status: 'open',
@@ -90,9 +90,9 @@ export const campaigns = [
         source: DEBUNK_SOURCE.FACEBOOK,
         factCheckers: [],
         sponsors: [],
-        type: "Sponsored",
+        type: DEBUNK_CAMPAIGN_TYPE.SPONSORED,
         amount: 3000,
-        currency: "USD",
+        currency: DEFAULT_BASE_CURRENCY,
         evidences: [],
         thumbnail: "",
         status: 'open',
@@ -114,7 +114,7 @@ export const debunks = Array.from({ length: 23 }).map((_, i) => ({
     tippers: [],
     evidences: [],
     amount: 3000,
-    currency: "USD",
+    currency: DEFAULT_BASE_CURRENCY,
     isFactual: i % 2 === 0,
     source: i % 2 === 0 ? DEBUNK_SOURCE.X : i % 3 === 0 ? DEBUNK_SOURCE.TIKTOK : DEBUNK_SOURCE.FACEBOOK,
     type: i % 2 === 0 ? DEBUNK_CAMPAIGN_TYPE.COMMUNITY : DEBUNK_CAMPAIGN_TYPE.SPONSORED
@@ -127,13 +127,13 @@ export const sponsorships = Array.from({ length: 23 }).map((_, i) => ({
     description:
         'Ant Design, a design language for background applications, is refined by Ant UED Team.',
     content:
-        'We supply a series of design principles, practical patterns and high quality design resources (Sketch and Axure), to help people create their product prototypes beautifully and efficiently.',
+        'Ant Design, a design language for background applications, is refined by Ant UED Team Ant Design, a design language for background applications, is refined by Ant UED Team Ant Design, a design language for background applications, is refined by Ant UED TeamAnt Design, a design language for background applications, is refined by Ant UED TeamAnt Design, a design language for background applications, is refined by Ant UED TeamAnt Design, a design language for background applications, is refined by Ant UED TeamAnt Design, a design language for background applications, is refined by Ant UED TeamAnt Design, a design language for background applications, is refined by Ant UED TeamAnt Design, a design language for background applications, is refined by Ant UED TeamAnt Design, a design language for background applications, is refined by Ant UED TeamAnt Design, a design language for background applications, is refined by Ant UED TeamAnt Design, a design language for background applications, is refined by Ant UED TeamAnt Design, a design language for background applications, is refined by Ant UED TeamAnt Design, a design language for background applications, is refined by Ant UED TeamAnt Design, a design language for background applications, is refined by Ant UED TeamAnt Design, a design language for background applications, is refined by Ant UED TeamAnt Design, a design language for background applications, is refined by Ant UED TeamAnt Design, a design language for background applications, is refined by Ant UED TeamAnt Design, a design language for background applications, is refined by Ant UED TeamAnt Design, a design language for background applications, is refined by Ant UED TeamAnt Design, a design language for background applications, is refined by Ant UED TeamAnt Design, a design language for background applications, is refined by Ant UED TeamAnt Design, a design language for background applications, is refined by Ant UED TeamAnt Design, a design language for background applications, is refined by Ant UED TeamAnt Design, a design language for background applications, is refined by Ant UED TeamAnt Design, a design language for background applications, is refined by Ant UED TeamAnt Design, a design language for background applications, is refined by Ant UED TeamAnt Design, a design language for background applications, is refined by Ant UED Team.',
     factCheckers: [],
     sponsors: [],
     tippers: [],
     evidences: [],
     amount: 3000,
-    currency: "USD",
+    currency: DEFAULT_BASE_CURRENCY,
     isFactual: i % 2 === 0,
     source: i % 2 === 0 ? DEBUNK_SOURCE.X : i % 3 === 0 ? DEBUNK_SOURCE.TIKTOK : DEBUNK_SOURCE.FACEBOOK,
     type: i % 2 === 0 ? DEBUNK_CAMPAIGN_TYPE.COMMUNITY : DEBUNK_CAMPAIGN_TYPE.SPONSORED

@@ -98,24 +98,17 @@ export const SearchOffers = (props: any) => {
                     }
                     onChange={async (value) => {
                         debounce(async () => {
-                            // const response = await fetch('/api/conversions', {
-                            //     method: 'POST',
-                            //     body: JSON.stringify({
-                            //         source: selectedCurrency,
-                            //         destination: selectedDestinationCurrency,
-                            //         amount: value
-                            //     })
-                            // })
-
-                            // const newAmount = await response.json()
-                            console.log("Amount Here Debounced ==>", {
-                                value,
-                                // newAmount,
-                                source: selectedCurrency,
-                                destination: selectedDestinationCurrency,
+                            const response = await fetch('/api/conversions', {
+                                method: 'POST',
+                                body: JSON.stringify({
+                                    source: selectedCurrency,
+                                    destination: selectedDestinationCurrency,
+                                    amount: value
+                                })
                             })
 
-                            // setCampaignAmount?.(Math.floor(newAmount?.conversion_result))
+                            const newAmount = await response.json()
+                            setCampaignAmount?.(Math.floor(newAmount?.conversion_result))
                         }, 1000)()
                         setLocalCampaignAmount(value as number)
                     }} />
@@ -129,16 +122,15 @@ export const SearchOffers = (props: any) => {
                     const data = await response.json()
 
                     if (!data.rate) {
-                        console.log("Data Here", data)
-                        // const responsePaid = await fetch(`/api/conversions`, {
-                        //     method: 'POST',
-                        //     body: JSON.stringify({ source: selectedDestinationCurrency, destination: value })
-                        // })
+                        const responsePaid = await fetch(`/api/conversions`, {
+                            method: 'POST',
+                            body: JSON.stringify({ source: selectedDestinationCurrency, destination: value })
+                        })
 
-                        // const dataPaid = await responsePaid.json()
-                        // const rate = dataPaid?.conversion_rate
+                        const dataPaid = await responsePaid.json()
+                        const rate = dataPaid?.conversion_rate
 
-                        // setCampaignAmount?.(Math.floor(rate * Number(campaignAmount)))
+                        setCampaignAmount?.(Math.floor(rate * Number(campaignAmount)))
                     } else {
                         const rate = data?.rate
                         setCampaignAmount?.(Math.floor(rate * Number(campaignAmount)))

@@ -6,9 +6,11 @@ import { Button, Modal, Spin } from "antd";
 import ReviewOffering from "../cards/Review";
 import { createOfferingReviewCredential } from "@/app/lib/web5";
 import { useState, useEffect } from "react"
+import { useNotificationContext } from "@/app/providers/NotificationProvider";
 
 const PaymentFlowModal = (props: any) => {
     const {
+        web5,
         money,
         values,
         pfiDid,
@@ -55,6 +57,7 @@ const PaymentFlowModal = (props: any) => {
 
     const [hasInsufficientBalance, setHasInsufficientBalance] = useState(false)
     const [startPollingForMessages, setStartPollingForMessages] = useState(false)
+    const { notify } = useNotificationContext()
 
     const isButtonDisabled = !activateButton
 
@@ -94,30 +97,27 @@ const PaymentFlowModal = (props: any) => {
         if (isCancelled) return
 
         if (isCompleted) {
-            console.log("IS Completed submit review", {
-                offeringReview,
-                // campaignDetails
-                // transactionDetails
-            })
             // Create review VC
-            // const status = await createOfferingReviewCredential(
-            //     web5,
-            //     userBearerDid,
-            //     {
-            //         ...offeringReview,
-            //         pfiDid
-            //     }
-            // )
+            const status = await createOfferingReviewCredential(
+                web5,
+                userBearerDid,
+                {
+                    ...offeringReview,
+                    pfiDid
+                }
+            )
 
-            // if (status?.status.code === 202) {
-            //     setIsLoading(false)
-            //     notify?.('success', {
-            //         message: 'Review Submitted!',
-            //         description: 'Your review of  the transaction has submitted!'
-            //     })
-            // }
+            if (status?.status.code === 202) {
+                setIsLoading(false)
+                notify?.('success', {
+                    message: 'Review Submitted!',
+                    description: 'Your review of  the transaction has submitted!'
+                })
+                setIsLoading(false)
+                setShowModal(false)
+            }
 
-            // setShowModal(false)
+            setShowModal(false)
         } else if (isRequestQuote) {
             setStartPollingForMessages(true)
 
@@ -131,21 +131,7 @@ const PaymentFlowModal = (props: any) => {
                 offering: rawOffering,
                 stateCredentials
             })
-
-            console.log("IS Request Quote", {
-                isRequestQuote,
-                requiredPaymentDetails,
-                credentials,
-                userBearerDid,
-                amount: convertedCampaignAmount,
-                offering: rawOffering,
-                stateCredentials
-            })
-
         } else {
-            console.log("IS Make Transfer")
-            // Extract t
-
             // Start timer for the transfer
             localStorage?.setItem(STARTED_TRANSFER_AT_LOCAL_STORAGE_KEY, JSON.stringify(new Date()))
 
@@ -161,10 +147,7 @@ const PaymentFlowModal = (props: any) => {
 
                 if (!hasSufficientBalance && sameCurrency) {
                     // Set error and disable button, insufficient balance
-                    console.log("Set error and disable button", {
-                        hasSufficientBalance,
-                        sameCurrency
-                    })
+                   console.log("Handle wallet balance here")
                 } else {
                     // Make deduction of amount from wallet
                     // Update state value with new amount
@@ -186,11 +169,6 @@ const PaymentFlowModal = (props: any) => {
 
             if (orderMessage) {
                 // To Do: Create and store completed transaction in state and local storage
-
-
-
-                console.log("Close modal and toast success txn complete", orderMessage)
-                // setShowModal(false);
                 // setIsCompleted(true)
                 setStartPollingForMessages(false)
             }
@@ -200,7 +178,6 @@ const PaymentFlowModal = (props: any) => {
     const handleCancel = async () => {
         if (isCompleted || isRequestQuote || isCancelled) {
             // Create a VC without user review?
-            console.log("Canelled out of a review of PFI", offeringReview)
             setShowModal(false);
         } else {
             setIsCancelling(true)
@@ -214,21 +191,9 @@ const PaymentFlowModal = (props: any) => {
                 exchangeId: relevantExchange?.mostRecentMessage?.metadata?.exchangeId,
             })
 
-            console.log("Canelled out sendCloseMessage", {
-                pfiDid,
-                closeMessage,
-                userBearerDid,
-                reason: TDBUNK_CANCEL_REASON,
-                exchangeId: relevantExchange?.mostRecentMessage?.metadata?.exchangeId,
-            })
-
-
             if (closeMessage) {
                 // To Do: Create and store cancelled transaction in state and local storage
-
-                console.log("Cancel Message returned", closeMessage)
                 // End Timer for Cancelling
-
                 // To Do: Reset form and all relevant state
                 setStartPollingForMessages(false)
 
@@ -274,17 +239,8 @@ const PaymentFlowModal = (props: any) => {
 
 
     // const insufficientBalance = Math.floor(campaignAmount / exchangeRate) > money?.amount
-
-    // // To Do: Clean this up 🤢
-    // // Maybe const disableActionButton = insufficientBalance || (!isCompleted && (isButtonDisabled || isCancelling));
-
-    // console.log("Disable Action Button?", {
-    //     result: insufficientBalance || (!isCompleted && (isButtonDisabled || isCancelling)),
-    //     insufficientBalance,
-    //     isCompleted,
-    //     isButtonDisabled,
-    //     isCancelling
-    // })
+    // To Do: Clean this up 🤢
+    // Maybe const disableActionButton = insufficientBalance || (!isCompleted && (isButtonDisabled || isCancelling));
 
     const disableActionButton = hasInsufficientBalance
         ? true
@@ -292,7 +248,6 @@ const PaymentFlowModal = (props: any) => {
 
     useEffect(() => {
         if (startPollingForMessages) {
-            console.log("Start Polling Messages")
             const intervalId = pollExchanges(userBearerDid, {
                 latest: setRelevantExchange,
                 all: setAllExchanges

@@ -25,7 +25,6 @@ const AssetExachangeAction = ({
     const handleButtonClicked = () => {
         showModal()
         setSelectedOffering(offering)
-        console.log("Offering selected", offering)
     }
     return (
         <Flex className="flex-col w-full items-start justify-end">

@@ -79,11 +79,6 @@ const ProfessionalInstitutionCredential = (props: any) => {
 
                 const { data } = extractVcDocumentDetails(parsedVc)
 
-                console.log("parsedVc", {
-                    parsedVc,
-                    data
-                })
-
                 const vcSubject = data?.subject
                 const issuanceDate = data?.issuanceDate
                 const expirationDate = data?.expirationDate
@@ -113,10 +108,6 @@ const ProfessionalInstitutionCredential = (props: any) => {
 
     const endDate = new Date(vcSubject?.endDate as string).toLocaleString('default', {
         dateStyle: 'short'
-    })
-
-    console.log("ProfessionalCredentials ==>", {
-        vcSubject
     })
 
     const showDrawer = () => {

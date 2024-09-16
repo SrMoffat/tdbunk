@@ -35,19 +35,12 @@ export const checkIfProtocolIsInstalled = async (web5: Web5Api | null) => {
             }
         });
 
-        console.log("Checking here", {
-            protocols,
-            status
-        })
-
         if (status.code !== 200) {
             // To Do: Better error handling
-            alert('Error querying protocols');
             console.error('Error querying protocols', status);
             return false;
         }
 
-        console.log('checkIfProtocolIsInstalled', protocols.length > 0);
         return protocols.length > 0
     } catch (error: any) {
         console.error("Error checkIfProtocolIsInstalled", error)
@@ -85,14 +78,9 @@ export const createDwnCampaign = async (web5: Web5Api | null) => {
         const data = await record?.data.json();
         const campaign = { record, data, id: record?.id };
 
-        console.log("campaign =====+++-->", campaign)
-
         const response = await record?.send("did:dht:b3tits968u8rdoxiec3qpb9tizg57zbspgn1mattogi7n3bfmc4y");
 
-        console.log("Data", response?.status)
-
         if (response?.status?.code !== 202) {
-            console.log("Unable to send to target did:" + response?.status?.code);
             return;
         }
         else {
@@ -124,8 +112,6 @@ export const fetchCampaigns = async (web5: Web5Api | null, did: string): Promise
             }
         });
 
-        console.log("Reccors Returned fro DWN", campaigns)
-
         // CreatedAscending = 'createdAscending',
         //     CreatedDescending = 'createdDescending',
         //     PublishedAscending = 'publishedAscending',
@@ -150,8 +136,6 @@ export const setupTdbunkProtocol = async (web5: Web5Api | null, did: string) => 
         const isInstalled = await checkIfProtocolIsInstalled(web5Instance)
 
         if (!isInstalled) {
-            console.log('!isInstalled', !isInstalled);
-
             // configure protocol on local DWN
             const { status: configureStatus, protocol } = await web5Instance!.dwn.protocols.configure({
                 message: {
@@ -163,14 +147,7 @@ export const setupTdbunkProtocol = async (web5: Web5Api | null, did: string) => 
             if (protocol) {
                 const { status: remoteStatus } = await protocol.send(did);
                 const isInstalled = remoteStatus.detail === 'Accepted'
-
-                console.log("Local Protocol Installation Status", {
-                    status: remoteStatus.detail,
-                    isInstalled
-                })
             }
-
-            console.log('Protocol configured', configureStatus, protocol);
         }
     } catch (error: any) {
         console.log("Error setting up campaign protocol", error);
@@ -305,10 +282,6 @@ export const fetchVcJwtFromDwn = async (web5: Web5Api, did: string) => {
 }
 
 export const createRequiredCredential = async (web5: Web5Api, did: string, details: any) => {
-    console.log("createRequiredCredential", {
-        web5,
-        details
-    })
     // Create new credential
     const vc = await generateUltimateIdentifierVc({
         ...details,
@@ -348,7 +321,6 @@ export const createRequiredCredential = async (web5: Web5Api, did: string, detai
 
 export const createFinancialCredential = async (details: any) => {
     try {
-        console.log("Details:createFinancialCredential", details)
         // Create DWN and Did
         const { web5, did, bearerDid, recoveryPhrase } = await initWeb5({
             password: details?.password as string
@@ -390,7 +362,6 @@ export const createFinancialCredential = async (details: any) => {
 }
 
 export const createGovernmentCredential = async (details: any) => {
-    console.log("Details:createGovernmentCredential", details)
     try {
         // Create DWN and Did
         const { web5, did, bearerDid, recoveryPhrase } = await initWeb5({
@@ -441,7 +412,6 @@ export const createGovernmentCredential = async (details: any) => {
 export const createProfessionalCredential = async (details: any) => {
     try {
 
-        console.log("Details:createProfessionalCredential", details)
         // Create DWN and Did
         const { web5, did, bearerDid, recoveryPhrase } = await initWeb5({
             password: details?.password as string
@@ -489,7 +459,6 @@ export const createProfessionalCredential = async (details: any) => {
 }
 
 export const createEducationalCredential = async (details: any) => {
-    console.log("Details:createEducationalCredential", details)
     try {
         // Create DWN and Did
         const { web5, did, bearerDid, recoveryPhrase } = await initWeb5({
@@ -540,11 +509,6 @@ export const createEducationalCredential = async (details: any) => {
 }
 
 export const createOfferingReviewCredential = async (web5: Web5Api, userBearerDid: any, details: any) => {
-    console.log("Details:createOfferingReviewCredential", {
-        details,
-        web5,
-        userBearerDid
-    })
     try {
         // Create new credential
         const credential = await VerifiableCredential.create({
@@ -568,14 +532,6 @@ export const createOfferingReviewCredential = async (web5: Web5Api, userBearerDi
 
         // Store VC in DWN
         const status = await storeVcJwtInDwn(web5Instance, vc, userBearerDid?.did.uri)
-
-        console.log("Created Credential", {
-            credential,
-            userBearerDid,
-            details,
-            vc,
-            status
-        })
 
         return status
     } catch (error: any) {

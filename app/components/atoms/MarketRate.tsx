@@ -52,10 +52,6 @@ const MarketRate = (props: any) => {
                 })
 
                 if (response?.success) {
-                    console.log("✅ Fetch Rates Market Rate Succeded", {
-                        marketRate: response?.rate,
-                        convertedAmount: response?.amount,
-                    })
                     const rate = response?.rate
                     setConvertedAmount(rate)
                     setCurrentMarketRate(rate)
@@ -67,10 +63,6 @@ const MarketRate = (props: any) => {
                         message: response?.message
                     }))
                     setShowBanner(true)
-                    console.log("❌ Fetch Rates Market Rate Failed", {
-                        marketRate: response?.rate,
-                        convertedAmount: response?.amount,
-                    })
                 }
             } catch (error: any) {
                 console.log("Fetching rates errored", error)
@@ -81,9 +73,6 @@ const MarketRate = (props: any) => {
     }, [source, destination])
 
     const exhuasted = localStorage?.getItem(MARKET_CONVERSION_API_EXCEEDED_QOUTA_LOCAL_STORAGE_KEY)
-
-    console.log("Local Exchuated", exhuasted)
-
 
     useEffect(() => {
         const showBanner = marketConversionApiQuotaExceeded || exhuasted

@@ -67,7 +67,6 @@ const MakePayment = (props: any) => {
     const onQuoteExpired = () => {
         setQuoteExpired(true)
         // To Do: Add notification
-        console.log('finished!');
     };
 
     const { timeWithLabel } = getEstimatedSettlementTime(offeringToCurrencyMethods, true)
@@ -96,40 +95,12 @@ const MakePayment = (props: any) => {
             const hasAllPayoutDetails = arraysEqual(providedPayoutFields, requiredPayout)
 
             activateBtn = hasAllPayinDetails && hasAllPayoutDetails
-            console.log('allPaymentDetailsRequired!', {
-                activateBtn,
-                requiredPayin,
-                requiredPayout,
-                hasAllPayinDetails,
-                hasAllPayoutDetails
-            });
-
         } else if (allPaymentDetailsNotRequired) {
             activateBtn = true
-            console.log('allPaymentDetailsNotRequired!', {
-                activateBtn,
-                allPaymentDetailsNotRequired,
-                requiredPayin,
-                requiredPayout,
-            });
-
         } else if (payinRequiredButNotPayout) {
             activateBtn = arraysEqual(providedPayinFields, requiredPayin)
-            console.log('payinRequiredButNotPayout!', {
-                activateBtn,
-                payinRequiredButNotPayout,
-                requiredPayin,
-                requiredPayout,
-            });
-
         } else if (payoutRequiredButNotPayin) {
             activateBtn = arraysEqual(providedPayoutFields, requiredPayout)
-            console.log('payoutRequiredButNotPayin!', {
-                activateBtn,
-                payoutRequiredButNotPayin,
-                requiredPayin,
-                requiredPayout,
-            });
         }
 
         setActivateButton(activateBtn)

@@ -25,11 +25,6 @@ const ReviewOffering = (props: any) => {
     const startTime = localStorage?.getItem(STARTED_TRANSFER_AT_LOCAL_STORAGE_KEY) as string
     const endTime = localStorage?.getItem(SETTLED_TRANSFER_AT_LOCAL_STORAGE_KEY) as string
 
-    console.log("🚀 Transfer Timestamps 🚀", {
-        startTime,
-        endTime
-    })
-
     const txnTime = differenceInSeconds(JSON.parse(endTime), JSON.parse(startTime))
     const txnTimeWithLabel = displayTimeWithLabel(txnTime)
 
@@ -45,7 +40,6 @@ const ReviewOffering = (props: any) => {
             offeringRate: toMethods.unit,
             estimatedSettlement: timeInSeconds,
         };
-        console.log("Review Subnission", reviewSubmission)
         setOfferingReview(reviewSubmission)
     }, [value, comment])
 

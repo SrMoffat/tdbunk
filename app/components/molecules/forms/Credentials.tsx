@@ -54,12 +54,6 @@ const CredentialsForm: React.FC<CreateCredentialProps> = ({
 
                 if (localCreds) {
                     const hasCreds = localCreds.length
-                    console.log("Found creds in local storage", {
-                        hasCreds,
-                        details,
-                        stateCredentials,
-                        localStorageCredentials
-                    })
                 } else {
                     // Get currency
                     const defaultCurrencyFromCredential = getCurrencyFromCountry(countries, details?.country?.value)
@@ -106,11 +100,6 @@ const CredentialsForm: React.FC<CreateCredentialProps> = ({
                 }
             } else {
                 // Credentials found, check to avoid duplicates?
-                console.log("Credentials found, check to avoid duplicates?", {
-                    details,
-                    stateCredentials,
-                    localStorageCredentials
-                })
             }
         } catch (error: any) {
             console.log("createOrUpdateCredentials here", error)

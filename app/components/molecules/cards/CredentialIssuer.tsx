@@ -88,30 +88,11 @@ const CredentialIssuerCard = (props: any) => {
             resultingCredentials = {
                 ...details
             }
-
-            console.log("Yes Local Credentials", {
-                result,
-                details,
-                localCredentials,
-                resultingCredentials,
-            })
         } else {
             resultingCredentials = {
                 ...storedVc
             }
-
-            console.log("No Local Credentials", {
-                result,
-                localCredentials,
-                resultingCredentials,
-            })
         }
-
-
-        console.log("Combined Credentials", {
-            resultingCredentials,
-        })
-
 
         setUserDid?.(did)
         setWeb5Instance?.(web5)
@@ -134,12 +115,10 @@ const CredentialIssuerCard = (props: any) => {
     const { isPending: financialIsPending, mutateAsync: createFinancialCredentialMutation } = useMutation({
         mutationFn: createFinancialCredential,
         onSuccess: (result: any) => {
-            console.log("Result:createFinancialCredentialMutation", result)
             setUserDataToState(result)
         },
         onError: (error: any) => {
             console.log("Error", error)
-
             // setNextButtonDisabled(true)
             // notify?.('error', {
             //     message: 'Credential Creation Failed!',
@@ -151,7 +130,6 @@ const CredentialIssuerCard = (props: any) => {
     const { isPending: governmentIsPending, mutateAsync: createGovernmentCredentialMutation } = useMutation({
         mutationFn: createGovernmentCredential,
         onSuccess: (result: any) => {
-            console.log("Result:createGovernmentCredentialMutation", result)
             setUserDataToState(result)
         },
         onError: (error: any) => {
@@ -167,7 +145,6 @@ const CredentialIssuerCard = (props: any) => {
     const { isPending: professionalIsPending, mutateAsync: createProfessionalCredentialMutation } = useMutation({
         mutationFn: createProfessionalCredential,
         onSuccess: (result: any) => {
-            console.log("Result:professional", result)
             setUserDataToState(result)
         },
         onError: (error: any) => {
@@ -183,7 +160,6 @@ const CredentialIssuerCard = (props: any) => {
     const { isPending: educationalIsPending, mutateAsync: createEducationalCredentialMutation } = useMutation({
         mutationFn: createEducationalCredential,
         onSuccess: (result: any) => {
-            console.log("Result:educational", result)
             setUserDataToState(result)
         },
         onError: (error: any) => {

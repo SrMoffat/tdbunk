@@ -4,8 +4,6 @@ import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 
 const EXCHANGE_RATE_API_KEY = process.env.EXCHANGE_RATE_API_KEY || '65d8d437e971f9ab656f086e'
-// const EXCHANGE_RATE_API_KEY = process.env.EXCHANGE_RATE_API_KEY || '17caec0b37b62a0b986d745e' // Exhausted
-// const EXCHANGE_RATE_API_KEY = process.env.EXCHANGE_RATE_API_KEY || '58faa419858f91e90f7ab302' // Exhausted
 const EXCHANGE_RATE_API_URL = 'https://v6.exchangerate-api.com/v6'
 
 interface RequestContext { }
@@ -26,38 +24,15 @@ handlePost
         const response = await fetch(url);
         const conversion = await response.json();
 
-
-        console.log("Use PAID API Hafndler:url", {
-            url,
-            source,
-            destination,
-            amount,
-            conversion
-        })
         return conversion
     })
 
 export async function POST(request: NextRequest, ctx: RequestContext) {
     try {
-        // const conversion: any = await handlePost.run(request, ctx);
-
-        // console.log("<=== Conversion Result Handlerrrr==>", conversion)
-        return NextResponse.json({
-            result: 'success',
-            documentation: 'https://www.exchangerate-api.com/docs',
-            terms_of_use: 'https://www.exchangerate-api.com/terms',
-            time_last_update_unix: 1726272002,
-            time_last_update_utc: 'Sat, 14 Sep 2024 00:00:02 +0000',
-            time_next_update_unix: 1726358402,
-            time_next_update_utc: 'Sun, 15 Sep 2024 00:00:02 +0000',
-            base_code: 'GHS',
-            target_code: 'EUR',
-            conversion_rate: 0.05605
-        });
-        // return NextResponse.json(conversion);
+        const conversion: any = await handlePost.run(request, ctx);
+        return NextResponse.json(conversion);
     } catch (error: any) {
         // TODO: Better error handling
-        console.log("<=== Conversion Error Handlerrrr==>", error)
         return Response.json({ error })
     }
 }

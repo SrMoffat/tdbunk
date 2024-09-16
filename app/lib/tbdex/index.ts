@@ -121,7 +121,6 @@ export const fetchExchanges = async ({ pfiDidUri, userBearerDid }: { pfiDidUri: 
         did: userBearerDid,
     });
 
-    console.log("fetchExchanges", exchanges);
     return exchanges
 };
 
@@ -379,15 +378,6 @@ export const sendCloseMessage = async ({
             }
         })
 
-        console.log('=> sendCloseMessage', {
-            userBearerDid,
-            pfiDid,
-            exchangeId,
-            reason,
-            close,
-        })
-
-
         await close.sign(userBearerDid?.did)
 
         await TbdexHttpClient.submitClose(close)
@@ -411,13 +401,6 @@ export const sendOrderMessage = async ({
                 exchangeId,
                 protocol: '1.0'
             }
-        })
-
-        console.log('=> sendOrderMessage', {
-            userBearerDid,
-            pfiDid,
-            exchangeId,
-            order,
         })
 
         await order.sign(userBearerDid?.did)

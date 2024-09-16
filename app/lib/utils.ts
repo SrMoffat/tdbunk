@@ -49,10 +49,8 @@ export const getFormattedOfferings = (offerings: any[], source: string, destinat
         const isHit = sourceMatches && destinationMatches
 
         if (isHit) {
-            // console.log("HIT ===>")
             direct.push(offer)
         } else {
-            // console.log("NOT-HIT ===>")
             hops.push(offering)
         }
     }
@@ -288,18 +286,6 @@ export const getPlatformFees = async (paymentDetails: any[]) => {
         percentageAmount,
     }
 
-    console.log("To DO: Calculate fees", {
-        fixedFee,
-        feeDetails,
-        quotePayoutFeeCurrency,
-        quotePayinFeeCurrency,
-        quotePayoutFee,
-        quotePayinFee,
-        percentageFee,
-        paymentDetails
-
-    })
-
     return feeDetails
 }
 
@@ -421,7 +407,6 @@ export const createTransaction = ({ offering, exchange: relevantExchange, campai
 
 export const clearAllIntervals = (intervalIds: string[]) => {
     for (const interval of intervalIds) {
-        console.log("Clearing interval with ID:", interval)
         window && window.clearInterval(interval);
     }
     localStorage && localStorage.removeItem(INTERVALS_LOCAL_STORAGE_KEY)

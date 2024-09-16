@@ -153,10 +153,6 @@ const TbdexContextProvider = ({ children }: PropsWithChildren) => {
 
                     setMonopolyMoney(moneyDetails)
                     localStorage.setItem(TDBUNK_WALLET_BALANCE_LOCAL_STORAGE_KEY, JSON.stringify(moneyDetails))
-                    console.log("✅ Fetch Rates TbdexProvider Succeded", {
-                        marketRate: response?.rate,
-                        convertedAmount: response?.amount,
-                    })
                     return
                 } else {
                     const isBrokeMessage = response?.message?.includes('Exceeded Quota')
@@ -165,11 +161,6 @@ const TbdexContextProvider = ({ children }: PropsWithChildren) => {
                         time: new Date(),
                         message: response?.message
                     }))
-                    console.log("❌ Fetch Rates TbdexProvider Failed", {
-                        message: response?.message,
-                        marketRate: response?.rate,
-                        convertedAmount: response?.amount,
-                    })
                 }
             } catch (error: any) {
                 console.log("Error in wallet conversion", error)

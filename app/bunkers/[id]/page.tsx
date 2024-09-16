@@ -208,8 +208,6 @@ export default function BunkerPage({ params }: { params: { id: string } }) {
         getDetails()
     }, [params, votes])
 
-    console.log("Data", pollData)
-
 
     const totalVotes = votes.reduce((a, b) => a + b, 0);
     const mostVotes = Math.max(...votes);

@@ -187,15 +187,6 @@ const RequestCredential = (props: any) => {
             ...storedVc
         }
 
-        console.log("<==== Result ====>", {
-            result,
-            details,
-            combinedCreds,
-            stateCredentials,
-            localStorageCredentials,
-            defaultCurrencyFromCredential
-        })
-
         setCredentials?.(combinedCreds)
         setLocalCredentials({
             did,
@@ -243,18 +234,6 @@ const RequestCredential = (props: any) => {
     const isFinancialCred = financialCred?.length
     const finCred = isFinancialCred ? stateCredentials[financialCred[0]][0] : ''
 
-    console.log("showCombinedCredentials", {
-        finCred,
-        stateCredentials,
-        financialCred,
-        isFinancialCred,
-        financialCredType,
-        credentialTypes,
-        hasCredentials,
-        localStorageCredentials,
-        showCombinedCredentials
-    })
-
     const checkIfUserHasCredentialInLocal = (credentials: any) => {
         let result = false
 
@@ -267,38 +246,12 @@ const RequestCredential = (props: any) => {
 
 
             result = Boolean(hasRequiredCredInLocalStorage)
-
-            console.log("Result hasRequiredCredInLocalStorage", {
-                hasRequiredCredInLocalStorage,
-                storedCredentials,
-                credentials,
-                result
-            })
-
         }
-
-
-        console.log("Result ====> hasRequiredCredInLocalStorage", {
-            credentials,
-            result
-        })
 
         return result
     }
 
     const hasRequiredCredInLocalStorage = checkIfUserHasCredentialInLocal(localStorageCredentials)
-
-    console.log("Result ====> hasRequiredCredInLocalStorage", {
-        hasRequiredCredInLocalStorage,
-    })
-
-
-
-
-
-    // ['VerifiableCredential:KnownCustomerCredential', 'VerifiableCredential:TDBunkProfessionalCredential']
-
-    // showCombinedCredentials
 
     return (
         <Flex className="flex-col">

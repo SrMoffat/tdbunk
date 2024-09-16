@@ -70,7 +70,6 @@ const RequestForQuote = (props: any) => {
                                         const details = {
                                             [name]: event?.target?.value
                                         }
-                                        console.log("Dynamic Value", details)
                                         setRequiredPaymentDetails((prev: any) => ({
                                             ...prev,
                                             ...{
@@ -202,13 +201,6 @@ const RequestForQuote = (props: any) => {
             const results = getRequiredDetails(entry)
 
             const isAssumedStoredBalance = !requiredPaymentDetailsTitle && !results.length
-
-            console.log("👽 Has Insufficient Balance", {
-                results,
-                insufficientBalance,
-                isAssumedStoredBalance,
-                requiredPaymentDetailsTitle,
-            })
 
             if (isAssumedStoredBalance){
                 setHasInsufficientBalance(insufficientBalance)

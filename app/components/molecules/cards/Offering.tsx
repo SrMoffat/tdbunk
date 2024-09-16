@@ -70,7 +70,6 @@ const OfferingDetails = (props: any) => {
         payin: {},
         payout: {}
     })
-    const { notify } = useNotificationContext()
     const [paymentStage, setPaymentStage] = useState<PaymentStage>(PaymentStage.REQUEST_QUOTE)
 
     const offering = Object.values(values ? values : {})[0] as any
@@ -126,7 +125,6 @@ const OfferingDetails = (props: any) => {
 
     useEffect(() => {
         if (relevantExchange) {
-            console.log("📭 New Message: Status 📭", relevantExchange?.status)
             const paymentState = paymentStage === PaymentStage.MAKE_TRANSFER
             const receivedQuote = relevantExchange.status === TBDEX_MESSAGE_TYPES_TO_STATUS.QUOTE
             const cancelledTransfer = relevantExchange.status === TBDEX_MESSAGE_TYPES_TO_STATUS.CLOSE
@@ -156,10 +154,6 @@ const OfferingDetails = (props: any) => {
                     return results
                 })
                 storeTbdexTransactionInDwn(txn)
-
-                console.log("Create Cancel Transaction", {
-                    txn,
-                })
                 setShowModal(false)
             }
 
@@ -173,11 +167,6 @@ const OfferingDetails = (props: any) => {
                     campaignAmount,
                     exchange: relevantExchange,
                 })
-
-                console.log("Create Completed Transaction", {
-                    txn,
-                })
-
                 setTransactions((prev: any) => {
                     const results = getUniqueExchanges([...prev, txn])
                     localStorage?.setItem(TDBUNK_TRANSACTIONS_LOCAL_STORAGE_KEY, JSON.stringify(results))
@@ -227,6 +216,7 @@ const OfferingDetails = (props: any) => {
         <List.Item className="flex flex-row gap-2">
             {/* TODO: Move all these into a context to avoid the prop drilling 🤢 */}
             <PaymentFlowModal
+                web5={web5}
                 money={money}
                 pfiDid={pfiDid}
                 values={values}

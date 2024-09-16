@@ -1,114 +1,80 @@
 ### TDBunk
 
-Debunking misinformation and disinformation
+This is a decentralised web application where users can setup misinformation and disinformation debunking campaigns and other users participate in it as fact checkers. The campaign sponsors can send their sponsorships for a campaign to any fact-checker across the globe and investigators receive their funds as soon as thier evidence have been submitted. 
 
-1. Provide secure encypted storage of VCs
-2. PFI discovery and crawling idenity hubs
-3. Receiving, offering, and presenting VCs (End user consent will be required to offer VCs)
-4. Applying digital signatures
-5. Storing transaction history
-
-
-To provide clarity on how KCCs function, many of the examples in this guide will refer to a user named Alice transacting via a fictional mobile application called Mobile Wallet. Mobile Wallet is a mobile application that individuals use to:
-
-
-Purchase digital assets using fiat currency from PFIs on tbDEX.
-
-Sell digital assets for fiat currency to a PFI on tbDEX.
-
-Manage and secure their digital identity information. Mobile Wallet also acts as a self-custodial digital wallet for Identity information.
-
-It creates a DID for the user and securely stores the private keys for that DID directly on-device.
-
-It stores Verifiable Credentials issued to the user directly on-device.
+### Short Demo Video
 
 
 
-⚠️ Note: While our example focuses on a Mobile Wallet capable of purchasing, storing, and selling digital assets, KCCs may generally be used for any type of financial transaction.
+### Tools and Technologies
 
+The web application uses a decentralised web nodes ([Web5 SDK DWN](https://www.npmjs.com/package/@web5/api)) as the data store, the [Web5 Credentials](https://www.npmjs.com/package/@web5/credentials) to generate Verifiable Credentials (VCs) for each evidence occurrence along as setting the minimum required credentials for fact-checkers. The app also uses the [tbDEX Client SDK](https://www.npmjs.com/package/@tbdex/http-client) to enlist Participating Financial Institutions and handle all the payments settlements. The app is build on [NextJS](https://www.npmjs.com/package/next) using Typesctipt.
 
-To transact with PFIs on tbDEX, Alice first opens Mobile Wallet and searches for PFIs offering services of interest to her. Alice sees a handful of PFIs offering the service she wants in her region, each of which requires Alice present a Verifiable Credential to access the service. Alice settles on one PFI, which has positive reviews and offers competitively priced services.
-
-
-Mobile Wallet is a mobile application that individuals use to:
-
-Purchase digital assets using fiat currency from PFIs on tbDEX. (Mobile Wallet is a self custodial wallet for digital assets)
-
-Sell digital assets for fiat currency through a PFI on tbDEX.
-
-Manage their digital identity information. Mobile Wallet also acts as a self-custodial digital wallet for Identity information.
-
-It creates a DID for the user and securely stores the private keys for that DID directly on-device.
-
-It stores Verifiable Credentials issued to the user directly on-device.
-
-Key Management
-Document Management
-Credential Management
-Financial Management
-
-
-logo
-name
-service url
-did
-
-
+Core dependencies were:
+```javascript
 "@tbdex/http-client": "1.1.0",
+"@web5/api": "0.10.0",
 "@web5/credentials": "1.1.0",
-"@web5/dids": "1.1.1",
-"@web5/common": "1.0.0",
-"@web5/crypto": "1.0.0"
+"@web5/crypto": "1.0.1",
+"@web5/dids": "1.1.2",
+```
 
-https://stackoverflow.com/questions/6843201/how-to-clearinterval-with-unknown-id
+### Local Setup
+1. Clone this repository
+```javascript
+git clone
+```
+2. Switch into the newly cloned repository
+```javascript
+cd tdbunk/
+```
+3. Install all project dependencies
+```javascript
+yarn install
+```
+4. Start the development server
+```javascript
+yarn dev
+```
+5. Play with the app
+```javascript
+Visit http://localhost:3000/
+```
 
+### Project Design Considerations
+`1. Profitability: How might your wallet application make a profit?`
 
-Sending money across borders is unnecessarily slow and painful. tbDEX, an open source protocol, enables payment applications, such as digital wallets, to communicate with liquidity providers to move money in a fast and compliant way.
+Transaction fee and platform fee. 
 
-tbDEX utilizes innovative open technologies such as Decentralized Identifiers and Verifiable Credentials to securely validate counterparty identity and trust, ensuring compliance with relevant laws and regulations.
+`Transaction Fee`: Each sponsorship transaction (funding a debunk campaign) will have a `2.9% + $0.50` applied to it. These figures were inspired by then general case for payment processing platforms. 
 
-
-Your task is to develop a wallet application that leverages the tbDEX SDK.  
-
-You can design your application for web, iOS, or Android. 
-
-Your application must connect to one or more of the liquidity providers in our sandbox of PFIs (participating financial institutions):
-
-Every PFI in the sandbox will require your customers present a Verifiable Credential from trusted issuer:
-
-🪪 Issuer: Ultimate Identity
-You can obtain a credential token for your customer by making a GET HTTP request to:
-https://mock-idv.tbddev.org/kcc?name=${customerName}&country=${countryCode}&did=${customerDID}
-
-
-
-Consider the following when designing your application:
-
-1. Profitability: how might your wallet application make a profit (charging fees per transaction (2.9% + $0.50 borrowed from general case for payment processing platforms), platform fees when article is debunked and fact checkers are being paid, we get paid too (1.5%))
-
-2. Optionality: how will your application handle matching offerings from multiple PFIs
-- Compare exchange rate to market rate and recommend whichever is lower
-- To Do: Compare settlement time, compare user rating, compare availability status, user discretion, user transaction history, AI?, compare to market rate?)
-
-3. Customer Management: how will your application manage customers’ decentralized identifiers and verifiable credentials (Bearer Did stored in local storage with key uris and keys in key manager, vcs stored in dwn)
-
-
-4. Customer Satisfaction: how will your application track customer satisfaction with PFIs (5-star rating on, speed of settlement i.e. actual vs estimated, comparison to market rate, )
-A set of Verifiable Credentials issued to the PFI that can be consumed by any interested party in order to assess the reputability of the respective PFI.
+`Platform Fee`: When fact-checkers are done with a campaign and submit their evidence, they will receive the payment. As they do so, a `1.4%` platform fee will be applied. This is figure is random and based on absolutely nothing.
 
 
-You must host your project in a public GitHub repository and provide that link as your submission. The project’s README.md file should provide an overview of your application and how you’ve addressed the design considerations above.
+`2. Optionality: How will your application handle matching offerings from multiple PFIs?`
+
+Market rate comparison and reputation.
+
+`Market Rate`: We compare the exchange rate of the offering to the current market rate. The one with the better rate will be recommended.
+
+`Reputation`: User rate each transaction with a PFI that generates a Verifiable Credential (VC). The reputation can be factored to recommend to a user. The reputation VC will include; estimated vs actual settlement time, market vs offering rates at the time, 5 star rating, and a comment.
+
+`3. Customer Management: How will your application manage customers’ decentralized identifiers and verifiable credentials?`
+
+`Decentralised Web Node`: A DWN is used as data store for all the users VCs; self issued and requested from other issuers. The user DID is handled by the Web5 agent provided by the DWN. However, I did struggle with managing the Bearer DID which has the cryptographic keys so I am currently serializing them to string and storing in client browser (bad practice but I have a knowledge gap here please).
+
+``:
 
 
+`4. Customer Satisfaction: How will your application track customer satisfaction with PFIs?`
 
-You may work individually or within a team (max of 2 people per team). 
-
-12 teams of semi-finalists will be chosen. Semi-finalists will prepare a video presentation explaining their project.
-
-6 teams of finalists will be chosen. Finalists will be flown to Nairobi, Kenya to attend the Africa Bitcoin Conference and pitch what they’ve built to our panel of judges. Conference tickets and travel accommodations will be provided.
+After each successful transaction (not cancelled), a user rates their experience using a 5-star rating. They are presented with a summary of their transaction including estimated vs actual settlement time, and market vs offering rates at the time. They can add 5-star rating and a comment that will be linked to the PFI.
 
 
-https://github.com/TBD54566975/tbdex/tree/main/specs/protocol#reserved-paymentmethod-kinds
+#### AOB
+I am curretly unemployed and would appreciate any recommendations or potential positions I could apply for. Please see my portfolio here:
 
-Payment Processors (e.g., PayPal, Stripe):
-Typically charge around 2.9% + $0.30 per transaction. This is a common standard for payment processing services and can serve as a reference point.
+`Portfolio`: [Moffat Gitau Portfolio](https://portfolio-ngigemoffat.vercel.app/)
+
+`Email`: `ngigemoffat@gmail.com`
+

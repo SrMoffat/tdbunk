@@ -1,10 +1,9 @@
 ### TDBunk
 
-This is a decentralised web application where users can setup misinformation and disinformation debunking campaigns and other users participate in it as fact checkers. The campaign sponsors can send their sponsorships for a campaign to any fact-checker across the globe and investigators receive their funds as soon as thier evidence have been submitted. 
+This is a decentralised web application where users can setup misinformation and disinformation debunking campaigns and other users participate in it as fact checkers. The campaign sponsors can send their sponsorships for a campaign to any fact-checker across the globe and investigators receive their funds as soon as thier evidence have been submitted. This project was a submission for the [tbDEX Hackathon](https://www.tbdex.io/hackathon).
 
 ### Short Demo Video
-
-
+https://github.com/user-attachments/assets/05917978-ac34-4fd7-b2f3-5831627dd0c0
 
 ### Tools and Technologies
 

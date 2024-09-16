@@ -42,7 +42,7 @@ Visit http://localhost:3000/
 ```
 
 ### Project Design Considerations
-`1. Profitability: How might your wallet application make a profit?`
+## 1. Profitability: How might your wallet application make a profit?
 
 Transaction fee and platform fee. 
 
@@ -51,7 +51,7 @@ Transaction fee and platform fee.
 `Platform Fee`: When fact-checkers are done with a campaign and submit their evidence, they will receive the payment. As they do so, a `1.4%` platform fee will be applied. This is figure is random and based on absolutely nothing.
 
 
-`2. Optionality: How will your application handle matching offerings from multiple PFIs?`
+## 2. Optionality: How will your application handle matching offerings from multiple PFIs?
 
 Market rate comparison and reputation.
 
@@ -59,14 +59,12 @@ Market rate comparison and reputation.
 
 `Reputation`: User rate each transaction with a PFI that generates a Verifiable Credential (VC). The reputation can be factored to recommend to a user. The reputation VC will include; estimated vs actual settlement time, market vs offering rates at the time, 5 star rating, and a comment.
 
-`3. Customer Management: How will your application manage customers’ decentralized identifiers and verifiable credentials?`
+## 3. Customer Management: How will your application manage customers’ decentralized identifiers and verifiable credentials?
 
 `Decentralised Web Node`: A DWN is used as data store for all the users VCs; self issued and requested from other issuers. The user DID is handled by the Web5 agent provided by the DWN. However, I did struggle with managing the Bearer DID which has the cryptographic keys so I am currently serializing them to string and storing in client browser (bad practice but I have a knowledge gap here please).
 
-``:
 
-
-`4. Customer Satisfaction: How will your application track customer satisfaction with PFIs?`
+## 4. Customer Satisfaction: How will your application track customer satisfaction with PFIs?
 
 After each successful transaction (not cancelled), a user rates their experience using a 5-star rating. They are presented with a summary of their transaction including estimated vs actual settlement time, and market vs offering rates at the time. They can add 5-star rating and a comment that will be linked to the PFI.
 

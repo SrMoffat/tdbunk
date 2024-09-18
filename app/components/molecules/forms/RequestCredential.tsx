@@ -1,5 +1,5 @@
 "use client"
-import { Card1, Card3, Card4, Card5, LogoIcon2, TBDVCLogoYellow } from '@/app/components/atoms/Icon';
+import { Card1, Card3, Card4, Card5, LogoIcon2, TBDVCLogoWhite, TBDVCLogoYellow } from '@/app/components/atoms/Icon';
 import {
     CredentialIssuerCard,
     EducationCredentialCard,
@@ -81,7 +81,7 @@ const RequestCredential = (props: any) => {
         {
             type: CREDENTIAL_TYPES.KNOWN_CUSTOMER_CREDENTIAL,
             issuerName: ULTIMATE_IDENTITY_ISSUER_NAME,
-            logo: TBDVCLogoYellow,
+            logo: TBDVCLogoWhite,
             card: Card1
         },
         {

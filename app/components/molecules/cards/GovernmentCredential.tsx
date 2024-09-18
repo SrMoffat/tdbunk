@@ -14,9 +14,10 @@ const GovernmentCredentialCard = (props: any) => {
         showDrawer,
         vcSubject,
         issuance,
-        expiration
+        expiration,
+        parsedVcJwt
     } = props
-
+    console.log("If we have data use it else use what we use today", parsedVcJwt)
     return (
         <Flex className="h-[200px]">
             <Flex onClick={() => showDrawer()} className="absolute hover:opacity-70 rounded-md transition-all cursor-pointer">
@@ -55,6 +56,7 @@ const GovernmentCredentialCard = (props: any) => {
 
 const GovernmentInstitutionCredential = (props: any) => {
     const {
+        parsedVcJwt,
         stateCredentials,
         localStorageCredentials
     } = props
@@ -68,6 +70,8 @@ const GovernmentInstitutionCredential = (props: any) => {
 
     useEffect(() => {
         (async () => {
+            if (!stateCredentials) return
+
             const isState = Object.keys(stateCredentials)?.length
 
             const credentialTypes = isState
@@ -123,7 +127,8 @@ const GovernmentInstitutionCredential = (props: any) => {
         showDrawer,
         vcSubject,
         issuance,
-        expiration
+        expiration,
+        parsedVcJwt
     }
 
     return (

@@ -3,7 +3,7 @@ import { createEdgeRouter } from "next-connect";
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 
-const EXCHANGE_RATE_API_KEY = process.env.EXCHANGE_RATE_API_KEY || '65d8d437e971f9ab656f086e'
+const EXCHANGE_RATE_API_KEY = process.env.EXCHANGE_RATE_API_KEY // || '65d8d437e971f9ab656f086e'
 const EXCHANGE_RATE_API_URL = 'https://v6.exchangerate-api.com/v6'
 
 interface RequestContext { }

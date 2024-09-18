@@ -15,8 +15,10 @@ const ProfessionalCredentialCard = (props: any) => {
         startDate,
         endDate,
         issuance,
-        expiration
+        expiration,
+        parsedVcJwt
     } = props
+    console.log("If we have data use it else use what we use today", parsedVcJwt)
     return (
         <Flex onClick={() => showDrawer()} className="absolute hover:opacity-70 rounded-md transition-all cursor-pointer">
             <Image alt="Card3" src={Card3} width={300} height={300} />
@@ -47,6 +49,7 @@ const ProfessionalCredentialCard = (props: any) => {
 
 const ProfessionalInstitutionCredential = (props: any) => {
     const {
+        parsedVcJwt,
         stateCredentials,
         localStorageCredentials
     } = props
@@ -124,7 +127,8 @@ const ProfessionalInstitutionCredential = (props: any) => {
         startDate,
         endDate,
         issuance,
-        expiration
+        expiration,
+        parsedVcJwt
     }
 
     return (

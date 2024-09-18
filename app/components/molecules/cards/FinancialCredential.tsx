@@ -27,6 +27,7 @@ export interface CredentialMetadata {
 
 export interface CredentialCardProps {
     credential: any;
+    parsedVcJwt: any;
     vcServiceUrl: string;
     name: string | undefined;
     countryCode: string | undefined;
@@ -64,6 +65,7 @@ export const getVcJwtDetails = (jwt: string) => {
 export const CredentialCard: React.FC<CredentialCardProps> = ({
     name,
     credential,
+    parsedVcJwt,
     countryCode,
     vcServiceUrl,
     issuanceDate,
@@ -86,6 +88,8 @@ export const CredentialCard: React.FC<CredentialCardProps> = ({
         }
 
     const isTestMessedCred = !details?.name?.includes('undefined')
+
+    console.log("If we have data use it else use what we use today", parsedVcJwt)
 
     return (
         <Flex className="h-[200px]">
@@ -176,7 +180,7 @@ export const extractVcDocumentDetails = (vc: VerifiableCredential) => {
 }
 
 const FinancialInstitutionCredential = (props: any) => {
-    const { stateCredentials, localStorageCredentials, credential } = props;
+    const { stateCredentials, localStorageCredentials, credential, parsedVcJwt } = props;
 
     const [open, setOpen] = useState(false);
     const [copied, setCopied] = useState(false)
@@ -210,6 +214,7 @@ const FinancialInstitutionCredential = (props: any) => {
 
     const commonCardProps = {
         credential,
+        parsedVcJwt,
         vcServiceUrl,
         name: renderName,
         issuanceDate: vcMetadata?.issuanceDate,

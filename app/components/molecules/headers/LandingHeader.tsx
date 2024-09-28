@@ -7,6 +7,18 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
+export enum Actions {
+    CAMPAIGN = "Start Campaign",
+    DEBUNKING = "Start Debunking",
+    SPONSOR = "Sponsor Campaign",
+    PARTNERS = "View Partners",
+}
+
+const START_CAMPAIGN = '/start/campaign'
+const START_DEBUNKING = '/start/debunking'
+const SPONSOR_CAMPAIGN = '/sponsor'
+const VIEW_PARTNERS = '/partners'
+
 const LandingHeader = () => {
     const pathname = usePathname()
 
@@ -14,27 +26,27 @@ const LandingHeader = () => {
         token: { colorBgContainer },
     } = theme.useToken()
 
-    const START_CAMPAIGN = '/start/campaign'
-    const START_DEBUNKING = '/start/debunking'
-    const SPONSOR_CAMPAIGN = '/sponsor'
-
     const links = [
         {
-            name: "Start Campaign",
+            name: Actions.CAMPAIGN,
             path: START_CAMPAIGN,
             active: pathname === START_CAMPAIGN
         },
         {
-            name: "Start Debunking",
+            name: Actions.DEBUNKING,
             path: START_DEBUNKING,
             active: pathname === START_DEBUNKING
 
         },
         {
-            name: "Sponsor Campaign",
+            name: Actions.SPONSOR,
             path: SPONSOR_CAMPAIGN,
             active: pathname === SPONSOR_CAMPAIGN
-
+        },
+        {
+            name: Actions.PARTNERS,
+            path: VIEW_PARTNERS,
+            active: pathname === VIEW_PARTNERS
         }
     ].map(({ name, path, active }) => (
         <Link key={path} href={path}>

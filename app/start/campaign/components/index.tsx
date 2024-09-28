@@ -88,3 +88,22 @@ export const StepNavigation: React.FC<StepNavigationProps> = ({
         </Flex>
     )
 }
+
+
+export const isNextButtonDisabledForStepOne = (localStorageData: any, credentials: any[]) => {
+    // @ts-ignore
+    const existingLocalStorageCreds = localStorageData?.credentials
+    const localStorageCredentials = existingLocalStorageCreds
+        ? Object.values(existingLocalStorageCreds)
+        : []
+    const localCredentials = localStorageCredentials.flat()
+    const hasLocalCreds = localCredentials.length > 0
+
+    const stateCredentials = credentials
+        ? Object.values(credentials)
+        : []
+    const contextCredentials = stateCredentials.flat()
+    const hasStateCreds = contextCredentials.length > 0
+
+    return !(hasStateCreds || hasLocalCreds)
+}

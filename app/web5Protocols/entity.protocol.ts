@@ -10,7 +10,7 @@ export const EntityProtocol = {
             dataFormats: ['image/png', 'jpeg', 'gif'],
         },
         profile: {
-            schema: 'https://github.com/riush03/musive/schemas/profile',
+            schema: 'https://github.com/SrMoffat/tdbunk/schemas/profile',
             dataFormats: ['application/json'],
         },
         campaigns: {

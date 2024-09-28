@@ -3,9 +3,7 @@ import { useCreateCampaignContext } from '@/app/providers/CreateCampaignProvider
 import { CheckCircleFilled, CheckCircleOutlined } from "@ant-design/icons";
 import { Avatar, Badge, Card, Flex, theme, Tooltip, Typography } from "antd";
 import Image from "next/image";
-import { useState, useEffect } from "react";
-
-interface InvestigatorsCredentialsProps { }
+import { useEffect, useState } from "react";
 
 const InvestigatorsCredentials: React.FC<any> = ({
     setNextButtonDisabled

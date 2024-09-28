@@ -1,7 +1,12 @@
-import { MARKET_CONVERSION_RATE_LOCAL_STORAGE_KEY, PFIs, SETTLED_TRANSFER_AT_LOCAL_STORAGE_KEY, STARTED_TRANSFER_AT_LOCAL_STORAGE_KEY } from "@/app/lib/constants";
+import {
+    MARKET_CONVERSION_RATE_LOCAL_STORAGE_KEY,
+    PFIs,
+    SETTLED_TRANSFER_AT_LOCAL_STORAGE_KEY,
+    STARTED_TRANSFER_AT_LOCAL_STORAGE_KEY
+} from "@/app/lib/constants";
 import { displayTimeWithLabel, getCurrencyFlag, getEstimatedSettlementTime, percentageDifference } from "@/app/lib/utils";
 import { PRIMARY_GOLD_HEX } from "@/app/providers/ThemeProvider";
-import { RightCircleFilled, ClockCircleOutlined } from "@ant-design/icons";
+import { ClockCircleOutlined, RightCircleFilled } from "@ant-design/icons";
 import { Avatar, Button, Card, Flex, Input, Rate, Space, Tag, Typography, theme } from "antd";
 import { differenceInSeconds } from 'date-fns';
 import { useEffect, useState } from "react";

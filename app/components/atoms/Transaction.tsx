@@ -1,6 +1,6 @@
 
 import { TDBUNK_CANCEL_REASON, TDBUNK_SUCCESS_TEXT } from "@/app/lib/constants";
-import { extractMessageDetailsFromExchange, getCurrencyFlag } from "@/app/lib/utils";
+import { getCurrencyFlag } from "@/app/lib/utils";
 import { PRIMARY_GOLD_HEX } from "@/app/providers/ThemeProvider";
 import { RightCircleFilled } from "@ant-design/icons";
 import { Avatar, Button, Card, Flex, Rate, Space, Tag, Typography } from "antd";

@@ -9,7 +9,7 @@ import useBrowserStorage from '@/app/hooks/useLocalStorage';
 import { CREDENTIALS_LOCAL_STORAGE_KEY, LOCAL_STORAGE_KEY } from '@/app/lib/constants';
 import { CreateCampaignContextProvider } from '@/app/providers/CreateCampaignProvider';
 import { useWeb5Context } from '@/app/providers/Web5Provider';
-import { StepContent, StepNavigation, StepTracker, Title } from '@/app/start/campaign/components';
+import { isNextButtonDisabledForStepOne, StepContent, StepNavigation, StepTracker, Title } from '@/app/start/campaign/components';
 import { Flex, Layout } from 'antd';
 import { useEffect, useState } from 'react';
 
@@ -20,24 +20,6 @@ export enum StartCampaignSteps {
     CAMPAIGN_DETAILS = 'Campaign Details',
     VERIFY_DETAILS = 'Verify Details',
     START_CAMPAIGN = 'Start Campaign',
-}
-
-const isNextButtonDisabledForStepOne = (localStorageData: any, credentials: any[]) => {
-    // @ts-ignore
-    const existingLocalStorageCreds = localStorageData?.credentials
-    const localStorageCredentials = existingLocalStorageCreds
-        ? Object.values(existingLocalStorageCreds)
-        : []
-    const localCredentials = localStorageCredentials.flat()
-    const hasLocalCreds = localCredentials.length > 0
-
-    const stateCredentials = credentials
-        ? Object.values(credentials)
-        : []
-    const contextCredentials = stateCredentials.flat()
-    const hasStateCreds = contextCredentials.length > 0
-
-    return !(hasStateCreds || hasLocalCreds)
 }
 
 export default function StartCampaignPage() {

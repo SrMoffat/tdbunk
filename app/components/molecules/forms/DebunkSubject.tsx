@@ -1,7 +1,6 @@
 import { DebounceSelect } from "@/app/components/atoms";
 import { Facebook, Instagram, TikTok, X, Youtube } from '@/app/components/atoms/Icon';
 import { DEBUNK_SOURCE } from '@/app/lib/constants';
-import { arraysEqual } from "@/app/lib/utils";
 import { useCreateCampaignContext } from '@/app/providers/CreateCampaignProvider';
 import { Flex, Form, Input, Typography } from "antd";
 import Image from "next/image";

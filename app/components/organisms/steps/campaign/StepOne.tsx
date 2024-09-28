@@ -5,7 +5,12 @@ import CreateCredential from '@/app/components/molecules/forms/CreateCredential'
 import ImportCredential from '@/app/components/molecules/forms/ImportCredential';
 import RequestCredential from '@/app/components/molecules/forms/RequestCredential';
 import useBrowserStorage from '@/app/hooks/useLocalStorage';
-import { CREDENTIAL_TYPES, CREDENTIALS_LOCAL_STORAGE_KEY, CREDENTIALS_STAREGY_LOCAL_STORAGE_KEY, LOCAL_STORAGE_KEY } from '@/app/lib/constants';
+import {
+    CREDENTIAL_TYPES,
+    CREDENTIALS_LOCAL_STORAGE_KEY,
+    CREDENTIALS_STAREGY_LOCAL_STORAGE_KEY,
+    LOCAL_STORAGE_KEY
+} from '@/app/lib/constants';
 import { useWeb5Context } from '@/app/providers/Web5Provider';
 import countries from '@/public/countries.json';
 import { BearerIdentity } from '@web5/agent';

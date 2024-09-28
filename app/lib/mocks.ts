@@ -1,5 +1,5 @@
-import { DEBUNK_SOURCE, DEBUNK_CAMPAIGN_TYPE, DEFAULT_BASE_CURRENCY } from "@/app/lib/constants";
 import { Card1, Card2, Card3, TBDVCLogoYellow } from "@/app/components/atoms/Icon";
+import { DEBUNK_CAMPAIGN_TYPE, DEBUNK_SOURCE, DEFAULT_BASE_CURRENCY } from "@/app/lib/constants";
 
 interface RecordType {
     key: string;

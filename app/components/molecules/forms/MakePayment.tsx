@@ -3,10 +3,9 @@ import PFIDetails from "@/app/components/atoms/OfferPFI";
 import MakeTransfer from "@/app/components/molecules/forms//MakeTransfer";
 import RequestForQuote from "@/app/components/molecules/forms/RequestForQuote";
 import { TBDEX_MESSAGE_TYPES_TO_STATUS } from "@/app/lib/constants";
-import { arraysEqual, getEstimatedSettlementTime, getPlatformFees, msToDays, percentageDifference } from "@/app/lib/utils";
-import { PRIMARY_GOLD_HEX } from "@/app/providers/ThemeProvider";
+import { arraysEqual, getEstimatedSettlementTime, msToDays, percentageDifference } from "@/app/lib/utils";
 import { ClockCircleFilled, CloseCircleFilled } from "@ant-design/icons";
-import { Card, Flex, theme, Statistic, Steps, Tag, Typography } from "antd";
+import { Card, Flex, Statistic, Steps, Tag, theme, Typography } from "antd";
 import { formatDistanceToNow } from "date-fns";
 import { useEffect, useState, } from "react";
 

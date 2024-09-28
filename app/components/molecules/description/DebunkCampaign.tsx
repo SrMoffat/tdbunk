@@ -1,6 +1,11 @@
 import { useCreateCampaignContext } from '@/app/providers/CreateCampaignProvider';
 import { Card, Descriptions, DescriptionsProps } from "antd";
 
+export enum DebunkCampaignSteps {
+    NAME = 'Name',
+    DESCRIPTION = 'Description',
+}
+
 const DebunkingCampaign = () => {
     const {
         campaignName,
@@ -9,14 +14,14 @@ const DebunkingCampaign = () => {
 
     const items2: DescriptionsProps['items'] = [
         {
-            key: '8',
-            label: 'Name',
+            key: '1',
+            label: DebunkCampaignSteps.NAME,
             children: campaignName,
             span: 3,
         },
         {
-            key: '9',
-            label: 'Description',
+            key: '2',
+            label: DebunkCampaignSteps.DESCRIPTION,
             children: campaignDescription,
             span: 3,
         },

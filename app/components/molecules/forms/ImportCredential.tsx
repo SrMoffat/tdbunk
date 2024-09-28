@@ -1,7 +1,7 @@
 "use client"
 import { Request } from '@/app/components/atoms/Icon';
 import type { UploadProps } from 'antd';
-import { Input, message, QRCode, Tabs, Upload } from 'antd';
+import { Input, message, Tabs, Upload } from 'antd';
 import Image from 'next/image';
 
 const { TextArea } = Input;

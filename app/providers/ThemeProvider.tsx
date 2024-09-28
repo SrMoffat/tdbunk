@@ -1,6 +1,6 @@
 'use client'
-import React, { PropsWithChildren } from 'react';
 import { ConfigProvider, theme } from 'antd';
+import { PropsWithChildren } from 'react';
 
 export const PRIMARY_GOLD_HEX = '#CC9933';
 

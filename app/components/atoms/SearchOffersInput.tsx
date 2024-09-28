@@ -5,8 +5,8 @@ import { useTbdexContext } from "@/app/providers/TbdexProvider"
 import { RedoOutlined, RightCircleFilled } from "@ant-design/icons"
 import { Button, Flex, InputNumber, Select, Space, Spin, theme, Typography } from "antd"
 import { formatDistanceToNow } from "date-fns"
+import debounce from 'lodash/debounce'
 import { useEffect, useState } from "react"
-import debounce from 'lodash/debounce';
 
 const { Option } = Select
 

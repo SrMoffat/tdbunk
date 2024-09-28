@@ -1,7 +1,6 @@
 import FinancialInstitutionCredential from '@/app/components/molecules/cards/FinancialCredential';
 import { CREDENTIAL_TYPES } from "@/app/lib/constants";
 import { parseJwtToVc } from "@/app/lib/web5";
-import countries from '@/public/countries.json';
 import { CheckCircleFilled, CheckCircleOutlined } from "@ant-design/icons";
 import { Card, Flex, theme } from "antd";
 import { StaticImport } from "next/dist/shared/lib/get-img-props";
@@ -9,9 +8,6 @@ import { useEffect, useState } from "react";
 import EducationalInstitutionCredential from "../molecules/cards/EducationCredential";
 import GovernmentInstitutionCredential from "../molecules/cards/GovernmentCredential";
 import ProfessionalInstitutionCredential from "../molecules/cards/ProfessionalCredential";
-
-const country = countries.filter((entry) => entry?.countryCode === "KE")[0]
-
 
 export interface CredentialHolderProps {
     firstName: string;

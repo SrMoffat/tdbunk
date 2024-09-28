@@ -1,6 +1,6 @@
+import { createEdgeRouter } from "next-connect";
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
-import { createEdgeRouter } from "next-connect";
 
 interface RequestContext {}
 

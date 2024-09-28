@@ -2,9 +2,19 @@
 import CampaignDetails from '@/app/components/molecules/forms/CampaignDetails';
 import DebunkSubject from '@/app/components/molecules/forms/DebunkSubject';
 import InvestigatorsCredentials from '@/app/components/molecules/forms/InvestigatorsCredentials';
+import { CampaignStepProps } from '@/app/components/organisms/steps/campaign/StepOne';
 import { Flex, Layout, Steps, theme } from 'antd';
-import React, { useState, useEffect } from 'react';
-import { CampaignStepProps } from './StepOne';
+import React, { useEffect, useState } from 'react';
+
+export enum CampaignDetailsSteps {
+    SUBJECT = 'Debunk Subject',
+    DETAILS = 'Campaign Details',
+    CREDENTIALS = "Investigators' Credentials",
+}
+
+const SUBJECT_DESCRIPTION = 'Add the details of the article to be debunked'
+const DETAILS_DESCRIPTION = 'Add the details of the campaign debunking the article'
+const CREDENTIALS_DESCRIPTION = 'Add the credentials needed by face checkers to debunk the campaign subject. List of Selectable Credentials from those TDBunk has Integrated'
 
 const StepTwo: React.FC<CampaignStepProps> = ({
     setNextButtonDisabled: disableNextButton
@@ -26,22 +36,22 @@ const StepTwo: React.FC<CampaignStepProps> = ({
 
     const steps = [
         {
-            title: 'Debunk Subject',
-            description: 'Add the details of the article to be debunked',
+            title: CampaignDetailsSteps.SUBJECT,
+            description: SUBJECT_DESCRIPTION,
             content: (
                 <DebunkSubject {...commonProps} />
             )
         },
         {
-            title: 'Campaign Details',
-            description: 'Add the details of the campaign debunking the article',
+            title: CampaignDetailsSteps.DETAILS,
+            description: DETAILS_DESCRIPTION,
             content: (
                 <CampaignDetails {...commonProps} />
             )
         },
         {
-            title: "Investigators' Credentials",
-            description: 'Add the credentials needed by face checkers to debunk the campaign subject. List of Selectable Credentials from those TDBunk has Integrated',
+            title: CampaignDetailsSteps.CREDENTIALS,
+            description: CREDENTIALS_DESCRIPTION,
             content: (
                 <InvestigatorsCredentials {...commonProps} />
             )

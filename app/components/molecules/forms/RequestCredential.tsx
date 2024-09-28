@@ -1,9 +1,8 @@
 "use client"
-import { Card1, Card3, Card4, Card5, LogoIcon2, TBDVCLogoWhite, TBDVCLogoYellow } from '@/app/components/atoms/Icon';
+import { Card1, Card3, Card4, Card5, LogoIcon2, TBDVCLogoWhite } from '@/app/components/atoms/Icon';
 import {
     CredentialIssuerCard,
     EducationCredentialCard,
-    // FinancialCredentialCard,
     GovernmentCredentialCard,
     ProfessionalCredentialCard
 } from '@/app/components/molecules/cards';
@@ -11,12 +10,25 @@ import FinancialInstitutionCredential from '@/app/components/molecules/cards/Fin
 import { CredentialStorage } from '@/app/components/molecules/forms/Credentials';
 import FinancialCredentialForm from "@/app/components/molecules/forms/FinancialCredential";
 import useBrowserStorage from '@/app/hooks/useLocalStorage';
-import { CREDENTIAL_TYPES, CREDENTIALS_LOCAL_STORAGE_KEY, CREDENTIALS_TYPE_LOCAL_STORAGE_KEY, LOCAL_STORAGE_KEY, TDBUNK_ISSUER_NAME, ULTIMATE_IDENTITY_ISSUER_NAME } from '@/app/lib/constants';
+import {
+    CREDENTIAL_TYPES,
+    CREDENTIALS_LOCAL_STORAGE_KEY,
+    CREDENTIALS_TYPE_LOCAL_STORAGE_KEY,
+    LOCAL_STORAGE_KEY, TDBUNK_ISSUER_NAME,
+    ULTIMATE_IDENTITY_ISSUER_NAME
+} from '@/app/lib/constants';
 import { getCurrencyFromCountry } from '@/app/lib/utils';
 import { createRequiredCredential } from '@/app/lib/web5';
 import countries from '@/public/countries.json';
 import { Alert, Button, Collapse, CollapseProps, Flex, Modal, Typography } from 'antd';
 import { useState } from 'react';
+
+export enum CredentialOptions {
+    FINANCIAL = 'Financial Insitution',
+    GOVERNMENT = 'Government Institution',
+    PROFESSIONAL = 'Professional Institution',
+    EDUCATIONAL = 'Educational Institution'
+}
 
 const getSelectedCredentialType = () => {
     const storedValue = localStorage.getItem(CREDENTIALS_TYPE_LOCAL_STORAGE_KEY)
@@ -125,28 +137,29 @@ const RequestCredential = (props: any) => {
         ...commonProps
     }
 
+
     const items: CollapseProps['items'] = [
         {
             key: '1',
-            label: 'Financial Insitution',
+            label: CredentialOptions.FINANCIAL,
             children:
                 <CredentialIssuerCard {...financialProps} />
         },
         {
             key: '2',
-            label: 'Government Institution',
+            label: CredentialOptions.GOVERNMENT,
             children:
                 <CredentialIssuerCard {...governmentProps} />
         },
         {
             key: '3',
-            label: 'Professional Institution',
+            label: CredentialOptions.PROFESSIONAL,
             children:
                 <CredentialIssuerCard {...professionalProps} />
         },
         {
             key: '4',
-            label: 'Educational Institution',
+            label: CredentialOptions.EDUCATIONAL,
             children:
                 <CredentialIssuerCard {...educationalProps} />
         },

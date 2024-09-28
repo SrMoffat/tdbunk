@@ -1,12 +1,16 @@
+import ReviewOffering from "@/app/components/molecules/cards/Review";
 import MakePayment from "@/app/components/molecules/forms/MakePayment";
 import { Credentials } from "@/app/components/organisms/Credentials";
-import { INTERVALS_LOCAL_STORAGE_KEY, STARTED_TRANSFER_AT_LOCAL_STORAGE_KEY, TDBUNK_CANCEL_REASON } from "@/app/lib/constants";
-import { sendCloseMessage, sendOrderMessage, pollExchanges } from "@/app/lib/tbdex";
-import { Button, Modal, Spin } from "antd";
-import ReviewOffering from "../cards/Review";
+import {
+    INTERVALS_LOCAL_STORAGE_KEY,
+    STARTED_TRANSFER_AT_LOCAL_STORAGE_KEY,
+    TDBUNK_CANCEL_REASON
+} from "@/app/lib/constants";
+import { pollExchanges, sendCloseMessage, sendOrderMessage } from "@/app/lib/tbdex";
 import { createOfferingReviewCredential } from "@/app/lib/web5";
-import { useState, useEffect } from "react"
 import { useNotificationContext } from "@/app/providers/NotificationProvider";
+import { Button, Modal, Spin } from "antd";
+import { useEffect, useState } from "react";
 
 const PaymentFlowModal = (props: any) => {
     const {

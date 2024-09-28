@@ -1,7 +1,6 @@
 "use client"
 
 import { Logo } from '@/app/components/atoms/Icon';
-import { useWeb5Context } from '@/app/providers/Web5Provider';
 import { Button, Flex, theme } from 'antd';
 import { Header } from 'antd/es/layout/layout';
 import Image from 'next/image';
@@ -9,7 +8,6 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
 const LandingHeader = () => {
-    const { userDid, web5, campaigns } = useWeb5Context()
     const pathname = usePathname()
 
     const {

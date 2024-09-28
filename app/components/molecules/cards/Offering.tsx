@@ -1,13 +1,12 @@
 import AssetExchangeOffer from "@/app/components/atoms/OfferDetails";
 import AssetExchangePFIDetails from "@/app/components/molecules/cards/OfferingPFIDetails";
-import { INTERVALS_LOCAL_STORAGE_KEY, PFIs, TBDEX_MESSAGE_TYPES_TO_STATUS, TDBUNK_TRANSACTIONS_LOCAL_STORAGE_KEY } from "@/app/lib/constants";
+import { PFIs, TBDEX_MESSAGE_TYPES_TO_STATUS, TDBUNK_TRANSACTIONS_LOCAL_STORAGE_KEY } from "@/app/lib/constants";
 import { createTransaction, getCurrencyFlag, getPlatformFees, getUniqueExchanges } from "@/app/lib/utils";
-import { useNotificationContext } from "@/app/providers/NotificationProvider";
+import { storeTbdexTransactionInDwn } from "@/app/lib/web5";
 import { Offering } from "@tbdex/http-client";
 import { List } from "antd";
 import { useEffect, useState } from "react";
 import PaymentFlowModal from "../modals/PaymentFlow";
-import { storeTbdexTransactionInDwn } from "@/app/lib/web5";
 
 export interface AssetExchangePFIDetailsProps {
     cta: string;
@@ -28,9 +27,6 @@ export enum PaymentStage {
     REQUEST_QUOTE = 'REQUEST_QUOTE',
     MAKE_TRANSFER = 'MAKE_TRANSFER',
 }
-
-
-
 
 const OfferingDetails = (props: any) => {
     const {

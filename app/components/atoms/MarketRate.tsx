@@ -1,7 +1,7 @@
 import { fetchMarketExchangeRates } from '@/app/lib/api';
 import { MARKET_CONVERSION_API_EXCEEDED_QOUTA_LOCAL_STORAGE_KEY, MARKET_CONVERSION_RATE_LOCAL_STORAGE_KEY } from '@/app/lib/constants';
-import { Flex, Steps, Typography, Alert } from 'antd';
-import { useEffect, useState, useMemo } from "react";
+import { Alert, Flex, Steps, Typography } from 'antd';
+import { useEffect, useState } from "react";
 
 export const SourceCurrency = (props: any) => {
     const { currency } = props

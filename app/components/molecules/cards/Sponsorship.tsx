@@ -172,51 +172,6 @@ const SponsorshipCard: React.FC<SponsorshipCardProps> = ({
                     </Tag>
                 </Flex>
             </Flex>
-
-            {/*
-            <Flex>
-                Campaign Title
-                Campaign Link
-                Campaign Source
-                Campaign Fact Checkers
-                Campaign Evidences
-                Campaign Type (Sponsored Campaigns Only)
-            </Flex>
-            <Flex>
-                Sponsorship Sponsor Names
-                Sponsorship AMount from Amount to
-            </Flex>
-            <Flex>
-                Settlement PFI details
-            </Flex>
-            <Flex className="flex-col">
-                <Typography.Text style={{ fontSize: 12 }}>{`A good title from Facebook fake post`}</Typography.Text>
-
-                <Image alt={source} src={X} {...iconProps} />
-                <Flex className="border justify-between w-[200px]">
-                    <Flex className="border">
-                        <Typography.Text style={{ fontSize: 12 }}>{' Sender Name'}</Typography.Text>
-                        <Typography.Text style={{ fontSize: 12 }}>{countryFlag}</Typography.Text>
-                    </Flex>
-                    <Flex>
-                        {'>'}
-                    </Flex>
-                    <Flex className="border">
-                        <Typography.Text style={{ fontSize: 12 }}>{' Receiver Name'}</Typography.Text>
-                        <Typography.Text style={{ fontSize: 12 }}>{countryFlag}</Typography.Text>
-                    </Flex>
-                </Flex>
-                <Flex className="border">
-                    <Typography.Text style={{ fontSize: 12 }}>{'PFI Name'}</Typography.Text>
-                    <Rate disabled allowHalf defaultValue={2.5} style={{ color: '#CC9933' }} />
-                </Flex>
-                <Flex className="items-center">
-                    <Image alt="Fact Checkers" src={FactCheckers} width={25} height={25} />
-                    <Typography.Text style={{ fontSize: 12 }}>{`${numOfFactCheckers + 4} Fact Checkers`}</Typography.Text>
-                </Flex>
-                Number of Investigators
-                Amount Contributed - Percentage of Total
-            </Flex> */}
         </List.Item>
     )
 }

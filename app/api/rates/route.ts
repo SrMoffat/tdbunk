@@ -3,8 +3,6 @@ import { createEdgeRouter } from "next-connect";
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 
-// const CURRENCY_LAYER_EXCHANGE_RATE_API_URL = 'http://apilayer.net/api/live'
-// const CURRENCY_LAYER_API_KEY = process.env.EXCHANGE_RATE_API_KEY || '918216d68ec274a2d48d6dd3ae4fdbb0'
 const CRYPTO_EXCHANGE_RATE_API_URL = 'https://api.coingate.com/api/v2/rates/merchant'
 
 interface RequestContext { }

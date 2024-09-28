@@ -7,7 +7,13 @@ import DebunkCampaignStats from "@/app/components/molecules/description/DebunkCa
 import { CredentialStorage } from "@/app/components/molecules/forms/Credentials";
 import { Credentials } from "@/app/components/organisms/Credentials";
 import useBrowserStorage from "@/app/hooks/useLocalStorage";
-import { CREDENTIALS_LOCAL_STORAGE_KEY, LOCAL_STORAGE_KEY, OFFERINGS_LOCAL_STORAGE_KEY, SETTLED_TRANSFER_AT_LOCAL_STORAGE_KEY, SPECIAL_OFFERINGS_LOCAL_STORAGE_KEY } from "@/app/lib/constants";
+import {
+    CREDENTIALS_LOCAL_STORAGE_KEY,
+    LOCAL_STORAGE_KEY,
+    OFFERINGS_LOCAL_STORAGE_KEY,
+    SETTLED_TRANSFER_AT_LOCAL_STORAGE_KEY,
+    SPECIAL_OFFERINGS_LOCAL_STORAGE_KEY
+} from "@/app/lib/constants";
 import { getFormattedOfferings } from "@/app/lib/utils";
 import { checkIfUserHasRequiredClaims, getUserBearerDid } from "@/app/lib/web5";
 import { useCreateCampaignContext } from "@/app/providers/CreateCampaignProvider";

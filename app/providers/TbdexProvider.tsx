@@ -1,6 +1,16 @@
 "use client"
 import useBrowserStorage from '@/app/hooks/useLocalStorage';
-import { DEFAULT_BASE_CURRENCY, DEFAULT_BASE_CURRENCY_STABLE_COIN, LOCAL_STORAGE_KEY, MARKET_CONVERSION_API_EXCEEDED_QOUTA_LOCAL_STORAGE_KEY, OFFERINGS_LAST_UPDATED, OFFERINGS_LOCAL_STORAGE_KEY, PFIs, SPECIAL_OFFERINGS_LOCAL_STORAGE_KEY, SPECIAL_PFI, TDBUNK_WALLET_BALANCE_LOCAL_STORAGE_KEY } from "@/app/lib/constants";
+import {
+    DEFAULT_BASE_CURRENCY,
+    LOCAL_STORAGE_KEY,
+    MARKET_CONVERSION_API_EXCEEDED_QOUTA_LOCAL_STORAGE_KEY,
+    OFFERINGS_LAST_UPDATED,
+    OFFERINGS_LOCAL_STORAGE_KEY,
+    PFIs,
+    SPECIAL_OFFERINGS_LOCAL_STORAGE_KEY,
+    SPECIAL_PFI,
+    TDBUNK_WALLET_BALANCE_LOCAL_STORAGE_KEY,
+} from "@/app/lib/constants";
 import { createRfQ } from '@/app/lib/tbdex';
 import { getOfferingPairs } from '@/app/lib/utils';
 import { useWeb5Context } from '@/app/providers/Web5Provider';

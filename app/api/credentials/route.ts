@@ -1,7 +1,7 @@
+import cors from "cors";
+import { createEdgeRouter } from "next-connect";
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
-import { createEdgeRouter } from "next-connect";
-import cors from "cors";
 
 const VC_ISSUER_URL = 'https://mock-idv.tbddev.org/kcc'
 

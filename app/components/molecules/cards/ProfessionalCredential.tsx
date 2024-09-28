@@ -3,7 +3,7 @@ import { DrawerHeader } from "@/app/components/molecules/cards/FinancialCredenti
 import { CREDENTIAL_TYPES, TDBUNK_ISSUER_NAME } from "@/app/lib/constants";
 import { CredentialParsedMetadata, getVcJwtDetails } from "@/app/lib/web5";
 import { resolveDid } from "@tbdex/http-client";
-import { Flex, Typography, Drawer, Card, QRCode } from "antd";
+import { Card, Drawer, Flex, QRCode, Typography } from "antd";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 

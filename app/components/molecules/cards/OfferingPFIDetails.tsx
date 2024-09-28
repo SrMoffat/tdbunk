@@ -3,7 +3,7 @@ import AssetExchangeRates from "@/app/components/atoms/OfferExchangeRates";
 import PFIDetails from "@/app/components/atoms/OfferPFI";
 import { getEstimatedSettlementTime } from "@/app/lib/utils";
 import { Card, Flex } from "antd";
-import React from "react"
+import React from "react";
 
 export interface AssetExchangePFIDetailsProps {
     cta: string;

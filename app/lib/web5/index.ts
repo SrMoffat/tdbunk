@@ -1,17 +1,15 @@
+import { generateUltimateIdentifierVc } from "@/app/lib/api";
 import { TdbunkProtocol } from "@/app/web5Protocols/tdbunk.protocol";
 import { Web5PlatformAgent } from '@web5/agent';
 import { Web5 as Web5Api } from "@web5/api";
 import { VerifiableCredential, type VerifiableCredential as VC } from "@web5/credentials";
 import { Jwk, LocalKeyManager } from "@web5/crypto";
 import { BearerDid, DidDht, DidResolutionResult } from '@web5/dids';
-import { BEARER_DID_LOCAL_STORAGE_KEY, CREDENTIAL_TYPES, VC_JWT_MIME_TYPE } from "../constants";
-import { generateUltimateIdentifierVc } from "../api";
-import { parse, stringify, toJSON, fromJSON } from 'flatted';
 import { formatDistanceToNow } from "date-fns";
+import { parse, stringify } from 'flatted';
+import { BEARER_DID_LOCAL_STORAGE_KEY, CREDENTIAL_TYPES, VC_JWT_MIME_TYPE } from "../constants";
 
 const DWN_SYNC_INTERVAL = '5s'
-const ULTIMATE_IDENTITY_DID_URI = 'did:dht:bh8me68fsdb6xuyy3dsh4aanczexga3k3m7fk4ie6hj5jy6inq5y'
-
 
 const ONE_YEAR_FROM_NOW = new Date();
 ONE_YEAR_FROM_NOW.setFullYear(ONE_YEAR_FROM_NOW.getFullYear() + 1);

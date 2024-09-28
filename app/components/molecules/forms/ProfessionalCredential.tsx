@@ -1,6 +1,6 @@
-import { FieldType, UserValue } from '@/app/lib/api';
+import { UserValue } from '@/app/lib/api';
 import { CREDENTIAL_TYPES } from '@/app/lib/constants';
-import type { DatePickerProps, FormProps } from 'antd';
+import type { DatePickerProps } from 'antd';
 import { DatePicker, Flex, Form, Input } from 'antd';
 import { useState } from 'react';
 
@@ -16,18 +16,9 @@ export interface ProfessionalCredentialProps {
     //() => React.Dispatch<React.SetStateAction<{ [key: CREDENTIAL_TYPES]: { }; }>>
 }
 
-export default function ProfessionalCredential({ 
+export default function ProfessionalCredentialForm({ 
     setFormData
 }: ProfessionalCredentialProps) {
-    const onFinish: FormProps<FieldType>['onFinish'] = async (values) => {
-        console.log('Values:', values);
-
-    };
-
-    const onFinishFailed: FormProps<FieldType>['onFinishFailed'] = (errorInfo) => {
-        console.log('Failed:', errorInfo);
-    };
-
     const onChange: DatePickerProps['onChange'] = (date, dateString) => {
         console.log(date, dateString);
     };

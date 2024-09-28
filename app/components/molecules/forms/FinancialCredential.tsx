@@ -17,7 +17,7 @@ export interface FinancialCredentialProps {
     //() => React.Dispatch<React.SetStateAction<{ [key: CREDENTIAL_TYPES]: { }; }>>
 }
 
-export default function FinancialCredential({
+export default function FinancialCredentialForm({
     setFormData
 }: FinancialCredentialProps) {
     const [value, setValue] = useState<UserValue[]>([]);

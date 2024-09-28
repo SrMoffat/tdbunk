@@ -58,6 +58,7 @@ const RequestCredential = (props: any) => {
         setHasRequiredCredentials
     } = props
 
+    const [isLoading, setIsLoading] = useState(false)
     const [showModal, setShowModal] = useState(false)
     const [createdCredentialType, setCreatedCredentialType] = useState<CREDENTIAL_TYPES>(getSelectedCredentialType())
 
@@ -170,6 +171,7 @@ const RequestCredential = (props: any) => {
     };
 
     const handleOk = async () => {
+        setIsLoading(true)
         // @ts-ignore
         const details = formData[CREDENTIAL_TYPES.FINANCIAL_CREDENTIAL]
 
@@ -196,6 +198,7 @@ const RequestCredential = (props: any) => {
         setNextButtonDisabled(false)
         setShowModal(false)
         setCombinedCredentials(true)
+        setIsLoading(false)
         // setHasRequiredCredentials?.(true)
     };
 
@@ -259,12 +262,12 @@ const RequestCredential = (props: any) => {
                 width={800}
                 open={showModal}
                 onClose={onClose}
-                title={`Request Credential`}
+                title="Request Credential"
                 footer={[
                     <Button danger key="back" onClick={handleCancel}>
                         Cancel
                     </Button>,
-                    <Button key="submit" type="primary" onClick={handleOk}>
+                    <Button key="submit" type="primary" loading={isLoading} onClick={handleOk}>
                         Request Credential
                     </Button>
                 ]}

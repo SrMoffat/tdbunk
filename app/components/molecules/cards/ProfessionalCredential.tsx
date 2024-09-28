@@ -1,10 +1,9 @@
 import { Card3, Evidence, ValidCredential } from "@/app/components/atoms/Icon";
-import { CredentialParsedMetadata, DrawerHeader, extractVcDocumentDetails } from "@/app/components/molecules/cards/FinancialCredential";
+import { DrawerHeader } from "@/app/components/molecules/cards/FinancialCredential";
 import { CREDENTIAL_TYPES, TDBUNK_ISSUER_NAME } from "@/app/lib/constants";
-import { parseJwtToVc } from "@/app/lib/web5";
+import { CredentialParsedMetadata, getVcJwtDetails } from "@/app/lib/web5";
 import { resolveDid } from "@tbdex/http-client";
 import { Flex, Typography, Drawer, Card, QRCode } from "antd";
-import { formatDistanceToNow } from "date-fns";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 
@@ -16,29 +15,61 @@ const ProfessionalCredentialCard = (props: any) => {
         endDate,
         issuance,
         expiration,
-        parsedVcJwt
+        parsedVcJwt,
+        handleCardClicked
     } = props
-    console.log("If we have data use it else use what we use today", parsedVcJwt)
+
+    const onClick = () => {
+        showDrawer?.()
+        handleCardClicked?.()
+    }
+
+    const toRender = parsedVcJwt
+        ? getVcJwtDetails(parsedVcJwt, true)
+        : {
+            issuance,
+            vcSubject,
+            expiration,
+            startDate,
+            endDate
+        }
+
+    // @ts-ignore
+    const start = toRender?.startDate
+        // @ts-ignore
+        ? toRender?.startDate
+        : toRender?.vcSubject?.startDate
+            ? toRender?.vcSubject?.startDate
+            : ''
+
+    // @ts-ignore
+    const end = toRender?.endDate
+        // @ts-ignore
+        ? toRender?.endDate
+        : toRender?.vcSubject?.endDate
+            ? toRender?.vcSubject?.endDate
+            : ''
+
     return (
-        <Flex onClick={() => showDrawer()} className="absolute hover:opacity-70 rounded-md transition-all cursor-pointer">
+        <Flex onClick={onClick} className="absolute hover:opacity-70 rounded-md transition-all cursor-pointer">
             <Image alt="Card3" src={Card3} width={300} height={300} />
             <Flex className="w-full absolute right-0 top-3 flex-col items-center">
-                <Typography.Text style={{ fontSize: 12, textAlign: "right" }}>{`${vcSubject?.nameOfProfessionalBody}`}</Typography.Text>
+                <Typography.Text style={{ fontSize: 12, textAlign: "right" }}>{`${toRender?.vcSubject?.nameOfProfessionalBody}`}</Typography.Text>
             </Flex>
             <Flex className="w-full absolute right-0 top-[90px] flex-col items-center">
                 <Flex className="w-full">
                     <Flex className="w-full flex-col pl-2 mt-3">
-                        <Typography.Text style={{ fontSize: 12 }}> {`${vcSubject?.nameOfProfession}`}</Typography.Text>
-                        <Typography.Text style={{ fontSize: 12 }}> {`${startDate} - ${endDate}`}</Typography.Text>
+                        <Typography.Text style={{ fontSize: 12 }}> {`${toRender?.vcSubject?.nameOfProfession}`}</Typography.Text>
+                        <Typography.Text style={{ fontSize: 12 }}> {`${start} - ${end}`}</Typography.Text>
                     </Flex>
                     <Flex className="w-full flex-col pr-2">
                         <Flex className="flex-col">
                             <Typography.Text style={{ fontSize: 12, textAlign: "right" }}> {`Issued:`}</Typography.Text>
-                            <Typography.Text style={{ fontSize: 10, textAlign: "right" }}> {`${issuance}`}</Typography.Text>
+                            <Typography.Text style={{ fontSize: 10, textAlign: "right" }}> {`${toRender?.issuance}`}</Typography.Text>
                         </Flex>
                         <Flex className="flex-col">
                             <Typography.Text style={{ fontSize: 12, textAlign: "right" }}> {`Expires:`}</Typography.Text>
-                            <Typography.Text style={{ fontSize: 10, textAlign: "right" }}> {`${expiration}`}</Typography.Text>
+                            <Typography.Text style={{ fontSize: 10, textAlign: "right" }}> {`${toRender?.expiration}`}</Typography.Text>
                         </Flex>
                     </Flex>
                 </Flex>
@@ -51,6 +82,7 @@ const ProfessionalInstitutionCredential = (props: any) => {
     const {
         parsedVcJwt,
         stateCredentials,
+        handleCardClicked,
         localStorageCredentials
     } = props
 
@@ -77,20 +109,16 @@ const ProfessionalInstitutionCredential = (props: any) => {
                     ? stateCredentials[credentialTypes][0]
                     : localStorageCredentials[credentialTypes][0]
 
-                // Parse VC to get metadata
-                const parsedVc = parseJwtToVc(vcJwt);
-
-                const { data } = extractVcDocumentDetails(parsedVc)
-
-                const vcSubject = data?.subject
-                const issuanceDate = data?.issuanceDate
-                const expirationDate = data?.expirationDate
-
-                const issuance = issuanceDate ? formatDistanceToNow(new Date(issuanceDate), { addSuffix: true }) : ''
-                const expiration = expirationDate ? formatDistanceToNow(new Date(expirationDate), { addSuffix: true }) : ''
+                const {
+                    issuance,
+                    vcSubject,
+                    expiration,
+                    issuerDidUri,
+                    // issuerServiceUrl
+                } = getVcJwtDetails(vcJwt)
 
                 // @ts-ignore
-                const issuerDidDocument = await resolveDid(data.issuerDidUri)
+                const issuerDidDocument = await resolveDid(issuerDidUri)
 
                 const issuerServiceUrls = issuerDidDocument?.service?.[0]?.serviceEndpoint as any
                 const issuerServiceUrl = issuerServiceUrls[0] as string
@@ -128,7 +156,8 @@ const ProfessionalInstitutionCredential = (props: any) => {
         endDate,
         issuance,
         expiration,
-        parsedVcJwt
+        parsedVcJwt,
+        handleCardClicked
     }
 
     return (
@@ -136,7 +165,7 @@ const ProfessionalInstitutionCredential = (props: any) => {
             <Flex className="h-[200px]">
                 <ProfessionalCredentialCard {...commonProps} />
             </Flex>
-            <Drawer title={<DrawerHeader type={[CREDENTIAL_TYPES.VERIFIABLE_CREDENTIAL, CREDENTIAL_TYPES.GOVERNMENT_CREDENTIAL]} />} onClose={onClose} open={open} width={600}>
+            <Drawer title={<DrawerHeader type={[CREDENTIAL_TYPES.VERIFIABLE_CREDENTIAL, CREDENTIAL_TYPES.PROFESSIONAL_CREDENTIAL]} />} onClose={onClose} open={open} width={600}>
                 <Flex className="h-[200px]">
                     <ProfessionalCredentialCard {...commonProps} />
                 </Flex>

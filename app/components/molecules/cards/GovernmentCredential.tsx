@@ -1,13 +1,11 @@
 import { Card5, Evidence, LogoIcon2, ValidCredential } from "@/app/components/atoms/Icon";
-import { CredentialParsedMetadata, DrawerHeader, extractVcDocumentDetails } from "@/app/components/molecules/cards/FinancialCredential";
+import { DrawerHeader } from "@/app/components/molecules/cards/FinancialCredential";
 import { CREDENTIAL_TYPES, TDBUNK_ISSUER_NAME } from "@/app/lib/constants";
-import { parseJwtToVc } from "@/app/lib/web5";
+import { CredentialParsedMetadata, getVcJwtDetails } from "@/app/lib/web5";
 import { resolveDid } from "@tbdex/http-client";
-import { Flex, Typography, Drawer, Card, QRCode } from "antd";
-import { formatDistanceToNow } from "date-fns";
+import { Card, Drawer, Flex, QRCode, Typography } from "antd";
 import Image from "next/image";
 import { useEffect, useState } from "react";
-
 
 const GovernmentCredentialCard = (props: any) => {
     const {
@@ -15,12 +13,26 @@ const GovernmentCredentialCard = (props: any) => {
         vcSubject,
         issuance,
         expiration,
-        parsedVcJwt
+        parsedVcJwt,
+        handleCardClicked
     } = props
-    console.log("If we have data use it else use what we use today", parsedVcJwt)
+
+    const onClick = () => {
+        showDrawer?.()
+        handleCardClicked?.()
+    }
+
+    const toRender = parsedVcJwt
+        ? getVcJwtDetails(parsedVcJwt, true)
+        : {
+            issuance,
+            vcSubject,
+            expiration,
+        }
+
     return (
         <Flex className="h-[200px]">
-            <Flex onClick={() => showDrawer()} className="absolute hover:opacity-70 rounded-md transition-all cursor-pointer">
+            <Flex onClick={onClick} className="absolute hover:opacity-70 rounded-md transition-all cursor-pointer">
                 <Image alt="Card2" src={Card5} width={300} height={300} />
                 <Flex className="absolute left-2 top-2 flex-col justify-end items-end">
                     <Image alt="LogoIcon" src={LogoIcon2} width={40} height={40} />
@@ -30,21 +42,21 @@ const GovernmentCredentialCard = (props: any) => {
                         <Flex className="w-full flex-col pl-3">
                             <Flex className="flex-col">
                                 <Typography.Text style={{ fontSize: 11, fontWeight: 'bold' }}>Name</Typography.Text>
-                                <Typography.Text style={{ fontSize: 10 }}>{`${vcSubject?.firstName} ${vcSubject?.lastName}`}</Typography.Text>
+                                <Typography.Text style={{ fontSize: 10 }}>{`${toRender?.vcSubject?.firstName} ${toRender?.vcSubject?.lastName}`}</Typography.Text>
                             </Flex>
                             <Flex className="flex-col">
                                 <Typography.Text style={{ fontSize: 11, fontWeight: 'bold' }}>ID Number</Typography.Text>
-                                <Typography.Text style={{ fontSize: 10 }}>{`${vcSubject?.idNumber}`}</Typography.Text>
+                                <Typography.Text style={{ fontSize: 10 }}>{`${toRender?.vcSubject?.idNumber}`}</Typography.Text>
                             </Flex>
                         </Flex>
                         <Flex className="w-full flex-col justify-end">
                             <Flex className="flex-col">
                                 <Typography.Text style={{ fontSize: 11, fontWeight: 'bold' }}>Issued:</Typography.Text>
-                                <Typography.Text style={{ fontSize: 10 }}>{`${issuance}`}</Typography.Text>
+                                <Typography.Text style={{ fontSize: 10 }}>{`${toRender?.issuance}`}</Typography.Text>
                             </Flex>
                             <Flex className="flex-col">
                                 <Typography.Text style={{ fontSize: 11, fontWeight: 'bold' }}>Expires:</Typography.Text>
-                                <Typography.Text style={{ fontSize: 10 }}>{`${expiration}`}</Typography.Text>
+                                <Typography.Text style={{ fontSize: 10 }}>{`${toRender?.expiration}`}</Typography.Text>
                             </Flex>
                         </Flex>
                     </Flex>
@@ -58,6 +70,7 @@ const GovernmentInstitutionCredential = (props: any) => {
     const {
         parsedVcJwt,
         stateCredentials,
+        handleCardClicked,
         localStorageCredentials
     } = props
 
@@ -87,20 +100,16 @@ const GovernmentInstitutionCredential = (props: any) => {
                     ? stateCredentials[credentialTypes][0]
                     : localStorageCredentials[credentialTypes][0]
 
-                // Parse VC to get metadata
-                const parsedVc = parseJwtToVc(vcJwt);
-
-                const { data } = extractVcDocumentDetails(parsedVc)
-
-                const vcSubject = data?.subject
-                const issuanceDate = data?.issuanceDate
-                const expirationDate = data?.expirationDate
-
-                const issuance = issuanceDate ? formatDistanceToNow(new Date(issuanceDate), { addSuffix: true }) : ''
-                const expiration = expirationDate ? formatDistanceToNow(new Date(expirationDate), { addSuffix: true }) : ''
+                const {
+                    issuance,
+                    vcSubject,
+                    expiration,
+                    issuerDidUri,
+                    // issuerServiceUrl
+                } = getVcJwtDetails(vcJwt)
 
                 // @ts-ignore
-                const issuerDidDocument = await resolveDid(data.issuerDidUri)
+                const issuerDidDocument = await resolveDid(issuerDidUri)
 
                 const issuerServiceUrls = issuerDidDocument?.service?.[0]?.serviceEndpoint as any
                 const issuerServiceUrl = issuerServiceUrls[0] as string
@@ -128,7 +137,8 @@ const GovernmentInstitutionCredential = (props: any) => {
         vcSubject,
         issuance,
         expiration,
-        parsedVcJwt
+        parsedVcJwt,
+        handleCardClicked
     }
 
     return (

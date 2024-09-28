@@ -15,7 +15,7 @@ export interface GovernmentCredentialProps {
     //() => React.Dispatch<React.SetStateAction<{ [key: CREDENTIAL_TYPES]: { }; }>>
 }
 
-export default function GovernmentCredential({
+export default function GovernmentCredentialForm({
     setFormData
 }: GovernmentCredentialProps) {
     const onChange: DatePickerProps['onChange'] = (date, dateString) => {

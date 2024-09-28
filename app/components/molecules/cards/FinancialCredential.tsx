@@ -1,7 +1,7 @@
 "use client"
 import { Card1, Evidence, TBDVCLogoWhite, TBDVCLogoYellow, ValidCredential } from "@/app/components/atoms/Icon";
-import { CREDENTIAL_TYPES } from "@/app/lib/constants";
-import { parseJwtToVc, resolveDid } from "@/app/lib/web5";
+import { CREDENTIAL_TYPES, ULTIMATE_IDENTITY_ISSUER_NAME } from "@/app/lib/constants";
+import { extractVcDocumentDetails, parseJwtToVc, resolveDid } from "@/app/lib/web5";
 import countries from '@/public/countries.json';
 import { VerifiableCredential } from "@web5/credentials";
 import { DidResolutionResult } from "@web5/dids";
@@ -37,8 +37,15 @@ export interface CredentialCardProps {
 
 }
 
-export const getVcJwtDetails = (jwt: string) => {
-    const parsedCred = parseJwtToVc(jwt)
+export const getFinancialVcJwtDetails = (jwt: any, isParsed: boolean = false) => {
+    let parsedCred
+
+    if (!isParsed){
+        parsedCred = parseJwtToVc(jwt)
+    } else {
+        parsedCred = jwt
+    }
+
     const { data } = extractVcDocumentDetails(parsedCred)
 
     const subject = data?.subject
@@ -79,7 +86,7 @@ export const CredentialCard: React.FC<CredentialCardProps> = ({
     const country = countries.filter(entry => entry?.countryCode === countryCode)[0]
 
     const details = credential
-        ? getVcJwtDetails(credential)
+        ? getFinancialVcJwtDetails(credential)
         : {
             name,
             country: `${country?.countryName} ${country?.flag}`,
@@ -89,21 +96,23 @@ export const CredentialCard: React.FC<CredentialCardProps> = ({
 
     const isTestMessedCred = !details?.name?.includes('undefined')
 
-    console.log("If we have data use it else use what we use today", parsedVcJwt)
+    const toRender = parsedVcJwt
+        ? getFinancialVcJwtDetails(parsedVcJwt, true)
+        : details
 
     return (
         <Flex className="h-[200px]">
             <Flex onClick={handleCardClicked} className="absolute hover:opacity-70 rounded-md transition-all cursor-pointer">
                 <Image alt="card" src={Card1} width={300} height={300} />
                 <Flex className="absolute left-4 top-4 flex-col">
-                    <Image alt="LogoIcon" src={isTestMessedCred ? TBDVCLogoWhite: TBDVCLogoYellow} width={40} height={40} />
-                    <Link target="_blank" href={vcServiceUrl} style={{ fontSize: 10, marginTop: 8 }}>Ultimate Identity</Link>
+                    <Image alt="LogoIcon" src={isTestMessedCred ? TBDVCLogoWhite : TBDVCLogoYellow} width={40} height={40} />
+                    <Link target="_blank" href={vcServiceUrl} style={{ fontSize: 10, marginTop: 8 }}>{ULTIMATE_IDENTITY_ISSUER_NAME}</Link>
                 </Flex>
                 <Flex className="absolute left-4 top-20 flex-col">
-                    <Typography.Text style={{ fontSize: 12 }}>{`${details?.name?.replace('undefined', '')}`}</Typography.Text>
-                    <Typography.Text style={{ fontSize: 12 }}>{`${details?.country}`}</Typography.Text>
-                    <Typography.Text style={{ fontSize: 9, marginTop: 10 }}>{`Issued: ${details?.issuance}`}</Typography.Text>
-                    <Typography.Text style={{ fontSize: 9 }}>{`Expires: ${details?.expiration}`}</Typography.Text>
+                    <Typography.Text style={{ fontSize: 12 }}>{`${toRender?.name?.replace('undefined', '')}`}</Typography.Text>
+                    <Typography.Text style={{ fontSize: 12 }}>{`${toRender?.country}`}</Typography.Text>
+                    <Typography.Text style={{ fontSize: 9, marginTop: 10 }}>{`Issued: ${toRender?.issuance}`}</Typography.Text>
+                    <Typography.Text style={{ fontSize: 9 }}>{`Expires: ${toRender?.expiration}`}</Typography.Text>
                 </Flex>
             </Flex>
         </Flex>
@@ -122,68 +131,10 @@ export const DrawerHeader: React.FC<DrawerHeaderProps> = ({
     </Flex>)
 }
 
-export interface CredentialParsedMetadata {
-    id?: string;
-    name?: string;
-    countryOfResidence?: string;
-    firstName?: string;
-    lastName?: string;
-    idNumber?: string;
-    phoneNumber?: string;
-    dateOfBirth?: string;
-    nameOfProfessionalBody?: string;
-    nameOfProfession?: string;
-    startDate?: string;
-    endDate?: string;
-    nameOfInstituion?: string;
-    nameOfCourse?: string;
-    startedDate?: string;
-    endedDate?: string;
-}
-
-export const extractVcDocumentDetails = (vc: VerifiableCredential) => {
-    const vcModel = vc?.vcDataModel
-
-    const credentialSubject = vcModel?.credentialSubject as CredentialParsedMetadata
-
-    const credentialMetadata = {
-        subject: {
-            didUri: credentialSubject?.id,
-            name: credentialSubject?.name,
-            endDate: credentialSubject?.endDate,
-            idNumber: credentialSubject?.idNumber,
-            lastName: credentialSubject?.lastName,
-            startDate: credentialSubject?.startDate,
-            endedDate: credentialSubject?.endedDate,
-            firstName: credentialSubject?.firstName,
-            phoneNumber: credentialSubject?.phoneNumber,
-            startedDate: credentialSubject?.startedDate,
-            dateOfBirth: credentialSubject?.dateOfBirth,
-            nameOfCourse: credentialSubject?.nameOfCourse,
-            countryCode: credentialSubject?.countryOfResidence,
-            nameOfProfession: credentialSubject?.nameOfProfession,
-            nameOfInstituion: credentialSubject?.nameOfInstituion,
-            nameOfProfessionalBody: credentialSubject?.nameOfProfessionalBody,
-        },
-        issuerDidUri: vcModel?.issuer,
-        issuanceDate: vcModel?.issuanceDate,
-        expirationDate: vcModel?.expirationDate,
-        type: vcModel?.type,
-    };
-
-    const issuerUri = vcModel?.issuer as string
-
-    return {
-        issuerUri,
-        data: credentialMetadata
-    }
-}
-
 const FinancialInstitutionCredential = (props: any) => {
-    const { stateCredentials, localStorageCredentials, credential, parsedVcJwt } = props;
+    const { stateCredentials, localStorageCredentials, credential, parsedVcJwt, handleCardClicked: onClick } = props;
 
     const [open, setOpen] = useState(false);
-    const [copied, setCopied] = useState(false)
     const [vcMetadata, setVcMetadata] = useState<CredentialMetadata | undefined>()
     const [vcIssuerDidDocument, setVcIssuerDidDocument] = useState<DidResolutionResult | undefined>()
     const [credentialDidDocument, setCredentialDidDocument] = useState<VerifiableCredential | undefined>()
@@ -200,6 +151,7 @@ const FinancialInstitutionCredential = (props: any) => {
 
     const handleCardClicked = () => {
         setOpen(true)
+        onClick?.()
     }
 
     const vcDidDoc = vcIssuerDidDocument?.didDocument
@@ -253,9 +205,12 @@ const FinancialInstitutionCredential = (props: any) => {
         setCredentialDidDocument(kccCredential?.rawCred)
     }, [])
 
+    const credentialType = parsedVcJwt
+        ? parsedVcJwt?.vcDataModel?.type
+        : vcMetadata?.type
     return (
         <Flex>
-            <Drawer title={<DrawerHeader type={vcMetadata?.type} />} onClose={onClose} open={open} width={600}>
+            <Drawer title={<DrawerHeader type={credentialType} />} onClose={onClose} open={open} width={600}>
                 <Flex>
                     <CredentialCard {...commonCardProps} />
                 </Flex>
@@ -263,9 +218,9 @@ const FinancialInstitutionCredential = (props: any) => {
                     <Flex className="w-[200px]">
                         <QRCode
                             errorLevel="H"
-                            size={160}
-                            iconSize={160 / 4}
-                            value="To Do: stringify the vc document and pass it here"
+                            size={200}
+                            iconSize={200 / 4}
+                            value={JSON.stringify(credentialDidDocument?.vcDataModel?.credentialSubject, null, 0)}
                             icon="/logo-icon.svg"
                         />
                     </Flex>

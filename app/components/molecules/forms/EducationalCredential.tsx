@@ -14,7 +14,7 @@ export interface EducationalCredentialProps {
     //() => React.Dispatch<React.SetStateAction<{ [key: CREDENTIAL_TYPES]: { }; }>>
 }
 
-export default function EducationalCredential({
+export default function EducationalCredentialForm({
     setFormData
  }: EducationalCredentialProps) {
     const onChange: DatePickerProps['onChange'] = (date, dateString) => {

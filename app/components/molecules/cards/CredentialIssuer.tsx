@@ -183,6 +183,8 @@ const CredentialIssuerCard = (props: any) => {
             // @ts-ignore
             const details = formData[key]
 
+            console.log("Details", details)
+
             if (Object.keys(details).length) {
                 const defaultCurrencyFromCredential = getCurrencyFromCountry(countries, details?.country?.value)
 

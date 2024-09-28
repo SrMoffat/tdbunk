@@ -7,6 +7,7 @@ import { BearerDid, DidDht, DidResolutionResult } from '@web5/dids';
 import { BEARER_DID_LOCAL_STORAGE_KEY, CREDENTIAL_TYPES, VC_JWT_MIME_TYPE } from "../constants";
 import { generateUltimateIdentifierVc } from "../api";
 import { parse, stringify, toJSON, fromJSON } from 'flatted';
+import { formatDistanceToNow } from "date-fns";
 
 const DWN_SYNC_INTERVAL = '5s'
 const ULTIMATE_IDENTITY_DID_URI = 'did:dht:bh8me68fsdb6xuyy3dsh4aanczexga3k3m7fk4ie6hj5jy6inq5y'
@@ -16,6 +17,25 @@ const ONE_YEAR_FROM_NOW = new Date();
 ONE_YEAR_FROM_NOW.setFullYear(ONE_YEAR_FROM_NOW.getFullYear() + 1);
 
 const localKeyManager = new LocalKeyManager();
+
+export interface CredentialParsedMetadata {
+    id?: string;
+    name?: string;
+    countryOfResidence?: string;
+    firstName?: string;
+    lastName?: string;
+    idNumber?: string;
+    phoneNumber?: string;
+    dateOfBirth?: string;
+    nameOfProfessionalBody?: string;
+    nameOfProfession?: string;
+    startDate?: string;
+    endDate?: string;
+    nameOfInstituion?: string;
+    nameOfCourse?: string;
+    startedDate?: string;
+    endedDate?: string;
+}
 
 export const checkIfProtocolIsInstalled = async (web5: Web5Api | null) => {
     try {
@@ -583,4 +603,70 @@ export const storeTbdexTransactionInDwn = async (transaction: any) => {
     // });
 
     console.log("To Do: storeTbdexTransaction", transaction)
+}
+
+export const extractVcDocumentDetails = (vc: VerifiableCredential) => {
+    const vcModel = vc?.vcDataModel
+
+    const credentialSubject = vcModel?.credentialSubject as CredentialParsedMetadata
+
+    const credentialMetadata = {
+        subject: {
+            didUri: credentialSubject?.id,
+            name: credentialSubject?.name,
+            endDate: credentialSubject?.endDate,
+            idNumber: credentialSubject?.idNumber,
+            lastName: credentialSubject?.lastName,
+            startDate: credentialSubject?.startDate,
+            endedDate: credentialSubject?.endedDate,
+            firstName: credentialSubject?.firstName,
+            phoneNumber: credentialSubject?.phoneNumber,
+            startedDate: credentialSubject?.startedDate,
+            dateOfBirth: credentialSubject?.dateOfBirth,
+            nameOfCourse: credentialSubject?.nameOfCourse,
+            countryCode: credentialSubject?.countryOfResidence,
+            nameOfProfession: credentialSubject?.nameOfProfession,
+            nameOfInstituion: credentialSubject?.nameOfInstituion,
+            nameOfProfessionalBody: credentialSubject?.nameOfProfessionalBody,
+        },
+        issuerDidUri: vcModel?.issuer,
+        issuanceDate: vcModel?.issuanceDate,
+        expirationDate: vcModel?.expirationDate,
+        type: vcModel?.type,
+    };
+
+    const issuerUri = vcModel?.issuer as string
+
+    return {
+        issuerUri,
+        data: credentialMetadata
+    }
+}
+
+
+export const getVcJwtDetails = (jwt: any, isParsed: boolean = false) => {
+    let parsedCred
+
+    if (!isParsed) {
+        parsedCred = parseJwtToVc(jwt)
+    } else {
+        parsedCred = jwt
+    }
+
+    const { data } = extractVcDocumentDetails(parsedCred)
+
+    const vcSubject = data?.subject
+    const issuanceDate = data?.issuanceDate
+    const expirationDate = data?.expirationDate
+    const issuerDidUri = data?.issuerDidUri
+
+    const issuance = issuanceDate ? formatDistanceToNow(new Date(issuanceDate), { addSuffix: true }) : ''
+    const expiration = expirationDate ? formatDistanceToNow(new Date(expirationDate), { addSuffix: true }) : ''
+
+    return {
+        issuance,
+        vcSubject,
+        expiration,
+        issuerDidUri,
+    }
 }

@@ -209,7 +209,7 @@ const RequestForQuote = (props: any) => {
                         ) : (
                             <Form
                                 form={form}
-                                disabled={disabled}
+                                disabled={isLoading}
                                 layout="vertical"
                                 style={{ width: "100%" }}
                             >

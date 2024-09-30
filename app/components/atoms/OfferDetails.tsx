@@ -2,48 +2,51 @@ import OfferCard from "@/app/components/molecules/cards/Offer";
 import { Badge } from "antd";
 
 export interface AssetExchangeOfferProps {
+    issuerDid: string;
+    selectedCard: any;
+    isSpecial: boolean;
     offeringId: string;
     isSelected: boolean;
     isRecommended: boolean;
-    isSpecial: boolean;
-    hasRequiredClaims: boolean;
     issuerVcSchema: string;
-    issuerDid: string;
+    hasRequiredClaims: boolean;
     offeringToCurrencyMethods: any[];
-
 }
 
 const AssetExchangeOffer = ({
-    offeringId,
-    isSelected,
-    issuerVcSchema,
-    issuerDid,
-    isRecommended,
     isSpecial,
+    issuerDid,
+    isSelected,
+    offeringId,
+    selectedCard,
+    isRecommended,
+    issuerVcSchema,
     hasRequiredClaims,
     offeringToCurrencyMethods
 }: AssetExchangeOfferProps) => {
     return isRecommended
         ? <Badge.Ribbon text="Recommended">
             <OfferCard
-                offeringId={offeringId}
-                issuerDid={issuerDid}
-                hasRequiredClaims={hasRequiredClaims}
-                isRecommended={isRecommended}
                 isSpecial={isSpecial}
+                issuerDid={issuerDid}
+                offeringId={offeringId}
                 isSelected={isSelected}
+                selectedCard={selectedCard}
+                isRecommended={isRecommended}
                 issuerVcSchema={issuerVcSchema}
+                hasRequiredClaims={hasRequiredClaims}
                 offeringToCurrencyMethods={offeringToCurrencyMethods}
             />
         </Badge.Ribbon>
         : <OfferCard
-            offeringId={offeringId}
             issuerDid={issuerDid}
             isSpecial={isSpecial}
-            hasRequiredClaims={hasRequiredClaims}
-            isRecommended={isRecommended}
+            offeringId={offeringId}
             isSelected={isSelected}
+            selectedCard={selectedCard}
+            isRecommended={isRecommended}
             issuerVcSchema={issuerVcSchema}
+            hasRequiredClaims={hasRequiredClaims}
             offeringToCurrencyMethods={offeringToCurrencyMethods}
         />
 }

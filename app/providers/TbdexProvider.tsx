@@ -37,8 +37,10 @@ export interface TbdexContextProps {
     offerings: any[];
     specialOfferings: any[];
     sourceCurrencies: any[];
+    selectedPayinMethod: any;
     selectedCurrency: string;
     currentMarketRate: number;
+    selectedPayoutMethod: any;
     unformattedOfferings: any[];
     credentials: CredentialProp;
     destinationCurrencies: any[];
@@ -53,6 +55,8 @@ export interface TbdexContextProps {
     setSourceCurrencies: React.Dispatch<React.SetStateAction<any[]>>;
     setSpecialOfferings: React.Dispatch<React.SetStateAction<any[]>>;
     setSelectedCurrency: React.Dispatch<React.SetStateAction<string>>;
+    setSelectedPayinMethod: React.Dispatch<React.SetStateAction<any>>;
+    setSelectedPayoutMethod: React.Dispatch<React.SetStateAction<any>>;
     setCurrentMarketRate: React.Dispatch<React.SetStateAction<number>>;
     setUnformattedOfferings: React.Dispatch<React.SetStateAction<any[]>>;
     setDestinationCurrencies: React.Dispatch<React.SetStateAction<any[]>>;
@@ -81,8 +85,10 @@ const useTbdexContext = (): Partial<TbdexContextProps> => {
 const TbdexContextProvider = ({ children }: PropsWithChildren) => {
     const { userBearerDid: contextUserBearerDid } = useWeb5Context()
     const [offerings, setOfferings] = useState<any[]>([])
-    const [currentMarketRate, setCurrentMarketRate] = useState<number>(1)
     const [specialOfferings, setSpecialOfferings] = useState<any[]>([])
+    const [currentMarketRate, setCurrentMarketRate] = useState<number>(1)
+    const [selectedPayinMethod, setSelectedPayinMethod] = useState<any>('')
+    const [selectedPayoutMethod, setSelectedPayoutMethod] = useState<any>('')
     const [unformattedOfferings, setUnformattedOfferings] = useState<any[]>([])
     const [unformattedSpecialOfferings, setUnformattedSpecialOfferings] = useState<any[]>([])
     const [selectedCurrency, setSelectedCurrency] = useState<string>(DEFAULT_BASE_CURRENCY)
@@ -227,6 +233,8 @@ const TbdexContextProvider = ({ children }: PropsWithChildren) => {
                 setUnformattedOfferings(unformattedOfferings)
                 setUnformattedSpecialOfferings(specialOfferings)
 
+                console.log("Unformatted Offerings", unformattedOfferings)
+
                 setDestinationCurrencies(destinationCurrencies)
                 setSpecialDestinationCurrencies(specialOffersDestinationCurrencies)
 
@@ -238,6 +246,10 @@ const TbdexContextProvider = ({ children }: PropsWithChildren) => {
     }, [])
 
 
+    console.log("Selected Payment Methods", {
+        selectedPayinMethod,
+        selectedPayoutMethod
+    })
 
     return <TbdexContext.Provider value={{
         offerings,
@@ -247,6 +259,8 @@ const TbdexContextProvider = ({ children }: PropsWithChildren) => {
         sourceCurrencies,
         selectedCurrency,
         currentMarketRate,
+        selectedPayinMethod,
+        selectedPayoutMethod,
         unformattedOfferings,
         destinationCurrencies,
         specialSourceCurrencies,
@@ -263,6 +277,8 @@ const TbdexContextProvider = ({ children }: PropsWithChildren) => {
         setSpecialOfferings,
         setSourceCurrencies,
         setCurrentMarketRate,
+        setSelectedPayinMethod,
+        setSelectedPayoutMethod,
         setUnformattedOfferings,
         setDestinationCurrencies,
         setSpecialSourceCurrencies,

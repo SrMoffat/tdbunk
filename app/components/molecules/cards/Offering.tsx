@@ -52,6 +52,10 @@ const OfferingDetails = (props: any) => {
         setCampaignAmount,
         setSelectedOffering,
         unformattedOfferings,
+        selectedPayinMethod,
+        selectedPayoutMethod,
+        setSelectedPayinMethod,
+        setSelectedPayoutMethod,
     } = props
 
     const [isLoading, setIsLoading] = useState(false)
@@ -77,6 +81,7 @@ const OfferingDetails = (props: any) => {
     const offeringFromCurrency = offering?.pair[0]
     const offeringToCurrency = offering?.pair[1]
     const offeringToCurrencyMethods = offeringToCurrency?.methods
+    const offeringFromCurrencyMethods = offeringFromCurrency?.methods
 
     const isCheaperThanMarketRate = offeringToCurrency?.unit > Number(currentMarketRate) // || isOnlyResult
 
@@ -98,9 +103,20 @@ const OfferingDetails = (props: any) => {
     const exchangeRate = rawOffering?.data?.payoutUnitsPerPayinUnit
 
     const totalFee = Number(feeDetails?.totalFee)?.toFixed(2)
+
     const overallFee = payinFee
         ? Number(payinFee + totalFee).toFixed(2)
         : Number(totalFee).toFixed(2)
+
+    const offeringRequiredClaimsInputDescriptors = rawOffering?.data?.requiredClaims?.input_descriptors
+
+    const offeringRequiredClaimsDetails = offeringRequiredClaimsInputDescriptors
+        ?.map((entry: any) => entry?.constraints?.fields
+            ?.map((entry: any) => entry?.filter?.const))
+
+    const requiredClaimsArray = offeringRequiredClaimsDetails?.flat()
+
+    const hasSelectedRequiredCredential = requiredClaimsArray?.includes(selectedCard?.issuer)
 
     const showPaymentModal = () => {
         const isReadyForQuote = hasRequiredCredentials && isSelected
@@ -112,7 +128,7 @@ const OfferingDetails = (props: any) => {
         setShowModal(true)
     }
 
-    const cta = isSelected
+    const cta = hasSelectedRequiredCredential
         ? 'Start Transfer'
         : 'Request Credentials'
 
@@ -230,8 +246,7 @@ const OfferingDetails = (props: any) => {
                 exchangeRate={exchangeRate}
                 isCancelling={isCancelling}
                 selectedCard={selectedCard}
-                setShowModal={setShowModal}
-                setIsLoading={setIsLoading}
+                isSpecial={!Boolean(pfiName)}
                 userBearerDid={userBearerDid}
                 setIsSelected={setIsSelected}
                 offeringReview={offeringReview}
@@ -239,21 +254,30 @@ const OfferingDetails = (props: any) => {
                 activateButton={activateButton}
                 campaignAmount={campaignAmount}
                 isRequestQuote={isRequestQuote}
-                setAllExchanges={setAllExchanges}
                 setSelectedCard={setSelectedCard}
-                setIsCancelling={setIsCancelling}
-                stateCredentials={stateCredentials}
                 relevantExchange={relevantExchange}
+                stateCredentials={stateCredentials}
                 currentMarketRate={currentMarketRate}
-                setOfferingReview={setOfferingReview}
-                setActivateButton={setActivateButton}
                 setCampaignAmount={setCampaignAmount}
                 offeringCreatedAt={offeringCreatedAt}
-                setRelevantExchange={setRelevantExchange}
+                selectedPayinMethod={selectedPayinMethod}
+                selectedPayoutMethod={selectedPayoutMethod}
                 offeringFromCurrency={offeringFromCurrency}
                 requiredPaymentDetails={requiredPaymentDetails}
                 hasRequiredCredentials={hasRequiredCredentials}
                 offeringToCurrencyMethods={offeringToCurrencyMethods}
+                offeringFromCurrencyMethods={offeringFromCurrencyMethods}
+                hasSelectedRequiredCredential={hasSelectedRequiredCredential}
+
+                setShowModal={setShowModal}
+                setIsLoading={setIsLoading}
+                setAllExchanges={setAllExchanges}
+                setIsCancelling={setIsCancelling}
+                setOfferingReview={setOfferingReview}
+                setActivateButton={setActivateButton}
+                setRelevantExchange={setRelevantExchange}
+                setSelectedPayinMethod={setSelectedPayinMethod}
+                setSelectedPayoutMethod={setSelectedPayoutMethod}
                 setRequiredPaymentDetails={setRequiredPaymentDetails}
             />
             <AssetExchangePFIDetails
@@ -264,25 +288,31 @@ const OfferingDetails = (props: any) => {
                 offering={rawOffering}
                 toUnit={offeringToCurrency?.unit}
                 selectedOffering={selectedOffering}
-                showPaymentModal={showPaymentModal}
                 offeringCreatedAt={offeringCreatedAt}
                 setSelectedOffering={setSelectedOffering}
                 toCurrencyCode={offeringToCurrency?.currencyCode}
                 offeringToCurrencyMethods={offeringToCurrencyMethods}
                 fromCurrencyCode={offeringFromCurrency?.currencyCode}
-                fromCurrencyFlag={getCurrencyFlag(offeringFromCurrency?.currencyCode)}
+
+                showPaymentModal={showPaymentModal}
                 toCurrencyFlag={getCurrencyFlag(offeringToCurrency?.currencyCode)}
+                fromCurrencyFlag={getCurrencyFlag(offeringFromCurrency?.currencyCode)}
             />
             <AssetExchangeOffer
                 issuerDid={issuerDid}
                 isSelected={isSelected}
                 offeringId={offeringId}
                 selectedCard={selectedCard}
-                issuerVcSchema={issuerVcSchema}
-                isRecommended={Boolean(pfiName) && isCheaperThanMarketRate}
                 isSpecial={!Boolean(pfiName)}
+                issuerVcSchema={issuerVcSchema}
+                selectedPayinMethod={selectedPayinMethod}
+                selectedPayoutMethod={selectedPayoutMethod}
+                setSelectedPayinMethod={setSelectedPayinMethod}
+                setSelectedPayoutMethod={setSelectedPayoutMethod}
                 hasRequiredClaims={offering?.requiredClaimsExist}
                 offeringToCurrencyMethods={offeringToCurrencyMethods}
+                offeringFromCurrencyMethods={offeringFromCurrencyMethods}
+                isRecommended={Boolean(pfiName) && isCheaperThanMarketRate}
             />
         </List.Item>
 

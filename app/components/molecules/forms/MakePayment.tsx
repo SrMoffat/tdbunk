@@ -17,8 +17,10 @@ const MakePayment = (props: any) => {
         pfiDid,
         pfiName,
         offering,
+        isSpecial,
         isLoading,
         feeDetails,
+        selectedCard,
         monopolyMoney,
         campaignAmount,
         isRequestQuote,
@@ -28,8 +30,13 @@ const MakePayment = (props: any) => {
         setPaymentDetails,
         setActivateButton,
         setCampaignAmount,
+        selectedPayinMethod,
+        selectedPayoutMethod,
+        setSelectedPayinMethod,
+        setSelectedPayoutMethod,
         offeringToCurrencyMethods,
         setHasInsufficientBalance,
+        offeringFromCurrencyMethods,
         requiredPaymentDetails: stateDetails,
     } = props
 
@@ -235,11 +242,20 @@ const MakePayment = (props: any) => {
                         money={money}
                         offering={offering}
                         isLoading={isLoading}
+                        isSpecial={isSpecial}
+                        selectedCard={selectedCard}
                         monopolyMoney={monopolyMoney}
                         campaignAmount={campaignAmount}
                         setCampaignAmount={setCampaignAmount}
                         currentMarketRate={currentMarketRate}
+                        selectedPayinMethod={selectedPayinMethod}
+                        selectedPayoutMethod={selectedPayoutMethod}
+                        setSelectedPayinMethod={setSelectedPayinMethod}
+                        setSelectedPayoutMethod={setSelectedPayoutMethod}
+                        offeringToCurrencyMethods={offeringToCurrencyMethods}
                         setHasInsufficientBalance={setHasInsufficientBalance}
+                        offeringFromCurrencyMethods={offeringFromCurrencyMethods}
+
                         setRequiredPaymentDetails={setRequiredPaymentDetails}
                     />
                     : <MakeTransfer

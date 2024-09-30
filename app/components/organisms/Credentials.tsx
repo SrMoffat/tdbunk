@@ -7,7 +7,7 @@ import {
 import { CREDENTIAL_TYPES } from "@/app/lib/constants";
 import { parseJwtToVc } from "@/app/lib/web5";
 import { CheckCircleFilled, CheckCircleOutlined } from "@ant-design/icons";
-import { Card, Flex, theme } from "antd";
+import { Card, Flex, Alert, theme } from "antd";
 import { StaticImport } from "next/dist/shared/lib/get-img-props";
 import { useEffect, useState } from "react";
 
@@ -40,11 +40,9 @@ export interface CredentialOptionProps {
 
 const CredentialOption: React.FC<any> = ({
     vcJwt,
-    offering,
-    isSelected,
     selectedCard,
-    setIsSelected,
-    setSelectedCard
+    setSelectedCard,
+    setHasSelectedCredential
 }) => {
     const [parsedVcJwt, setParsedVcJwt] = useState<any>()
 
@@ -70,6 +68,7 @@ const CredentialOption: React.FC<any> = ({
         };
 
         setSelectedCard(credentialDetails)
+        setHasSelectedCredential(true)
 
         if (selectedCard?.jwt) {
             const isSame = selectedCard?.jwt === vcJwt
@@ -77,8 +76,8 @@ const CredentialOption: React.FC<any> = ({
             if (isSame) {
                 // Deselect the selected card
                 setSelectedCard({})
+                setHasSelectedCredential(false)
             }
-
         }
     }
 
@@ -122,6 +121,7 @@ const CredentialOption: React.FC<any> = ({
 
 export const Credentials = (props: any) => {
     const {
+        inModal,
         offering,
         credentials,
         isSelected,
@@ -129,19 +129,35 @@ export const Credentials = (props: any) => {
         setIsSelected,
         setSelectedCard,
     } = props
+
+    const [hasSelectedCredential, setHasSelectedCredential] = useState(false)
+
     return (
-        <Flex className="gap-3">
-            {credentials?.map((entry: any) => (
-                <CredentialOption
-                    key={entry}
-                    vcJwt={entry}
-                    offering={offering}
-                    isSelected={isSelected}
-                    selectedCard={selectedCard}
-                    setIsSelected={setIsSelected}
-                    setSelectedCard={setSelectedCard}
-                />
-            ))}
+        <Flex className="flex-col">
+            {hasSelectedCredential && inModal && (
+                <Flex className="w-full bordder">
+                    <Alert
+                        showIcon
+                        message="Selected credential does not satisfy the requirements of funds transfers."
+                        type="warning"
+                        className="mb-6 text-xs w-full"
+                    />
+                </Flex>
+            )}
+            <Flex className="gap-3">
+                {credentials?.map((entry: any) => (
+                    <CredentialOption
+                        key={entry}
+                        vcJwt={entry}
+                        offering={offering}
+                        isSelected={isSelected}
+                        selectedCard={selectedCard}
+                        setIsSelected={setIsSelected}
+                        setSelectedCard={setSelectedCard}
+                        setHasSelectedCredential={setHasSelectedCredential}
+                    />
+                ))}
+            </Flex>
         </Flex>
     )
 }

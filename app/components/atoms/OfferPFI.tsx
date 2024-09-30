@@ -50,11 +50,11 @@ const PFIDetails = (props: PFIDetailsProps) => {
                 </Flex>
             </Flex>
             <Flex className="flex-col gap-2">
-                <Tag className="items-center">
+                <Tag className="items-center mr-0">
                     <Rate style={{ fontSize: 11, color: '#CC9933' }} disabled allowHalf defaultValue={pfiRating} />
                 </Tag>
                 <Flex className="justify-end">
-                    <Tag className="items-center" color="gold">
+                    <Tag className="items-center mr-0" color="gold">
                         <Typography.Text>
                             <ClockCircleOutlined className="mr-1" />
                             {`${estimatedSettlementTime}`}

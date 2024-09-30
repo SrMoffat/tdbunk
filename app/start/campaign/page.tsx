@@ -33,7 +33,7 @@ export default function StartCampaignPage() {
         setRecoveryPhrase,
     } = useWeb5Context()
 
-    const [current, setCurrent] = useState<number>(0);
+    const [current, setCurrent] = useState<number>(3);
     const [nextButtonDisabled, setNextButtonDisabled] = useState<boolean>(true);
 
     const [localStorageData] = useBrowserStorage<UserStorage>(

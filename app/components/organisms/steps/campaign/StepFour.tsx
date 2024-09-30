@@ -39,13 +39,20 @@ const StepFour = () => {
     const [transactions, setTransactions] = useState<any[]>([])
 
     const {
+        createExchange,
+        setCurrentMarketRate,
+        setSelectedPayinMethod,
+        setSelectedPayoutMethod,
+
         credentials,
         monopolyMoney,
-        createExchange,
-        currentMarketRate,
         selectedCurrency,
-        setCurrentMarketRate,
+        sourceCurrencies,
+        currentMarketRate,
+        selectedPayinMethod,
+        selectedPayoutMethod,
         unformattedOfferings,
+        destinationCurrencies,
         selectedDestinationCurrency,
         marketConversionApiQuotaExceeded,
     } = useTbdexContext()
@@ -161,12 +168,13 @@ const StepFour = () => {
     // To track when txn is completed
     const hasMadePayment = false
 
-
+    const isLoadingOfferings = !sourceCurrencies?.length || !destinationCurrencies?.length
 
     return <Layout style={{ backgroundColor: colorBgContainer }}>
         <Flex className="flex-col">
             <Flex className="justify-between">
                 <Credentials
+                    inModal={false}
                     isSelected={isSelected}
                     selectedCard={selectedCard}
                     setIsSelected={setIsSelected}
@@ -203,7 +211,7 @@ const StepFour = () => {
                             </Flex>
                             <List
                                 pagination={{ position: "bottom", align: "start", pageSize: 4 }}
-                                loading={isLoading}
+                                loading={isLoading || isLoadingOfferings}
                                 dataSource={offerings}
                                 className="mt-4"
                                 renderItem={(item, index) => {
@@ -225,6 +233,8 @@ const StepFour = () => {
                                             credentials={existingCredentials}
                                             selectedOffering={selectedOffering}
                                             currentMarketRate={currentMarketRate}
+                                            selectedPayinMethod={selectedPayinMethod}
+                                            selectedPayoutMethod={selectedPayoutMethod}
                                             unformattedOfferings={unformattedOfferings}
 
                                             setIsSelected={setIsSelected}
@@ -235,6 +245,8 @@ const StepFour = () => {
                                             setSelectedCard={setSelectedCard}
                                             setCampaignAmount={setCampaignAmount}
                                             setSelectedOffering={setSelectedOffering}
+                                            setSelectedPayinMethod={setSelectedPayinMethod}
+                                            setSelectedPayoutMethod={setSelectedPayoutMethod}
                                         />
                                     )
                                 }}

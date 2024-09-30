@@ -1,4 +1,3 @@
-import { toCapitalizedWords } from "@/app/lib/utils";
 import { CheckCircleFilled } from "@ant-design/icons";
 import { Card, Flex, Tag, Typography } from "antd";
 import Link from "next/link";
@@ -11,37 +10,14 @@ export interface OfferCardProps {
     isSelected: boolean
     isRecommended: boolean
     issuerVcSchema: string
+    selectedPayinMethod: any;
+    selectedPayoutMethod: any;
     hasRequiredClaims: boolean
     offeringToCurrencyMethods: any[]
+    offeringFromCurrencyMethods: any[]
+    setSelectedPayinMethod: React.Dispatch<React.SetStateAction<any>>;
+    setSelectedPayoutMethod: React.Dispatch<React.SetStateAction<any>>;
 }
-
-const renderPaymentMethods = (methods: any[]) => {
-    const renderPropertyNames = (names: any[]) => {
-        return (
-            <Flex>
-                {names.map((name, index) => <Tag key={index}>{toCapitalizedWords(name)}</Tag>)}
-            </Flex>
-        )
-    }
-
-    return (
-        <Flex className="flex-col gap-2">
-            {methods.map(entry => {
-                const kind = entry.kind
-                const paymentProperties = entry.paymentProperties
-
-                const paymentPropertyNames = paymentProperties ? Object.keys(paymentProperties) : []
-                return (
-                    <Flex key={entry.kind} className="w-full">
-                        <Tag>{toCapitalizedWords(kind)}</Tag>
-                        {/* {renderPropertyNames(paymentPropertyNames)} */}
-                    </Flex>
-                )
-            })}
-        </Flex>
-    )
-}
-
 
 const OfferCard = ({
     isSpecial,
@@ -49,17 +25,11 @@ const OfferCard = ({
     offeringId,
     selectedCard,
     issuerVcSchema,
-    offeringToCurrencyMethods
 }: OfferCardProps) => {
     const noRequiredClaims = !issuerVcSchema && !issuerDid
 
     const hasClaims = selectedCard?.issuer === issuerDid
 
-    console.log("Handle Here ===>", {
-        selectedCard,
-        issuerVcSchema,
-        issuerDid,
-    })
     return (
         <Card className={`w-[470px] min-h-[200px] ${!isSpecial ? 'opacity-100' : 'opacity-40'}`}>
             <Flex className="w-full gap-2">
@@ -71,7 +41,7 @@ const OfferCard = ({
                 </Tag>
             </Flex>
             <Flex className="gap-1">
-                <Flex className="mt-4 border-[0.3px] border-gray-800 rounded-md p-3 w-[250px] justify-between items-center">
+                <Flex className="mt-4 border-[0.3px] border-gray-800 w-full rounded-md p-3 justify-between items-center">
                     {!noRequiredClaims
                         ? (
                             <>
@@ -81,8 +51,8 @@ const OfferCard = ({
                                     </Typography.Text>
                                     <Flex>
                                         <Tag className="items-center text-xs" color={hasClaims ? 'green' : 'default'}>
-                                            <Link href={issuerVcSchema ? issuerVcSchema : 'http://localhost:3000'} target="_blank" style={{ color: hasClaims ? 'green' : 'default' }}>
-                                                <Typography.Text style={{ color: hasClaims ? '#16a34a' : 'inherit' }} copyable>
+                                            <Link href={issuerVcSchema ? issuerVcSchema : 'https://google.com'} target="_blank">
+                                                <Typography.Text style={{ color: hasClaims ? '#16a34a' : 'inherit' }}>
                                                     View Credential Structure
                                                 </Typography.Text>
                                             </Link>
@@ -91,7 +61,7 @@ const OfferCard = ({
                                     <Flex>
                                         <Tag color={hasClaims ? 'green' : 'default'}>
                                             <Typography.Text style={{ color: hasClaims ? '#16a34a' : 'inherit' }} copyable>
-                                                {`${issuerDid?.slice(0, 14)}...${issuerDid?.slice(-6)}`}
+                                                {`${issuerDid?.slice(0, 18)}...${issuerDid?.slice(-18)}`}
                                             </Typography.Text>
                                         </Tag>
                                     </Flex>
@@ -111,17 +81,6 @@ const OfferCard = ({
                             </Flex>
                         )
                     }
-                </Flex>
-                <Flex className="mt-4 border-[0.3px] border-gray-800 rounded-md p-3 w-[250px] justify-between flex-col">
-                    <Typography.Text className="text-xs" style={{ fontSize: 11 }}>
-                        Payout Payment Methods:
-                    </Typography.Text>
-                    {/* <Flex className="flex-col w-full">
-                            {renderPaymentMethods(offeringFromCurrencyMethods)}
-                        </Flex> */}
-                    <Flex className="flex-col w-full">
-                        {renderPaymentMethods(offeringToCurrencyMethods)}
-                    </Flex>
                 </Flex>
             </Flex>
         </Card>

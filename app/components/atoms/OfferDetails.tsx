@@ -9,8 +9,13 @@ export interface AssetExchangeOfferProps {
     isSelected: boolean;
     isRecommended: boolean;
     issuerVcSchema: string;
+    selectedPayinMethod: any;
+    selectedPayoutMethod: any;
     hasRequiredClaims: boolean;
     offeringToCurrencyMethods: any[];
+    offeringFromCurrencyMethods: any[];
+    setSelectedPayinMethod: React.Dispatch<React.SetStateAction<any>>;
+    setSelectedPayoutMethod: React.Dispatch<React.SetStateAction<any>>;
 }
 
 const AssetExchangeOffer = ({
@@ -22,7 +27,12 @@ const AssetExchangeOffer = ({
     isRecommended,
     issuerVcSchema,
     hasRequiredClaims,
-    offeringToCurrencyMethods
+    selectedPayinMethod,
+    selectedPayoutMethod,
+    setSelectedPayinMethod,
+    setSelectedPayoutMethod,
+    offeringToCurrencyMethods,
+    offeringFromCurrencyMethods,
 }: AssetExchangeOfferProps) => {
     return isRecommended
         ? <Badge.Ribbon text="Recommended">
@@ -35,7 +45,13 @@ const AssetExchangeOffer = ({
                 isRecommended={isRecommended}
                 issuerVcSchema={issuerVcSchema}
                 hasRequiredClaims={hasRequiredClaims}
+                selectedPayinMethod={selectedPayinMethod}
+                selectedPayoutMethod={selectedPayoutMethod}
                 offeringToCurrencyMethods={offeringToCurrencyMethods}
+                offeringFromCurrencyMethods={offeringFromCurrencyMethods}
+
+                setSelectedPayinMethod={setSelectedPayinMethod}
+                setSelectedPayoutMethod={setSelectedPayoutMethod}
             />
         </Badge.Ribbon>
         : <OfferCard
@@ -47,7 +63,13 @@ const AssetExchangeOffer = ({
             isRecommended={isRecommended}
             issuerVcSchema={issuerVcSchema}
             hasRequiredClaims={hasRequiredClaims}
+            selectedPayinMethod={selectedPayinMethod}
+            selectedPayoutMethod={selectedPayoutMethod}
             offeringToCurrencyMethods={offeringToCurrencyMethods}
+            offeringFromCurrencyMethods={offeringFromCurrencyMethods}
+
+            setSelectedPayinMethod={setSelectedPayinMethod}
+            setSelectedPayoutMethod={setSelectedPayoutMethod}
         />
 }
 

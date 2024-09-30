@@ -21,6 +21,7 @@ const PaymentFlowModal = (props: any) => {
         pfiName,
         offering,
         showModal,
+        isSpecial,
         isLoading,
         overallFee,
         feeDetails,
@@ -52,11 +53,17 @@ const PaymentFlowModal = (props: any) => {
         setOfferingReview,
         offeringCreatedAt,
         setRelevantExchange,
+        selectedPayinMethod,
+        selectedPayoutMethod,
         offeringFromCurrency,
+        setSelectedPayinMethod,
         hasRequiredCredentials,
         requiredPaymentDetails,
+        setSelectedPayoutMethod,
         setRequiredPaymentDetails,
         offeringToCurrencyMethods,
+        offeringFromCurrencyMethods,
+        hasSelectedRequiredCredential,
     } = props
 
     const [hasInsufficientBalance, setHasInsufficientBalance] = useState(false)
@@ -69,15 +76,16 @@ const PaymentFlowModal = (props: any) => {
 
     const allFee = `${currencyCode} ${overallFee}`
 
-    const isPaymentStep = hasRequiredCredentials && isSelected
 
     const sourceCurrencyCode = rawOffering?.data?.payin.currencyCode
+
+    const isPaymentStep = hasRequiredCredentials && hasSelectedRequiredCredential
+
+    const finalPayoutValue = campaignAmount + parseFloat(allFee?.split(" ")[1])
 
     const cancelText = isRequestQuote
         ? 'Cancel'
         : `${isCancelled || isCompleted ? 'Close' : 'Cancel Transfer'}`
-
-    const finalPayoutValue = campaignAmount + parseFloat(allFee?.split(" ")[1])
 
     const submitText = isRequestQuote
         ? 'Request for Quote'
@@ -86,7 +94,7 @@ const PaymentFlowModal = (props: any) => {
             : `Transfer ${sourceCurrencyCode} ${Number(finalPayoutValue).toFixed(2)}`
 
     const modalTitle = hasRequiredCredentials
-        ? isSelected
+        ? hasSelectedRequiredCredential
             ? isRequestQuote
                 ? 'Request for Quote'
                 : isCompleted
@@ -151,7 +159,7 @@ const PaymentFlowModal = (props: any) => {
 
                 if (!hasSufficientBalance && sameCurrency) {
                     // Set error and disable button, insufficient balance
-                   console.log("Handle wallet balance here")
+                    console.log("Handle wallet balance here")
                 } else {
                     // Make deduction of amount from wallet
                     // Update state value with new amount
@@ -208,14 +216,17 @@ const PaymentFlowModal = (props: any) => {
     const showActionButtons = isPaymentStep || isCompleted
 
     const flow = hasRequiredCredentials
-        ? isSelected
+        ? true
+        // ? hasSelectedRequiredCredential
             ? <MakePayment
                 money={money}
                 pfiDid={pfiDid}
                 pfiName={pfiName}
+                isSpecial={isSpecial}
                 monopolyMoney={money}
                 offering={rawOffering}
                 feeDetails={feeDetails}
+                selectedCard={selectedCard}
                 userBearerDid={userBearerDid}
                 isRequestQuote={isRequestQuote}
                 campaignAmount={campaignAmount}
@@ -226,18 +237,25 @@ const PaymentFlowModal = (props: any) => {
                 setActivateButton={setActivateButton}
                 setCampaignAmount={setCampaignAmount}
                 offeringCreatedAt={offeringCreatedAt}
+                selectedPayinMethod={selectedPayinMethod}
+                selectedPayoutMethod={selectedPayoutMethod}
                 setPaymentDetails={setRequiredPaymentDetails}
                 requiredPaymentDetails={requiredPaymentDetails}
+                setSelectedPayinMethod={setSelectedPayinMethod}
+                setSelectedPayoutMethod={setSelectedPayoutMethod}
                 setHasInsufficientBalance={setHasInsufficientBalance}
                 offeringToCurrencyMethods={offeringToCurrencyMethods}
+                offeringFromCurrencyMethods={offeringFromCurrencyMethods}
             />
             : <Credentials
+                inModal
                 offering={values}
                 isSelected={isSelected}
                 credentials={credentials}
                 selectedCard={selectedCard}
                 setIsSelected={setIsSelected}
                 setSelectedCard={setSelectedCard}
+                hasSelectedRequiredCredential={hasSelectedRequiredCredential}
             />
         : 'Create New Credential Form'
 

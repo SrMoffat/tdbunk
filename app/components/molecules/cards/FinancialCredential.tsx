@@ -1,6 +1,7 @@
 "use client"
 import { Card1, Evidence, TBDVCLogoWhite, TBDVCLogoYellow, ValidCredential } from "@/app/components/atoms/Icon";
-import { CREDENTIAL_TYPES, ULTIMATE_IDENTITY_ISSUER_NAME } from "@/app/lib/constants";
+import { CredentialMode } from "@/app/components/organisms/steps/campaign/StepOne";
+import { CREDENTIAL_TYPES, CREDENTIALS_STAREGY_LOCAL_STORAGE_KEY, ULTIMATE_IDENTITY_ISSUER_NAME } from "@/app/lib/constants";
 import { extractVcDocumentDetails, parseJwtToVc, resolveDid } from "@/app/lib/web5";
 import countries from '@/public/countries.json';
 import { VerifiableCredential } from "@web5/credentials";
@@ -40,7 +41,7 @@ export interface CredentialCardProps {
 export const getFinancialVcJwtDetails = (jwt: any, isParsed: boolean = false) => {
     let parsedCred
 
-    if (!isParsed){
+    if (!isParsed) {
         parsedCred = parseJwtToVc(jwt)
     } else {
         parsedCred = jwt
@@ -79,6 +80,7 @@ export const CredentialCard: React.FC<CredentialCardProps> = ({
     expirationDate,
     handleCardClicked
 }) => {
+    const [isTestCred, setIsTestCred] = useState(false)
     const expiry = expirationDate ? expirationDate : ''
     const issuance = issuanceDate ? formatDistanceToNow(new Date(issuanceDate), { addSuffix: true }) : ''
     const expiration = expiry ? formatDistanceToNow(new Date(expiry), { addSuffix: true }) : ''
@@ -94,18 +96,36 @@ export const CredentialCard: React.FC<CredentialCardProps> = ({
             expiration
         }
 
-    const isTestMessedCred = !details?.name?.includes('undefined')
+    const isTestMessedCred = !details?.name?.includes('undefined') || parsedVcJwt
 
     const toRender = parsedVcJwt
         ? getFinancialVcJwtDetails(parsedVcJwt, true)
         : details
+
+    const issuerLogo = isTestCred
+        ? TBDVCLogoWhite
+        : parsedVcJwt
+            ? TBDVCLogoYellow
+            : isTestMessedCred
+                ? TBDVCLogoWhite
+                : TBDVCLogoYellow
+
+    useEffect(() => {
+        const data = localStorage?.getItem(CREDENTIALS_STAREGY_LOCAL_STORAGE_KEY)
+
+        if (data) {
+            const isRequest = data === CredentialMode.REQUEST
+
+            setIsTestCred(isRequest)
+        }
+    }, [])
 
     return (
         <Flex className="h-[200px]">
             <Flex onClick={handleCardClicked} className="absolute hover:opacity-70 rounded-md transition-all cursor-pointer">
                 <Image alt="card" src={Card1} width={300} height={300} />
                 <Flex className="absolute left-4 top-4 flex-col">
-                    <Image alt="LogoIcon" src={isTestMessedCred ? TBDVCLogoWhite : TBDVCLogoYellow} width={40} height={40} />
+                    <Image alt="LogoIcon" src={issuerLogo} width={40} height={40} />
                     <Link target="_blank" href={vcServiceUrl} style={{ fontSize: 10, marginTop: 8 }}>{ULTIMATE_IDENTITY_ISSUER_NAME}</Link>
                 </Flex>
                 <Flex className="absolute left-4 top-20 flex-col">

@@ -6,6 +6,7 @@ import { resolveDid } from "@tbdex/http-client";
 import { Card, Drawer, Flex, QRCode, Typography } from "antd";
 import Image from "next/image";
 import { useEffect, useState } from "react";
+import { format } from "date-fns"
 
 const ProfessionalCredentialCard = (props: any) => {
     const {
@@ -39,7 +40,7 @@ const ProfessionalCredentialCard = (props: any) => {
         // @ts-ignore
         ? toRender?.startDate
         : toRender?.vcSubject?.startDate
-            ? toRender?.vcSubject?.startDate
+            ? format(new Date(toRender?.vcSubject?.startDate), "dd/MM/yyyy")
             : ''
 
     // @ts-ignore
@@ -47,7 +48,7 @@ const ProfessionalCredentialCard = (props: any) => {
         // @ts-ignore
         ? toRender?.endDate
         : toRender?.vcSubject?.endDate
-            ? toRender?.vcSubject?.endDate
+            ? format(new Date(toRender?.vcSubject?.endDate), "dd/MM/yyyy")
             : ''
 
     return (
@@ -94,6 +95,8 @@ const ProfessionalInstitutionCredential = (props: any) => {
 
     useEffect(() => {
         (async () => {
+            if (!stateCredentials) return
+
             const isState = Object.keys(stateCredentials)?.length
 
             const credentialTypes = isState

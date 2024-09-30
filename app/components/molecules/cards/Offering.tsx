@@ -277,6 +277,7 @@ const OfferingDetails = (props: any) => {
                 issuerDid={issuerDid}
                 isSelected={isSelected}
                 offeringId={offeringId}
+                selectedCard={selectedCard}
                 issuerVcSchema={issuerVcSchema}
                 isRecommended={Boolean(pfiName) && isCheaperThanMarketRate}
                 isSpecial={!Boolean(pfiName)}

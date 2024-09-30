@@ -1,13 +1,15 @@
-import FinancialInstitutionCredential from '@/app/components/molecules/cards/FinancialCredential';
+import {
+    EducationCredentialCard,
+    FinancialCredentialCard,
+    GovernmentCredentialCard,
+    ProfessionalCredentialCard
+} from '@/app/components/molecules/cards';
 import { CREDENTIAL_TYPES } from "@/app/lib/constants";
 import { parseJwtToVc } from "@/app/lib/web5";
 import { CheckCircleFilled, CheckCircleOutlined } from "@ant-design/icons";
 import { Card, Flex, theme } from "antd";
 import { StaticImport } from "next/dist/shared/lib/get-img-props";
 import { useEffect, useState } from "react";
-import EducationalInstitutionCredential from "../molecules/cards/EducationCredential";
-import GovernmentInstitutionCredential from "../molecules/cards/GovernmentCredential";
-import ProfessionalInstitutionCredential from "../molecules/cards/ProfessionalCredential";
 
 export interface CredentialHolderProps {
     firstName: string;
@@ -56,18 +58,28 @@ const CredentialOption: React.FC<any> = ({
     }, [])
 
     const handleCardClicked = () => {
-        console.log("♦️ Card Clicked", {
-            offering,
-            parsedVcJwt,
-            
-        })
-        // if (selectedCard) {
-        //     setSelectedCard('')
-        // } else {
-        //     setSelectedCard(vcJwt)
-        // }
+        const dataModel = parsedVcJwt?.vcDataModel;
 
-        // setIsSelected(selectedCard === vcJwt)
+        const credentialDetails = {
+            jwt: vcJwt,
+            type: credentialTypes,
+            issuer: dataModel?.issuer,
+            issuanceDate: dataModel?.issuanceDate,
+            expirationDate: dataModel?.expirationDate,
+            subject: dataModel?.credentialSubject,
+        };
+
+        setSelectedCard(credentialDetails)
+
+        if (selectedCard?.jwt) {
+            const isSame = selectedCard?.jwt === vcJwt
+
+            if (isSame) {
+                // Deselect the selected card
+                setSelectedCard({})
+            }
+
+        }
     }
 
     const credentialTypes = parsedVcJwt?.vcDataModel?.type
@@ -85,23 +97,23 @@ const CredentialOption: React.FC<any> = ({
 
     // TO DO: Clean this up 🤢
     const credentialCard = financialCredential
-        ? <FinancialInstitutionCredential {...commonProps} />
+        ? <FinancialCredentialCard {...commonProps} />
         : governmentCredential
-            ? <GovernmentInstitutionCredential {...commonProps} />
+            ? <GovernmentCredentialCard {...commonProps} />
             : professionalCredential
-                ? <ProfessionalInstitutionCredential {...commonProps} />
+                ? <ProfessionalCredentialCard {...commonProps} />
                 : educationalCredential
-                    ? <EducationalInstitutionCredential {...commonProps} />
+                    ? <EducationCredentialCard {...commonProps} />
                     : 'Here'
 
     return (
-        <Card className="w-[360px] h-[220px] border border-red-400 relative">
+        <Card className="w-[360px] h-[220px] relative">
             {credentialCard}
-            <Flex className="border absolute top-0 right-0">
+            <Flex className="absolute top-0 right-0">
                 {
-                    isSelected
-                        ? <CheckCircleFilled className='mr-2' style={{ color: colorPrimary }} />
-                        : <CheckCircleOutlined className='mr-2' style={{ color: 'gray' }} />
+                    selectedCard?.jwt === vcJwt
+                        ? <CheckCircleFilled className='mr-2 mt-2' style={{ color: colorPrimary, fontSize: 20 }} />
+                        : <CheckCircleOutlined className='mr-2 mt-2' style={{ color: 'gray', fontSize: 20 }} />
                 }
             </Flex>
         </Card>

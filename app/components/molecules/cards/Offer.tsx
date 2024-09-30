@@ -4,13 +4,14 @@ import { Card, Flex, Tag, Typography } from "antd";
 import Link from "next/link";
 
 export interface OfferCardProps {
-    offeringId: string
     issuerDid: string
-    isSelected: boolean
+    offeringId: string
+    selectedCard: any
     isSpecial: boolean
-    hasRequiredClaims: boolean
+    isSelected: boolean
     isRecommended: boolean
     issuerVcSchema: string
+    hasRequiredClaims: boolean
     offeringToCurrencyMethods: any[]
 }
 
@@ -43,19 +44,22 @@ const renderPaymentMethods = (methods: any[]) => {
 
 
 const OfferCard = ({
-    offeringId,
-    issuerDid,
-    isSelected,
     isSpecial,
-    hasRequiredClaims,
-    isRecommended,
+    issuerDid,
+    offeringId,
+    selectedCard,
     issuerVcSchema,
     offeringToCurrencyMethods
 }: OfferCardProps) => {
     const noRequiredClaims = !issuerVcSchema && !issuerDid
 
-    const hasClaims = isSelected && hasRequiredClaims
+    const hasClaims = selectedCard?.issuer === issuerDid
 
+    console.log("Handle Here ===>", {
+        selectedCard,
+        issuerVcSchema,
+        issuerDid,
+    })
     return (
         <Card className={`w-[470px] min-h-[200px] ${!isSpecial ? 'opacity-100' : 'opacity-40'}`}>
             <Flex className="w-full gap-2">

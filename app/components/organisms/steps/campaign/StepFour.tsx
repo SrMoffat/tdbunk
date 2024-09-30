@@ -32,7 +32,7 @@ const StepFour = () => {
     const [isSelected, setIsSelected] = useState(false)
     const [isCancelled, setIsCancelled] = useState(false)
     const [isCompleted, setIsCompleted] = useState(false)
-    const [selectedCard, setSelectedCard] = useState('')
+    const [selectedCard, setSelectedCard] = useState({})
     // const [notifiedCompletion, setNotifiedCompletion] = useState(false)
     const [selectedOffering, setSelectedOffering] = useState<any>()
     const [offerings, setOfferings] = useState<any[]>([])
@@ -157,7 +157,11 @@ const StepFour = () => {
         ? userBearerDid
         : getUserBearerDid()
 
+
+    // To track when txn is completed
     const hasMadePayment = false
+
+
 
     return <Layout style={{ backgroundColor: colorBgContainer }}>
         <Flex className="flex-col">

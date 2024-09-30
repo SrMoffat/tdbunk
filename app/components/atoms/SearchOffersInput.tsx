@@ -77,6 +77,7 @@ export const SearchOffers = (props: any) => {
         <Space.Compact block >
             <Select style={{ width: 130 }} defaultValue={selectedCurrency || DEFAULT_BASE_CURRENCY} onChange={(value) => {
                 setSelectedCurrency?.(value)
+                setIsLoading(true)
             }}>
                 {mergedSourceCurrencies?.map(entry => <Option key={entry} value={entry}>{`${entry} ${getCurrencyFlag(entry)}`}</Option>)}
             </Select>
@@ -117,6 +118,7 @@ export const SearchOffers = (props: any) => {
                 <RightCircleFilled style={{ color: colorPrimary }} />
             </Flex>
             <Select style={{ width: 130 }} defaultValue={selectedDestinationCurrency} onChange={async (value) => {
+                setIsLoading(true)
                 try {
                     const response = await fetch(`/api/rates?source=${selectedDestinationCurrency}&destination=${value}`)
                     const data = await response.json()

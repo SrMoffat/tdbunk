@@ -15,9 +15,9 @@ const AssetExachangeAction = ({
     pfiName,
     offering,
     showModal,
-    selectedOffering,
     setSelectedOffering,
 }: AssetExachangeActionProps) => {
+
     const text = pfiName
         ? cta
         : 'Coming Soon'

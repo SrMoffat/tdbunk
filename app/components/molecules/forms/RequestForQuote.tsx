@@ -1,7 +1,21 @@
 import { LogoIcon2 } from "@/app/components/atoms/Icon";
 import { getCurrencyFlag, toCapitalizedWords } from "@/app/lib/utils";
 import { RightCircleFilled } from "@ant-design/icons";
-import { Button, Card, Flex, Form, Input, Select, InputNumber, Space, Statistic, StatisticProps, Tag, theme, Typography, } from "antd";
+import {
+    Button,
+    Card,
+    Flex,
+    Form,
+    Input,
+    InputNumber,
+    Select,
+    Space,
+    Statistic,
+    StatisticProps,
+    Tag,
+    theme,
+    Typography
+} from "antd";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import CountUp from "react-countup";
@@ -13,13 +27,6 @@ export interface RenderPaymentMethodArgs {
     isSpecial: boolean
 }
 
-// export interface SelectedPaymentDetails {
-//     method: any
-//     type: string
-//     isLoading: boolean
-//     insufficientBalance: boolean
-// }
-
 const RequestForQuote = (props: any) => {
     const [form] = Form.useForm();
 
@@ -28,7 +35,6 @@ const RequestForQuote = (props: any) => {
         offering,
         isLoading,
         isSpecial,
-        selectedCard,
         campaignAmount,
         setCampaignAmount,
         selectedPayinMethod,
@@ -154,11 +160,6 @@ const RequestForQuote = (props: any) => {
 
         const isAssumedStoredBalance = !requiredPaymentDetailsTitle && !results?.length;
 
-
-        console.log("Waititu ====>", {
-            entry,
-        })
-
         return (
             <Flex className="w-full">
                 <Flex key={kind} className="flex-col">
@@ -230,19 +231,10 @@ const RequestForQuote = (props: any) => {
             offeringId
         } = args
 
-        const renderPropertyNames = (names: any[]) => {
-            return (
-                <Flex>
-                    {names.map((name, index) => <Tag key={index}>{toCapitalizedWords(name)}</Tag>)}
-                </Flex>
-            )
-        }
-
         return (
             <Flex>
                 <Select
                     disabled={isSpecial}
-                    // defaultValue={methods[0]?.kind}
                     placeholder="Select Payment Method"
                     className="w-[90%]"
                     onChange={(value) => {

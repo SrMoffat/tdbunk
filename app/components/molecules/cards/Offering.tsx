@@ -1,12 +1,12 @@
 import AssetExchangeOffer from "@/app/components/atoms/OfferDetails";
 import AssetExchangePFIDetails from "@/app/components/molecules/cards/OfferingPFIDetails";
+import PaymentFlowModal from "@/app/components/molecules/modals/PaymentFlow";
 import { PFIs, TBDEX_MESSAGE_TYPES_TO_STATUS, TDBUNK_TRANSACTIONS_LOCAL_STORAGE_KEY } from "@/app/lib/constants";
 import { createTransaction, getCurrencyFlag, getPlatformFees, getUniqueExchanges } from "@/app/lib/utils";
 import { storeTbdexTransactionInDwn } from "@/app/lib/web5";
 import { Offering } from "@tbdex/http-client";
 import { List } from "antd";
 import { useEffect, useState } from "react";
-import PaymentFlowModal from "../modals/PaymentFlow";
 
 export interface AssetExchangePFIDetailsProps {
     cta: string;

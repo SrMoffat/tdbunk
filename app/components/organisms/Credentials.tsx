@@ -40,6 +40,7 @@ export interface CredentialOptionProps {
 
 const CredentialOption: React.FC<any> = ({
     vcJwt,
+    noDrawer,
     selectedCard,
     setSelectedCard,
     setHasSelectedCredential
@@ -90,6 +91,7 @@ const CredentialOption: React.FC<any> = ({
     const educationalCredential = specificCredentialType === CREDENTIAL_TYPES.EDUCATIONAL_CREDENTIAL
 
     const commonProps = {
+        noDrawer,
         parsedVcJwt,
         handleCardClicked,
     }
@@ -121,6 +123,7 @@ const CredentialOption: React.FC<any> = ({
 
 export const Credentials = (props: any) => {
     const {
+        noDrawer,
         inModal,
         offering,
         credentials,
@@ -149,6 +152,7 @@ export const Credentials = (props: any) => {
                     <CredentialOption
                         key={entry}
                         vcJwt={entry}
+                        noDrawer={noDrawer}
                         offering={offering}
                         isSelected={isSelected}
                         selectedCard={selectedCard}

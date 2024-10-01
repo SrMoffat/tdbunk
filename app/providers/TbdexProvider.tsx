@@ -245,12 +245,6 @@ const TbdexContextProvider = ({ children }: PropsWithChildren) => {
         })()
     }, [])
 
-
-    console.log("Selected Payment Methods", {
-        selectedPayinMethod,
-        selectedPayoutMethod
-    })
-
     return <TbdexContext.Provider value={{
         offerings,
         credentials,

@@ -33,7 +33,6 @@ const StepFour = () => {
     const [isCancelled, setIsCancelled] = useState(false)
     const [isCompleted, setIsCompleted] = useState(false)
     const [selectedCard, setSelectedCard] = useState({})
-    // const [notifiedCompletion, setNotifiedCompletion] = useState(false)
     const [selectedOffering, setSelectedOffering] = useState<any>()
     const [offerings, setOfferings] = useState<any[]>([])
     const [transactions, setTransactions] = useState<any[]>([])
@@ -175,12 +174,14 @@ const StepFour = () => {
             <Flex className="justify-between">
                 <Credentials
                     inModal={false}
+                    noDrawer
                     isSelected={isSelected}
                     selectedCard={selectedCard}
+                    stateCredentials={credentials}
+                    credentials={existingCredentials}
+
                     setIsSelected={setIsSelected}
                     setSelectedCard={setSelectedCard}
-                    credentials={existingCredentials}
-                    stateCredentials={credentials}
                 />
                 <WalletBalance money={monopolyMoney} />
             </Flex>

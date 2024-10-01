@@ -10,6 +10,7 @@ import { format } from "date-fns"
 
 const ProfessionalCredentialCard = (props: any) => {
     const {
+        noDrawer,
         showDrawer,
         vcSubject,
         startDate,
@@ -21,7 +22,10 @@ const ProfessionalCredentialCard = (props: any) => {
     } = props
 
     const onClick = () => {
-        showDrawer?.()
+        if (!noDrawer) {
+            
+            showDrawer?.()
+        }
         handleCardClicked?.()
     }
 
@@ -81,6 +85,7 @@ const ProfessionalCredentialCard = (props: any) => {
 
 const ProfessionalInstitutionCredential = (props: any) => {
     const {
+        noDrawer,
         userDid,
         parsedVcJwt,
         stateCredentials,
@@ -149,6 +154,10 @@ const ProfessionalInstitutionCredential = (props: any) => {
     })
 
     const showDrawer = () => {
+        console.log("👑 👑 3333=====>3333 👑 👑", {
+            noDrawer
+        })
+
         setOpen(true)
     }
 
@@ -158,6 +167,7 @@ const ProfessionalInstitutionCredential = (props: any) => {
 
     const commonProps = {
         showDrawer,
+        noDrawer,
         vcSubject,
         startDate,
         endDate,
@@ -199,7 +209,7 @@ const ProfessionalInstitutionCredential = (props: any) => {
                     </Flex>
                 </Flex>
 
-                <Card className="flex-col mb-4">
+                <Card className="flex-col my-6 w-full">
                     <Flex className="mb-3 justify-between">
                         <Flex className="flex-col">
                             <Typography.Text style={{ fontSize: 18 }}>Issuer Name:</Typography.Text>

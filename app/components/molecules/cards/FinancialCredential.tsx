@@ -153,7 +153,7 @@ export const DrawerHeader: React.FC<DrawerHeaderProps> = ({
 
 const FinancialInstitutionCredential = (props: any) => {
     const {
-        userDid,
+        noDrawer,
         credential,
         parsedVcJwt,
         stateCredentials,
@@ -177,7 +177,9 @@ const FinancialInstitutionCredential = (props: any) => {
     }
 
     const handleCardClicked = () => {
-        setOpen(true)
+        if (!noDrawer) {
+            setOpen(true)
+        }
         onClick?.()
     }
 

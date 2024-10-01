@@ -249,6 +249,7 @@ const PaymentFlowModal = (props: any) => {
             />
             : <Credentials
                 inModal
+                noDrawer
                 offering={values}
                 isSelected={isSelected}
                 credentials={credentials}

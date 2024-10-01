@@ -10,6 +10,7 @@ import { format } from "date-fns"
 
 const EducationalCredentialCard = (props: any) => {
     const {
+        noDrawer,
         showDrawer,
         vcSubject,
         startedDate,
@@ -21,7 +22,9 @@ const EducationalCredentialCard = (props: any) => {
     } = props
 
     const onClick = () => {
-        showDrawer?.()
+        if (!noDrawer) {
+            showDrawer?.()
+        }
         handleCardClicked?.()
     }
 
@@ -81,6 +84,7 @@ const EducationalCredentialCard = (props: any) => {
 
 const EducationalInstitutionCredential = (props: any) => {
     const {
+        noDrawer,
         userDid,
         parsedVcJwt,
         stateCredentials,
@@ -147,6 +151,9 @@ const EducationalInstitutionCredential = (props: any) => {
     })
 
     const showDrawer = () => {
+        console.log("👑 👑 =====> 👑 👑", {
+            noDrawer
+        })
         setOpen(true)
     }
 
@@ -156,6 +163,7 @@ const EducationalInstitutionCredential = (props: any) => {
 
     const commonProps = {
         showDrawer,
+        noDrawer,
         vcSubject,
         startedDate,
         endedDate,

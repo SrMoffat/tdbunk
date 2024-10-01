@@ -9,6 +9,7 @@ import { useEffect, useState } from "react";
 
 const GovernmentCredentialCard = (props: any) => {
     const {
+        noDrawer,
         showDrawer,
         vcSubject,
         issuance,
@@ -18,7 +19,9 @@ const GovernmentCredentialCard = (props: any) => {
     } = props
 
     const onClick = () => {
-        showDrawer?.()
+        if (!noDrawer) {
+            showDrawer?.()
+        }
         handleCardClicked?.()
     }
 
@@ -68,6 +71,7 @@ const GovernmentCredentialCard = (props: any) => {
 
 const GovernmentInstitutionCredential = (props: any) => {
     const {
+        noDrawer,
         userDid,
         parsedVcJwt,
         stateCredentials,
@@ -129,6 +133,10 @@ const GovernmentInstitutionCredential = (props: any) => {
     }, [stateCredentials, localStorageCredentials])
 
     const showDrawer = () => {
+        console.log("👑 👑 222=====>2222 👑 👑", {
+            noDrawer
+        })
+
         setOpen(true)
     }
 
@@ -138,6 +146,7 @@ const GovernmentInstitutionCredential = (props: any) => {
 
     const commonProps = {
         showDrawer,
+        noDrawer,
         vcSubject,
         issuance,
         expiration,

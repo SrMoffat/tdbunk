@@ -4,9 +4,19 @@ import FinancialCredentialForm from "@/app/components/molecules/forms/FinancialC
 import GovernmentCredentialForm from "@/app/components/molecules/forms/GovernmentCredential";
 import ProfessionalCredentialForm from "@/app/components/molecules/forms/ProfessionalCredential";
 import useBrowserStorage from "@/app/hooks/useLocalStorage";
-import { CREDENTIAL_TYPES, CREDENTIALS_LOCAL_STORAGE_KEY, CREDENTIALS_TYPE_LOCAL_STORAGE_KEY, LOCAL_STORAGE_KEY } from "@/app/lib/constants";
+import {
+    CREDENTIAL_TYPES,
+    CREDENTIALS_LOCAL_STORAGE_KEY,
+    CREDENTIALS_TYPE_LOCAL_STORAGE_KEY,
+    LOCAL_STORAGE_KEY
+} from "@/app/lib/constants";
 import { getCurrencyFromCountry, toCapitalizedWords } from "@/app/lib/utils";
-import { createEducationalCredential, createFinancialCredential, createGovernmentCredential, createProfessionalCredential } from "@/app/lib/web5";
+import {
+    createEducationalCredential,
+    createFinancialCredential,
+    createGovernmentCredential,
+    createProfessionalCredential
+} from "@/app/lib/web5";
 import { useNotificationContext } from "@/app/providers/NotificationProvider";
 import countries from '@/public/countries.json';
 import { useMutation } from '@tanstack/react-query';
@@ -19,6 +29,7 @@ const CredentialIssuerCard = (props: any) => {
         type,
         card,
         logo,
+        userDid,
         issuerName,
         setUserDid,
         setCredentials,
@@ -233,13 +244,13 @@ const CredentialIssuerCard = (props: any) => {
         setShowModal(false);
     };
 
-
     return (
         <>
             <Modal
                 width={800}
                 open={showModal}
                 onClose={onClose}
+                onCancel={onClose}
                 title={`Request ${toCapitalizedWords(type)}`}
                 footer={[
                     <Button danger key="back" onClick={handleCancel}>
@@ -252,7 +263,9 @@ const CredentialIssuerCard = (props: any) => {
             >
                 <Flex className="m-4 w-full">
                     <Spin className="w-full" spinning={isLoading}>
-                        {flow}
+                        <Flex className="justify-center w-[730px]">
+                            {flow}
+                        </Flex>
                     </Spin>
                 </Flex>
             </Modal>

@@ -664,6 +664,7 @@ export const getVcJwtDetails = (jwt: any, isParsed: boolean = false) => {
     return {
         issuance,
         vcSubject,
+        parsedCred,
         expiration,
         issuerDidUri,
     }

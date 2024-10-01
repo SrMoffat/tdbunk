@@ -68,6 +68,7 @@ const GovernmentCredentialCard = (props: any) => {
 
 const GovernmentInstitutionCredential = (props: any) => {
     const {
+        userDid,
         parsedVcJwt,
         stateCredentials,
         handleCardClicked,
@@ -75,6 +76,7 @@ const GovernmentInstitutionCredential = (props: any) => {
     } = props
 
     const [open, setOpen] = useState(false);
+    const [parsedCred, setParsedCred] = useState<any>()
     const [issuance, setIssuance] = useState<string | undefined>()
     const [expiration, setExpiration] = useState<string | undefined>()
     const [issuerServiceUrl, setIssuerServiceUrl] = useState<string | undefined>()
@@ -103,6 +105,7 @@ const GovernmentInstitutionCredential = (props: any) => {
                 const {
                     issuance,
                     vcSubject,
+                    parsedCred,
                     expiration,
                     issuerDidUri,
                     // issuerServiceUrl
@@ -117,6 +120,7 @@ const GovernmentInstitutionCredential = (props: any) => {
                 // setCountry(country)
                 setIssuance(issuance)
                 setVcSubject(vcSubject)
+                setParsedCred(parsedCred)
                 setExpiration(expiration)
                 setIssuerServiceUrl(issuerServiceUrl)
 
@@ -146,12 +150,23 @@ const GovernmentInstitutionCredential = (props: any) => {
             <Flex className="h-[200px]">
                 <GovernmentCredentialCard {...commonProps} />
             </Flex>
-            <Drawer title={<DrawerHeader type={[CREDENTIAL_TYPES.VERIFIABLE_CREDENTIAL, CREDENTIAL_TYPES.GOVERNMENT_CREDENTIAL]} />} onClose={onClose} open={open} width={600}>
-                <Flex className="h-[200px]">
-                    <GovernmentCredentialCard {...commonProps} />
-                </Flex>
-                <Flex className="mb-4 gap-2">
-                    <Flex className="w-[200px]">
+            <Drawer
+                title={
+                    <DrawerHeader type={[
+                        CREDENTIAL_TYPES.VERIFIABLE_CREDENTIAL,
+                        CREDENTIAL_TYPES.GOVERNMENT_CREDENTIAL
+                    ]}
+                    />
+                }
+                onClose={onClose}
+                open={open}
+                width={600}
+            >
+                <Flex className="justify-between">
+                    <Flex className="w-full">
+                        <GovernmentCredentialCard {...commonProps} />
+                    </Flex>
+                    <Flex className="w-1/2">
                         <QRCode
                             errorLevel="H"
                             size={160}
@@ -160,24 +175,26 @@ const GovernmentInstitutionCredential = (props: any) => {
                             icon="/logo-icon.svg"
                         />
                     </Flex>
-                    <Card className="flex-col mb-4">
-                        <Flex className="mb-3 justify-between">
-                            <Flex className="flex-col">
-                                <Typography.Text style={{ fontSize: 18 }}>Issuer Name:</Typography.Text>
-                                <Typography.Text style={{ fontSize: 14 }}>{TDBUNK_ISSUER_NAME}</Typography.Text>
-                            </Flex>
-                            <Image src={ValidCredential} width={50} height={50} alt="valid" />
-                        </Flex>
-                        <Flex className="flex-col mb-3">
-                            <Typography.Text style={{ fontSize: 18 }}>Service Endpoint:</Typography.Text>
-                            {/* <Typography.Text style={{ fontSize: 14 }} copyable>{vcServiceUrl}</Typography.Text> */}
-                        </Flex>
-                        <Flex className="flex-col mb-3">
-                            <Typography.Text style={{ fontSize: 18 }}>Issuer DID:</Typography.Text>
-                            {/* <Typography.Text style={{ fontSize: 14 }} copyable>{vcMetadata?.issuerDidUri}</Typography.Text> */}
-                        </Flex>
-                    </Card>
                 </Flex>
+
+                <Card className="flex-col mb-4">
+                    <Flex className="mb-3 justify-between">
+                        <Flex className="flex-col">
+                            <Typography.Text style={{ fontSize: 18 }}>Issuer Name:</Typography.Text>
+                            <Typography.Text style={{ fontSize: 14 }}>{TDBUNK_ISSUER_NAME}</Typography.Text>
+                        </Flex>
+                        <Image src={ValidCredential} width={50} height={50} alt="valid" />
+                    </Flex>
+                    <Flex className="flex-col mb-3">
+                        <Typography.Text style={{ fontSize: 18 }}>Service Endpoint:</Typography.Text>
+                        <Typography.Text style={{ fontSize: 14 }} copyable>{issuerServiceUrl}</Typography.Text>
+                    </Flex>
+                    <Flex className="flex-col mb-3">
+                        <Typography.Text style={{ fontSize: 18 }}>Issuer DID:</Typography.Text>
+                        <Typography.Text style={{ fontSize: 14 }} copyable>{userDid}</Typography.Text>
+                    </Flex>
+                </Card>
+
                 <Card className="flex-col mb-4">
                     <Flex className="mb-3 justify-between">
                         <Flex className="flex-col">
@@ -186,8 +203,7 @@ const GovernmentInstitutionCredential = (props: any) => {
                         <Image src={Evidence} width={40} height={40} alt="valid" />
                     </Flex>
                     <Flex className="flex-col mb-3">
-                        Here
-                        {/* <pre>{JSON.stringify(credentialDidDocument, null, 2)}</pre> */}
+                        <pre>{JSON.stringify(parsedCred, null, 2)}</pre>
                     </Flex>
                 </Card>
             </Drawer>

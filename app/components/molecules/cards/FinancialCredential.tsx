@@ -152,7 +152,14 @@ export const DrawerHeader: React.FC<DrawerHeaderProps> = ({
 }
 
 const FinancialInstitutionCredential = (props: any) => {
-    const { stateCredentials, localStorageCredentials, credential, parsedVcJwt, handleCardClicked: onClick } = props;
+    const {
+        userDid,
+        credential,
+        parsedVcJwt,
+        stateCredentials,
+        localStorageCredentials,
+        handleCardClicked: onClick,
+    } = props;
 
     const [open, setOpen] = useState(false);
     const [vcMetadata, setVcMetadata] = useState<CredentialMetadata | undefined>()
@@ -230,38 +237,53 @@ const FinancialInstitutionCredential = (props: any) => {
         : vcMetadata?.type
     return (
         <Flex>
-            <Drawer title={<DrawerHeader type={credentialType} />} onClose={onClose} open={open} width={600}>
-                <Flex>
-                    <CredentialCard {...commonCardProps} />
-                </Flex>
-                <Flex className="mb-4 gap-2">
-                    <Flex className="w-[200px]">
+            <Flex className="h-[200px]">
+                <CredentialCard {...commonCardProps} />
+            </Flex>
+
+            <Drawer
+                title={
+                    <DrawerHeader
+                        type={credentialType}
+                    />
+                }
+                onClose={onClose}
+                open={open}
+                width={600}
+            >
+                <Flex className="justify-between">
+                    <Flex className="w-full">
+                        <CredentialCard {...commonCardProps} />
+                    </Flex>
+                    <Flex className="w-1/2">
                         <QRCode
                             errorLevel="H"
-                            size={200}
-                            iconSize={200 / 4}
-                            value={JSON.stringify(credentialDidDocument?.vcDataModel?.credentialSubject, null, 0)}
+                            size={160}
+                            iconSize={160 / 4}
+                            value="To Do: stringify the vc document and pass it here"
                             icon="/logo-icon.svg"
                         />
                     </Flex>
-                    <Card className="flex-col mb-4 w-full">
-                        <Flex className="mb-3 justify-between">
-                            <Flex className="flex-col">
-                                <Typography.Text style={{ fontSize: 18 }}>Issuer Name:</Typography.Text>
-                                <Typography.Text style={{ fontSize: 14 }}>Ultimate Identity</Typography.Text>
-                            </Flex>
-                            <Image src={ValidCredential} width={50} height={50} alt="valid" />
-                        </Flex>
-                        <Flex className="flex-col mb-3">
-                            <Typography.Text style={{ fontSize: 18 }}>Service Endpoint:</Typography.Text>
-                            <Typography.Text style={{ fontSize: 14 }} copyable>{vcServiceUrl}</Typography.Text>
-                        </Flex>
-                        <Flex className="flex-col mb-3">
-                            <Typography.Text style={{ fontSize: 18 }}>Issuer DID:</Typography.Text>
-                            <Typography.Text style={{ fontSize: 14 }} copyable>{vcMetadata?.issuerDidUri}</Typography.Text>
-                        </Flex>
-                    </Card>
                 </Flex>
+
+                <Card className="flex-col mb-4 w-full">
+                    <Flex className="mb-3 justify-between">
+                        <Flex className="flex-col">
+                            <Typography.Text style={{ fontSize: 18 }}>Issuer Name:</Typography.Text>
+                            <Typography.Text style={{ fontSize: 14 }}>{ULTIMATE_IDENTITY_ISSUER_NAME}</Typography.Text>
+                        </Flex>
+                        <Image src={ValidCredential} width={50} height={50} alt="valid" />
+                    </Flex>
+                    <Flex className="flex-col mb-3">
+                        <Typography.Text style={{ fontSize: 18 }}>Service Endpoint:</Typography.Text>
+                        <Typography.Text style={{ fontSize: 14 }} copyable>{vcServiceUrl}</Typography.Text>
+                    </Flex>
+                    <Flex className="flex-col mb-3">
+                        <Typography.Text style={{ fontSize: 18 }}>Issuer DID:</Typography.Text>
+                        <Typography.Text style={{ fontSize: 14 }} copyable>{userDid}</Typography.Text>
+                    </Flex>
+                </Card>
+
                 <Card className="flex-col mb-4">
                     <Flex className="mb-3 justify-between">
                         <Flex className="flex-col">
@@ -274,7 +296,6 @@ const FinancialInstitutionCredential = (props: any) => {
                     </Flex>
                 </Card>
             </Drawer>
-            <CredentialCard {...commonCardProps} />
         </Flex>
     );
 };

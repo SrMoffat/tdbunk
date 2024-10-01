@@ -280,7 +280,7 @@ const FinancialInstitutionCredential = (props: any) => {
                     </Flex>
                     <Flex className="flex-col mb-3">
                         <Typography.Text style={{ fontSize: 18 }}>Issuer DID:</Typography.Text>
-                        <Typography.Text style={{ fontSize: 14 }} copyable>{userDid}</Typography.Text>
+                        <Typography.Text style={{ fontSize: 14 }} copyable>{vcMetadata?.issuerDidUri}</Typography.Text>
                     </Flex>
                 </Card>
 

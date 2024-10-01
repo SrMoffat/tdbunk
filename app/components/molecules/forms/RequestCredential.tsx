@@ -76,8 +76,9 @@ const RequestCredential = (props: any) => {
 
 
     const commonProps = {
-        noCredentialsFound,
+        userDid,
         stateCredentials,
+        noCredentialsFound,
         nextButtonDisabled,
         localStorageCredentials,
 
@@ -220,27 +221,21 @@ const RequestCredential = (props: any) => {
     const professionalCredential = createdCredentialType === CREDENTIAL_TYPES.PROFESSIONAL_CREDENTIAL
     const educationalCredential = createdCredentialType === CREDENTIAL_TYPES.EDUCATIONAL_CREDENTIAL
 
+    const commonIssuerProps = {
+        userDid,
+        stateCredentials,
+        localStorageCredentials,
+    }
+
     // TO DO: Clean this up 🤢
     const credentialCard = financialCredential
-        ? <FinancialInstitutionCredential
-            stateCredentials={stateCredentials}
-            localStorageCredentials={localStorageCredentials}
-        />
+        ? <FinancialInstitutionCredential {...commonIssuerProps} />
         : governmentCredential
-            ? <GovernmentCredentialCard
-                stateCredentials={stateCredentials}
-                localStorageCredentials={localStorageCredentials}
-            />
+            ? <GovernmentCredentialCard {...commonIssuerProps} />
             : professionalCredential
-                ? <ProfessionalCredentialCard
-                    stateCredentials={stateCredentials}
-                    localStorageCredentials={localStorageCredentials}
-                />
+                ? <ProfessionalCredentialCard {...commonIssuerProps} />
                 : educationalCredential
-                    ? <EducationCredentialCard
-                        stateCredentials={stateCredentials}
-                        localStorageCredentials={localStorageCredentials}
-                    />
+                    ? <EducationCredentialCard {...commonIssuerProps} />
                     : 'Here'
 
 
